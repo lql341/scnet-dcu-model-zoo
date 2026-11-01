@@ -36,7 +36,7 @@
 | 名称 | 值 | 含义 |
 | --- | --- | --- |
 | Harbor **manifest digest** | `sha256:db981c466e74…`（SGLang）<br>`sha256:0793026099b5…`（vLLM） | registry 上 manifest 的摘要，用于 `podman pull image@sha256:…` 精确拉取 |
-| 本地 `podman images --format {{.Digest}}` | `sha256:9d16c7f3aec3…`（SGLang，实测） | **本地 image config 的 digest**，与上面**本来就不相等** |
+| 本地 `podman images --format {{.Digest}}` | `sha256:9d16c7f3aec3…`（SGLang）<br>`sha256:641a79d516b1…`（vLLM） | **本地 image config 的 digest**，与上面**本来就不相等** |
 
 这是实测踩到的一个坑：一开始想用本地 `.Digest` 去比对 Harbor 的 manifest digest，发现对不上，
 这是正常的 —— 两者哈希的输入不同。
@@ -63,6 +63,15 @@ $PD images --format '{{.Repository}}:{{.Tag}}|{{.Digest}}'
 ```
 
 `load` 恢复的是**原名**（`dcu/linshp/...`）；要推到自己名下必须先 `podman tag`，见 `manual-push.md`。
+
+## 还原验证结果（实测）
+
+| 镜像 | `load` 结果 | 体积 |
+| --- | --- | --- |
+| `mimo-sglang-bw10000:1.1.1` | ✅ `Loaded image` | 32.2 GB |
+| `vllm0.20-...-_bw:1.0.0` | ✅ `Loaded image` | 29.6 GB |
+
+两者恢复的镜像名都是**上游原名**（`dcu/linshp/base/...`），证明归档未经重建。
 
 ## 生成时的坑
 
