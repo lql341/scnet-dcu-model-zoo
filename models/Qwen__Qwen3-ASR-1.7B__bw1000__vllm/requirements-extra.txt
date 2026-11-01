@@ -1,0 +1,3 @@
+# 本件无额外依赖。
+# 语音链路所需的音频处理依赖（librosa / soundfile / av）镜像已自带，
+# 实测 /v1/chat/completions(audio_url) 与 /v1/audio/transcriptions 两条路径均可用。

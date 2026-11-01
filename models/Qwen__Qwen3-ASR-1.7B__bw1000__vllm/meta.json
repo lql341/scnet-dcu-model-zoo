@@ -1,0 +1,28 @@
+{
+  "model_id": "Qwen/Qwen3-ASR-1.7B",
+  "org": "Qwen",
+  "model": "Qwen3-ASR-1.7B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.20.0",
+  "precision": "bf16",
+  "status": "smoke",
+  "bench": "no-material",
+  "bench_note": "T04 语音类性能测法随分题材料下发，尚未获取",
+  "cold_start_s": [
+    150,
+    200
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-01"
+}

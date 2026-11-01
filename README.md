@@ -24,9 +24,24 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 
 每个条目附 `image.lock`（镜像 digest），**本项目不构建镜像**，全部复用 Harbor 现成镜像。
 为什么用单仓库、体积怎么控制、什么时候该拆：见 [docs/repo-layout.md](docs/repo-layout.md)。
-体积守门：`./tools/check_quota.sh`（单条目 ≤2 MB，全库 ≤25 MB，当前全库 2 MB）。
+规范与守门（提交前必跑）：
+
+```bash
+./tools/lint_entry.sh      # 按 docs/entry-spec.md 校验所有条目
+python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
+./tools/check_quota.sh     # 体积守门：单条目 ≤2 MB，全库 ≤25 MB
+```
 
 ## 跑通矩阵
+
+<!-- MATRIX:BEGIN （由 tools/gen_index.py 生成，勿手改） -->
+| 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
+| [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
+| [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |
+| [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | BW1000 ×4 | sglang | bf16 | ✅ 6 档基准 | 608.23 | 80.73 |
+<!-- MATRIX:END -->
 
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |
 | --- | --- | --- | --- | --- | --- | --- | --- |

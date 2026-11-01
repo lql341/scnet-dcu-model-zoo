@@ -1,0 +1,28 @@
+{
+  "model_id": "moonshotai/Kimi-Linear-48B-A3B-Instruct",
+  "org": "moonshotai",
+  "model": "Kimi-Linear-48B-A3B-Instruct",
+  "card": "BW1000",
+  "cards_used": 4,
+  "tp": 4,
+  "framework": "sglang",
+  "framework_version": "0.5.10rc0+das.opt2.alpha.dtk2604",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "",
+  "cold_start_s": [
+    280,
+    360
+  ],
+  "throughput": {
+    "4k_c1": 14.52,
+    "4k_c8": 111.01,
+    "4k_c64": 608.23,
+    "16k_c1": 14.01,
+    "16k_c8": 80.73,
+    "16k_c64": 249.89
+  },
+  "optimized": false,
+  "verified_on": "2026-10-31"
+}

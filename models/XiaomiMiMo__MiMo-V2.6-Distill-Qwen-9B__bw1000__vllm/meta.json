@@ -1,0 +1,28 @@
+{
+  "model_id": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+  "org": "XiaomiMiMo",
+  "model": "MiMo-V2.6-Distill-Qwen-9B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.20.0",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "",
+  "cold_start_s": [
+    270,
+    410
+  ],
+  "throughput": {
+    "4k_c1": 20.73,
+    "4k_c8": 160.63,
+    "4k_c64": 489.52,
+    "16k_c1": 8.19,
+    "16k_c8": 44.83,
+    "16k_c64": 100.82
+  },
+  "optimized": true,
+  "verified_on": "2026-11-01"
+}
