@@ -1,0 +1,12 @@
+== /health
+HTTP 200
+== /v1/models
+{"object":"list","data":[{"id":"kimi-linear-48b","object":"model","created":1793426563,"owned_by":"sglang","root":"kimi-linear-48b","parent":null,"max_model_len":20480}]}
+== 单轮
+{"id":"5b2e1de229a54ca384e20e9543fbc361","object":"chat.completion","created":1793426566,"model":"kimi-linear-48b","choices":[{"index":0,"message":{"role":"assistant","content":"国产异构加速器是以专用计算架构为核心，融合CPU与GPU/FPGA/ASIC等异构单元，实现高性能、高能效计算的中国自主技术平台。","reasoning_content":null,"tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":163586}],"usage":{"prompt_tokens":15,"total_tokens":51,"completion_tokens":36,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+== 多轮
+{"id":"08aca863788f4694a2818143889fca44","object":"chat.completion","created":1793426568,"model":"kimi-linear-48b","choices":[{"index":0,"message":{"role":"assistant","content":"你刚刚说：“我叫小海。”  \n所以我知道你的名字是 **小海**。","reasoning_content":null,"tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":163586}],"usage":{"prompt_tokens":28,"total_tokens":46,"completion_tokens":18,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+== 流式
+
+data: [DONE]
+

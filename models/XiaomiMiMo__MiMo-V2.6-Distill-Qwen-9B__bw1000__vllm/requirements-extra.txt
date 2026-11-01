@@ -1,0 +1,4 @@
+# 本件无额外依赖：镜像内已自带 sglang 0.5.10rc0+das.opt2.alpha.dtk2604 /
+# torch 2.9.0 (HIP 6.3.26113) / triton 3.5.1 / transformers，满足模型要求。
+# 适配全部通过运行时环境变量与启动参数完成，见 README §3.3。
+# run.sh 会跳过本文件（无可安装条目）。

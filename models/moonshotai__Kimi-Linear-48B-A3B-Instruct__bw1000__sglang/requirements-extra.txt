@@ -1,0 +1,6 @@
+# 本件无额外依赖。
+# 关键实测：官方模型卡建议的 fla-core >= 0.4.0 在本件不需要——
+#   sglang 0.5.10rc0 已内置 sglang.srt.models.kimi_linear，
+#   且 KDA kernel 以 vendored 形式位于 sglang/srt/layers/attention/fla/{kda,chunk,fused_norm_gate}.py。
+#   容器内 `import fla` 为 ModuleNotFoundError，服务仍正常启动并通过全部 smoke。
+#   einops 镜像已自带。详见 README §3.2。
