@@ -1,0 +1,12 @@
+== /health
+HTTP 200
+== /v1/models
+{"object":"list","data":[{"id":"qwen3-asr-1.7b","object":"model","created":1793528040,"owned_by":"vllm","root":"/models/ASR","parent":null,"max_model_len":8192,"permission":[{"id":"modelperm-92a5fe64aceb3f8f","object":"model_permission","created":1793528040,"allow_create_engine":false,"allow_sampling":true,"allow_logprobs":true,"allow_search_indices":false,"allow_view":true,"allow_fine_tuning":false,"organization":"*","group":null,"is_blocking":false}]}]}
+== 音频信息
+-rw-r--r-- 1 root root 103578 Nov  1 18:10 /work/repo/assets/asr_test.wav
+== audio_url（chat/completions）
+{"id":"chatcmpl-b3c719aed8f41886","object":"chat.completion","created":1793528040,"model":"qwen3-asr-1.7b","choices":[{"index":0,"message":{"role":"assistant","content":"language Chinese<asr_text>甚至出现交易几乎停顿的情况。","refusal":null,"annotations":null,"audio":null,"function_call":null,"tool_calls":[],"reasoning":null},"logprobs":null,"finish_reason":"stop","stop_reason":null,"token_ids":null}],"service_tier":null,"system_fingerprint":null,"usage":{"prompt_tokens":56,"total_tokens":68,"completion_tokens":12,"prompt_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"kv_transfer_params":null}
+== transcriptions 接口
+{"text":"甚至出现交易几乎停顿的情况。","usage":{"type":"duration","seconds":4}}
+== 参考文本
+甚至出现交易几乎停滞的情况

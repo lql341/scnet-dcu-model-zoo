@@ -29,6 +29,7 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 | [Kimi-Linear-48B-A3B](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | 48B/A3B · 91.5 GB | BW1000 ×4 | SGLang 0.5.10 | bf16 | ✅ 跑通 | 608.23 | 80.73 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | 9.4B · 18 GB | BW1000 ×1 | SGLang 0.5.10 | bf16 | ✅ 跑通 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | 9.4B · 18 GB | BW1000 ×1 | vLLM 0.20.0 | bf16 | ✅ 跑通 | 489.52 | 44.83 |
+| [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | 2.35B · 4.7 GB | BW1000 ×1 | vLLM 0.20.0 | bf16 | ✅ 语音链路通（bench 口径未下发） | — | — |
 
 吞吐单位 tok/s，取 `bench/round2.jsonl` 的 `output_throughput`。
 

@@ -10,6 +10,10 @@
 
 单位：output tok/s。
 
+| Qwen3-ASR-1.7B | BW1000 ×1 | vLLM 0.20.0 | bf16 | 1 | 150–200 s | — | — | — | — | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
+
+> ASR 的 6 档基准未做：语音类性能测法随分题材料下发，尚未获取。已实测：单条 TTS 音频两条接口均正确返回，单样本 CER 1/12。
+
 ## 部分验证
 
 | 项目 | 状态 | 说明 |
@@ -23,7 +27,6 @@
 
 | 模型 | 题 | 权重 | 卡型 | 备注 |
 | --- | --- | --- | --- | --- |
-| Qwen3-ASR-1.7B | T04 | 4.7 GB | BW1000 | vLLM day-0；int8 全空位 |
 | Qwen3-ForcedAligner-0.6B | T04 | 1.8 GB | BW1000 | 最小；时间戳 AAS 指标 |
 | AuK | T04 | 3.4 GB | BW1000 | 需另下 Qwen2.5-Omni-3B 编码器 |
 | Recon2Reason-Reasoning-4B | T02 | 8.9 GB | BW1000 | 标准 Qwen3-VL，无自定义代码 |
