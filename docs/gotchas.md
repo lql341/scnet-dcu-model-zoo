@@ -135,3 +135,33 @@ FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
 `unset HIP_VISIBLE_DEVICES CUDA_VISIBLE_DEVICES` 无效。
 **状态**：**未解决**。根因怀疑是 rootless 容器 + 多卡 cgroup 设备白名单映射不一致
 （同样的 TP=4 在另一套启动路径下可以跑通）。单卡场景不受影响。
+
+## 15. SGLang 默认选到的 `aiter` attention backend 残缺
+
+**现象**：服务启动成功、`/health` 返回 200，但第一个 decode 请求就把整个进程带崩：
+
+```
+File ".../sglang/srt/layers/attention/aiter_backend.py", line 2535, in forward_decode
+    paged_attention_ragged(
+NameError: name 'paged_attention_ragged' is not defined
+```
+
+**根因**：镜像内 `aiter` 不完整（缺 `aiter.ops.triton.*`）。SGLang 在部分模型上会默认选
+`aiter` 而不是 `triton` backend。K100-AI 的 `jupyter-sglang` 镜像更严重——`import` 阶段就崩
+（`ModuleNotFoundError: No module named 'aiter.ops.triton.gemm'`）。
+
+**解法**：**所有条目一律显式指定 `--attention-backend triton`**，不要依赖默认值。
+MiMo / Kimi 两个条目一直带着这个参数所以没暴露；Recon2Reason 首次忘了加，就踩到了。
+
+## 16. 容器保活后，容器状态不再能反映服务健康
+
+**现象**：为解决「`run.sh` 后台起服务后自己退出 → 容器主进程退出 → 服务被杀」的问题，
+把容器主进程改成 `exec tail -f /dev/null` 保活。但此后 `podman ps` 永远显示 `Up`，
+即使里面 sglang 已经崩了，健康检查循环仍会一直等到 `LOAD_TIMEOUT`（实测白等 30 分钟）。
+
+**解法**：健康检查里额外查服务进程：
+
+```bash
+$PD exec <container> bash -lc 'pgrep -f launch_server >/dev/null' \
+  || { echo "SERVER_PROCESS_DIED"; grep -iE "error|NameError|Traceback" "$WORK/repo/logs/server.log" | tail -8; exit 1; }
+```

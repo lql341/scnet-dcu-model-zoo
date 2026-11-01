@@ -1,0 +1,11 @@
+== /health
+HTTP 200
+== /v1/models
+{"object":"list","data":[{"id":"recon2reason-4b","object":"model","created":1793551965,"owned_by":"sglang","root":"recon2reason-4b","parent":null,"max_model_len":32768}]}
+== 纯文本
+{"id":"3f1bfa06a83e44b5ac3f1f8edbc4ab01","object":"chat.completion","created":1793551966,"model":"recon2reason-4b","choices":[{"index":0,"message":{"role":"assistant","content":"空间推理是指在三维空间中，根据物体之间的相对位置和方向，推断出物体之间的关系和相互作用的能力。","reasoning_content":null,"tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":151645}],"usage":{"prompt_tokens":15,"total_tokens":43,"completion_tokens":28,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+生成 assets/red.png (320x240) 与 assets/blue.png (320x240)
+== 单图
+{"id":"1ca46ded99904b30a02ffc1c37d219b1","object":"chat.completion","created":1793551966,"model":"recon2reason-4b","choices":[{"index":0,"message":{"role":"assistant","content":"红色","reasoning_content":null,"tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":151645}],"usage":{"prompt_tokens":67,"total_tokens":69,"completion_tokens":2,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}
+== 多图（2 张）
+{"id":"1b4ae78280644574b8d18c4e0a008868","object":"chat.completion","created":1793551966,"model":"recon2reason-4b","choices":[{"index":0,"message":{"role":"assistant","content":"第一张图是红色，第二张图是蓝色。","reasoning_content":null,"tool_calls":null},"logprobs":null,"finish_reason":"stop","matched_stop":151645}],"usage":{"prompt_tokens":115,"total_tokens":128,"completion_tokens":13,"prompt_tokens_details":null,"reasoning_tokens":0},"metadata":{"weight_version":"default"}}

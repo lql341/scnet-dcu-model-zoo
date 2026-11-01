@@ -1,0 +1,18 @@
+{
+  "model_id": "BAAI/Recon2Reason-Reasoning-4B",
+  "org": "BAAI",
+  "model": "Recon2Reason-Reasoning-4B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "sglang",
+  "framework_version": "0.5.10rc0+das.opt2.alpha.dtk2604",
+  "precision": "bf16",
+  "status": "smoke",
+  "bench": "no-material",
+  "bench_note": "T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成的是视觉链路 smoke",
+  "cold_start_s": [150, 150],
+  "throughput": {"4k_c1": null, "4k_c8": null, "4k_c64": null, "16k_c1": null, "16k_c8": null, "16k_c64": null},
+  "optimized": false,
+  "verified_on": "2026-11-02"
+}

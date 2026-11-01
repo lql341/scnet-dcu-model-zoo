@@ -42,6 +42,7 @@ python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
 <!-- MATRIX:BEGIN （由 tools/gen_index.py 生成，勿手改） -->
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| [Recon2Reason-Reasoning-4B](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
 | [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |

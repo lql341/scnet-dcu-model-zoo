@@ -16,6 +16,7 @@
 
 | 模型 | 卡型×卡数 | 框架 | 精度 | 状态 | 冷启动 | 原因 | 详情 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| Recon2Reason-Reasoning-4B | BW1000 ×1 | sglang | bf16 | smoke | 150–150 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成的是视觉链路 smoke | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) |
 | Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | smoke | 150–200 s | T04 语音类性能测法随分题材料下发，尚未获取 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
 
 ## 未完成 / 失败记录
