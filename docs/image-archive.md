@@ -28,7 +28,26 @@
 | `mimo-sglang-bw10000_1.1.1.tar.gz` | `dcu/linshp/base/mimo-sglang-bw10000:1.1.1` | `sha256:db981c466e74…` | 7.9 GB |
 | `vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | `dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0` | `sha256:0793026099b5…` | 8.7 GB |
 
-没有做任何修改 —— 归档产物 `load` 后的 digest 与原镜像一致（由 `verify_archive.slurm` 校验）。
+没有做任何修改：`load` 后的镜像名与上游完全相同（`dcu/linshp/base/...`），
+说明 tar 直接来自上游镜像，未经重新构建。
+
+### 关于 digest：两个不同的东西，不要混淆
+
+| 名称 | 值 | 含义 |
+| --- | --- | --- |
+| Harbor **manifest digest** | `sha256:db981c466e74…`（SGLang）<br>`sha256:0793026099b5…`（vLLM） | registry 上 manifest 的摘要，用于 `podman pull image@sha256:…` 精确拉取 |
+| 本地 `podman images --format {{.Digest}}` | `sha256:9d16c7f3aec3…`（SGLang，实测） | **本地 image config 的 digest**，与上面**本来就不相等** |
+
+这是实测踩到的一个坑：一开始想用本地 `.Digest` 去比对 Harbor 的 manifest digest，发现对不上，
+这是正常的 —— 两者哈希的输入不同。
+
+**正确的完整性校验方式**（`verify_archive.slurm` 采用后者）：
+
+1. 归档 tar 的 `sha256sum` 与 `MANIFEST.md` 记录一致（防传输/存储损坏）
+2. `load` 成功且镜像名为上游原名（证明未经重建）
+3. 起服务跑 smoke 通过（功能性验证）
+
+不要用 `podman images --format {{.Digest}}` 去比 Harbor 的 manifest digest。
 
 ## 还原
 
@@ -53,3 +72,7 @@ $PD images --format '{{.Repository}}:{{.Tag}}|{{.Digest}}'
 - 节点根盘水位不稳：两次提交遇到 `tmp free=7G` 被 `df` 前置检查拦下（`exit 42`）。
   归档单个镜像需 ~35 GB 临时空间（解压镜像 + tar 输出）。
 - `gzip` 压缩比约 3.8:1（32 GB 未压缩 → 7.9 GB），耗时约 22 分钟。
+- **同一作业里连续 `load` 两个镜像会失败**：解压后共需 ~62 GB 临时空间，
+  实测在 100 GB 可用空间的节点上跑到第二个时仍报
+  `no space left on device ... rocfft_kernel_cache.db`。
+  应分两次作业验证（`ONLY=sgl` / `ONLY=vllm`）。
