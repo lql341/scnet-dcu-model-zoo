@@ -26,6 +26,11 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 为什么用单仓库、体积怎么控制、什么时候该拆：见 [docs/repo-layout.md](docs/repo-layout.md)。
 规范与守门（提交前必跑）：
 
+镜像归档与迁移（防止上游删除导致不可复现）：
+
+- 归档位置与还原方式：[docs/image-archive.md](docs/image-archive.md)
+- 推送到自有命名空间（手动）：[docs/manual-push.md](docs/manual-push.md)
+
 ```bash
 ./tools/lint_entry.sh      # 按 docs/entry-spec.md 校验所有条目
 python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
