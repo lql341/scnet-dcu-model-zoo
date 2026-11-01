@@ -22,6 +22,10 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 
 没有走官方模板的临时实验放在 `sweeps/`，工具脚本在 `tools/`。
 
+每个条目附 `image.lock`（镜像 digest），**本项目不构建镜像**，全部复用 Harbor 现成镜像。
+为什么用单仓库、体积怎么控制、什么时候该拆：见 [docs/repo-layout.md](docs/repo-layout.md)。
+体积守门：`./tools/check_quota.sh`（单条目 ≤2 MB，全库 ≤25 MB，当前全库 2 MB）。
+
 ## 跑通矩阵
 
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |
