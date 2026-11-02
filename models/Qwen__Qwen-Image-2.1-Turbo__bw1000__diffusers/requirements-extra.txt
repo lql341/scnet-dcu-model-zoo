@@ -1,0 +1,4 @@
+# 隔离安装（container/submit.slurm 自动完成），不写包名让 run.sh 直接装：
+#   diffusers==0.42.1    # 内置 QwenImage21Pipeline；--no-deps 装到 /opt/qi-libs
+# 镜像自带：torch 2.9.0+das（DCU 版）、transformers 5.3.0、triton 3.5.1
+# 注意：官方模型卡要求 transformers>=5.17.0，但 PyPI 最高仅 5.9.0（见 MISSING.md ②）

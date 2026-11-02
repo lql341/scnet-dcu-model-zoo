@@ -1,0 +1,28 @@
+{
+  "model_id": "Qwen/Qwen-Image-2.1-Turbo",
+  "org": "Qwen",
+  "model": "Qwen-Image-2.1-Turbo",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "diffusers",
+  "framework_version": "diffusers 0.42.1",
+  "precision": "bf16",
+  "status": "in-progress",
+  "bench": "not-required",
+  "bench_note": "官方 T03/T04 明确不进行统一评分和性能比较",
+  "cold_start_s": [
+    0,
+    0
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-02"
+}

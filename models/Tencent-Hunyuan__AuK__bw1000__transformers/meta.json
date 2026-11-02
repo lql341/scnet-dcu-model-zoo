@@ -1,0 +1,28 @@
+{
+  "model_id": "Tencent-Hunyuan/AuK",
+  "org": "Tencent-Hunyuan",
+  "model": "AuK",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "transformers",
+  "framework_version": "AuK (源码) + torch 2.10 (镜像自带)",
+  "precision": "bf16",
+  "status": "in-progress",
+  "bench": "not-required",
+  "bench_note": "官方 T03/T04 明确不进行统一评分和性能比较",
+  "cold_start_s": [
+    0,
+    0
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-02"
+}
