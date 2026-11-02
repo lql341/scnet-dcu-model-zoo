@@ -47,9 +47,10 @@ python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | blocked | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | blocked | — | — |
 | [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 官方 300/300 条完成 | — | — |
+| [Qwen3-ForcedAligner-0.6B](models/Qwen__Qwen3-ForcedAligner-0.6B__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 30/30 条完成 | — | — |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |
-| [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | BW1000 ×4 | sglang | bf16 | ✅ 6 档基准 | 608.23 | 80.73 |
+| [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | BW1000 ×4 | sglang | bf16 | ✅ 6 档基准 | 839.00 | 119.21 |
 <!-- MATRIX:END -->
 
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |

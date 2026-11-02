@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# FA 条目的 wheel 不入库（体积超限），清单见 wheels/README.md
+models/*/wheels/*.whl

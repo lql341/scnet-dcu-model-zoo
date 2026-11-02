@@ -1,0 +1,14 @@
+# 【不能直接写包名让 run.sh 装】本条目需要一个与镜像不兼容的 transformers 版本，
+# 因此采用“隔离目录 + PYTHONPATH 前置”，由 container/eval_official.slurm 完成安装。
+#
+# 依赖清单与实际版本（详见 wheels/README.md）：
+#   transformers==4.57.6        # qwen-asr 钉死；镜像内 5.8.1 的 check_model_inputs 签名已变
+#   huggingface_hub==0.36.2     # transformers 4.57.6 要求 <1.0；镜像内 1.11.0
+#   tokenizers==0.22.2          # transformers 4.57.6 要求 >=0.21,<0.23
+#   qwen_asr==0.0.6             # 提供 Qwen3ForcedAligner.from_pretrained / .align()
+#   soynlp==0.0.493             # 韩语分词（本条目英文评测不触达）
+#   qwen_omni_utils==0.0.9      # 音频预处理
+#   nagisa                      # 用 wheels/stub/nagisa.py 替换（真实版依赖 dyNET，仅日语路径需要）
+#
+# 安装方式：pip install --no-deps --target /opt/fa-libs <whl...>
+#           export PYTHONPATH=/opt/fa-libs:$PYTHONPATH

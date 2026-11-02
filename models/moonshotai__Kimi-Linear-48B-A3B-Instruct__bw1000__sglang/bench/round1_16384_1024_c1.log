@@ -16,7 +16,7 @@ Namespace(backend='sglang', base_url=None, host='127.0.0.1', port=30000, ready_c
 #Output tokens: 8192
 Starting warmup with 1 sequences...
 Warmup completed with 1 sequences. Starting main benchmark run...
-  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [01:18<09:12, 78.93s/it] 25%|██▌       | 2/8 [02:31<07:31, 75.21s/it] 38%|███▊      | 3/8 [03:40<06:01, 72.39s/it] 50%|█████     | 4/8 [04:51<04:46, 71.70s/it] 62%|██████▎   | 5/8 [06:02<03:35, 71.67s/it] 75%|███████▌  | 6/8 [07:09<02:20, 70.08s/it] 88%|████████▊ | 7/8 [08:21<01:10, 70.45s/it]100%|██████████| 8/8 [09:31<00:00, 70.39s/it]100%|██████████| 8/8 [09:31<00:00, 71.41s/it]
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:56<06:33, 56.15s/it] 25%|██▌       | 2/8 [01:11<03:11, 31.97s/it] 38%|███▊      | 3/8 [01:26<02:01, 24.25s/it] 50%|█████     | 4/8 [01:41<01:22, 20.64s/it] 62%|██████▎   | 5/8 [01:56<00:55, 18.62s/it] 75%|███████▌  | 6/8 [02:11<00:34, 17.43s/it] 88%|████████▊ | 7/8 [02:26<00:16, 16.65s/it]100%|██████████| 8/8 [02:41<00:00, 16.12s/it]100%|██████████| 8/8 [02:41<00:00, 20.19s/it]
 Calling super().encode with {'add_special_tokens': False}
 Calling super().encode with {'add_special_tokens': False}
 Calling super().encode with {'add_special_tokens': False}
@@ -31,35 +31,35 @@ Backend:                                 sglang
 Traffic request rate:                    inf       
 Max request concurrency:                 1         
 Successful requests:                     8         
-Benchmark duration (s):                  571.32    
+Benchmark duration (s):                  161.57    
 Total input tokens:                      131072    
 Total input text tokens:                 131072    
 Total generated tokens:                  8192      
 Total generated tokens (retokenized):    7168      
-Request throughput (req/s):              0.01      
-Input token throughput (tok/s):          229.42    
-Output token throughput (tok/s):         14.34     
-Peak output token throughput (tok/s):    16.00     
+Request throughput (req/s):              0.05      
+Input token throughput (tok/s):          811.23    
+Output token throughput (tok/s):         50.70     
+Peak output token throughput (tok/s):    79.00     
 Peak concurrent requests:                2         
-Total token throughput (tok/s):          243.76    
+Total token throughput (tok/s):          861.93    
 Concurrency:                             1.00      
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   71412.69  
-Median E2E Latency (ms):                 70912.04  
-P90 E2E Latency (ms):                    74498.58  
-P99 E2E Latency (ms):                    78482.27  
+Mean E2E Latency (ms):                   20193.53  
+Median E2E Latency (ms):                 15056.24  
+P90 E2E Latency (ms):                    27414.79  
+P99 E2E Latency (ms):                    53274.45  
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          1759.72   
-Median TTFT (ms):                        1997.45   
-P99 TTFT (ms):                           2061.93   
+Mean TTFT (ms):                          1700.26   
+Median TTFT (ms):                        1939.47   
+P99 TTFT (ms):                           1958.11   
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          68.09     
-Median TPOT (ms):                        67.38     
-P99 TPOT (ms):                           76.58     
+Mean TPOT (ms):                          18.08     
+Median TPOT (ms):                        12.82     
+P99 TPOT (ms):                           51.94     
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           66.80     
-Median ITL (ms):                         66.74     
-P95 ITL (ms):                            71.02     
-P99 ITL (ms):                            73.95     
-Max ITL (ms):                            87.74     
+Mean ITL (ms):                           12.82     
+Median ITL (ms):                         12.82     
+P95 ITL (ms):                            13.00     
+P99 ITL (ms):                            13.12     
+Max ITL (ms):                            14.48     
 ==================================================

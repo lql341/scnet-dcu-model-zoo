@@ -1,0 +1,7 @@
+== FA smoke（未单独跑 smoke.sh，评测作业已覆盖同等链路）==
+[align] 条件 30 条，素材缺失 0
+[align] torch 2.10.0 | cuda avail True | devs 1
+[align] 模型加载 8.5s
+[align] 30/30  11s  eta=0s
+样例: STUFF 0.32-0.8 / IT 0.8-0.88 / INTO 0.88-1.44
+说明：本条目为一次性批处理，无 serving；完整输出见 official-eval/

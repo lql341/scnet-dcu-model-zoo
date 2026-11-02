@@ -1,0 +1,12 @@
+{
+  "total": 30,
+  "ok": 30,
+  "fail": 0,
+  "evaluation_status": "BOUNDARIES_PENDING",
+  "note": "官方明示：无人工词边界，仅收集词级起止时间预测，不计算边界准确率；本文件不含任何准确率数字",
+  "word_count": {
+    "predicted_total": 572,
+    "reference_total": 572
+  },
+  "elapsed_s": 10.7
+}

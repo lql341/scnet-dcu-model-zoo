@@ -16,13 +16,14 @@
     360
   ],
   "throughput": {
-    "4k_c1": 14.52,
-    "4k_c8": 111.01,
-    "4k_c64": 608.23,
-    "16k_c1": 14.01,
-    "16k_c8": 80.73,
-    "16k_c64": 249.89
+    "4k_c1": 104.67,
+    "4k_c8": 353.53,
+    "4k_c64": 839.0,
+    "16k_c1": 50.8,
+    "16k_c8": 119.21,
+    "16k_c64": 234.17
   },
-  "optimized": false,
-  "verified_on": "2026-10-31"
+  "optimized": true,
+  "verified_on": "2026-10-31",
+  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；6 档中 5 档大幅提升，16K/c64 回退 6.3%"
 }

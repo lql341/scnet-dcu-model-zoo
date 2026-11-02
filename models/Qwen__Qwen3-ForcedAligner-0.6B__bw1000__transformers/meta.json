@@ -1,0 +1,41 @@
+{
+  "model_id": "Qwen/Qwen3-ForcedAligner-0.6B",
+  "org": "Qwen",
+  "model": "Qwen3-ForcedAligner-0.6B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "transformers",
+  "framework_version": "transformers 4.57.6 (isolated) + qwen_asr 0.0.6",
+  "precision": "bf16",
+  "status": "official-eval",
+  "bench": "not-required",
+  "bench_note": "官方 T04 明确不进行统一评分和性能比较；且 BOUNDARIES_PENDING —— 无人工词边界，仅收集预测不计算准确率",
+  "cold_start_s": [
+    0,
+    0
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-02",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/forced_aligner.jsonl",
+    "total": 30,
+    "ok": 30,
+    "fail": 0,
+    "elapsed_s": 10.7,
+    "evaluation_status": "BOUNDARIES_PENDING",
+    "word_count": {
+      "predicted_total": 572,
+      "reference_total": 572
+    },
+    "note": "官方明示无人工词边界，仅收集预测、不计算边界准确率；故本条目不含任何准确率数字"
+  }
+}

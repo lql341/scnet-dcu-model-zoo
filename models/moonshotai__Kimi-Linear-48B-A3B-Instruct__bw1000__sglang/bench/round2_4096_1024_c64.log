@@ -16,7 +16,7 @@ Namespace(backend='sglang', base_url=None, host='127.0.0.1', port=30000, ready_c
 #Output tokens: 131072
 Starting warmup with 1 sequences...
 Warmup completed with 1 sequences. Starting main benchmark run...
-  0%|          | 0/128 [00:00<?, ?it/s]  1%|          | 1/128 [01:33<3:17:26, 93.28s/it] 51%|█████     | 65/128 [03:35<03:02,  2.90s/it] 100%|██████████| 128/128 [03:35<00:00,  1.68s/it]
+  0%|          | 0/128 [00:00<?, ?it/s]  1%|          | 1/128 [01:03<2:13:57, 63.29s/it] 51%|█████     | 65/128 [02:36<02:13,  2.12s/it] 100%|██████████| 128/128 [02:36<00:00,  1.22s/it]
 Calling super().encode with {'add_special_tokens': False}
 Calling super().encode with {'add_special_tokens': False}
 Calling super().encode with {'add_special_tokens': False}
@@ -151,35 +151,35 @@ Backend:                                 sglang
 Traffic request rate:                    inf       
 Max request concurrency:                 64        
 Successful requests:                     128       
-Benchmark duration (s):                  215.50    
+Benchmark duration (s):                  156.22    
 Total input tokens:                      524288    
 Total input text tokens:                 524288    
 Total generated tokens:                  131072    
-Total generated tokens (retokenized):    129508    
-Request throughput (req/s):              0.59      
-Input token throughput (tok/s):          2432.91   
-Output token throughput (tok/s):         608.23    
-Peak output token throughput (tok/s):    960.00    
+Total generated tokens (retokenized):    130085    
+Request throughput (req/s):              0.82      
+Input token throughput (tok/s):          3355.99   
+Output token throughput (tok/s):         839.00    
+Peak output token throughput (tok/s):    1650.00   
 Peak concurrent requests:                128       
-Total token throughput (tok/s):          3041.13   
+Total token throughput (tok/s):          4194.98   
 Concurrency:                             63.97     
 ----------------End-to-End Latency----------------
-Mean E2E Latency (ms):                   107692.25 
-Median E2E Latency (ms):                 107694.07 
-P90 E2E Latency (ms):                    122143.18 
-P99 E2E Latency (ms):                    122149.88 
+Mean E2E Latency (ms):                   78081.78  
+Median E2E Latency (ms):                 78084.06  
+P90 E2E Latency (ms):                    92908.95  
+P99 E2E Latency (ms):                    92917.35  
 ---------------Time to First Token----------------
-Mean TTFT (ms):                          11441.21  
-Median TTFT (ms):                        11389.59  
-P99 TTFT (ms):                           21179.62  
+Mean TTFT (ms):                          11415.09  
+Median TTFT (ms):                        11365.90  
+P99 TTFT (ms):                           21117.89  
 -----Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          94.09     
-Median TPOT (ms):                        93.82     
-P99 TPOT (ms):                           117.27    
+Mean TPOT (ms):                          65.17     
+Median TPOT (ms):                        64.94     
+P99 TPOT (ms):                           88.73     
 ---------------Inter-Token Latency----------------
-Mean ITL (ms):                           94.09     
-Median ITL (ms):                         71.71     
-P95 ITL (ms):                            157.94    
-P99 ITL (ms):                            177.05    
-Max ITL (ms):                            19029.38  
+Mean ITL (ms):                           65.17     
+Median ITL (ms):                         42.38     
+P95 ITL (ms):                            108.14    
+P99 ITL (ms):                            116.81    
+Max ITL (ms):                            19001.48  
 ==================================================
