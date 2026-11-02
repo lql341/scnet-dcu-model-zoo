@@ -1,0 +1,19 @@
+模型及权重版本：Qwen/Qwen3-ForcedAligner-0.6B（ModelScope 快照，未指定 revision；BF16 单文件 1.8 GB）
+框架及版本：Transformers 4.57.6（隔离安装于 /opt/fa-libs）+ qwen_asr 0.0.6
+  - 镜像内 transformers 为 5.8.1，与 qwen-asr 要求的 4.57.6 冲突，故隔离安装、PYTHONPATH 前置
+  - 镜像内 vLLM 0.20.0 未受影响
+torch 版本：2.10.0（HIP 6.3.26093）
+triton：3.5.0
+设备信息：异构加速卡 BW（BW1000）× 1，64 GB，arch gfx936:sramecc+:xnack-
+镜像：image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0
+执行范围：official/t03-t04/conditions/forced_aligner.jsonl，共 30 条（LibriSpeech test-clean，按 ID 排序、时长≤15s 的前 30 条）
+输入：assets.audio + 正确 text + language（官方允许传正确文本）
+参数：dtype=bf16；params.language = English
+输出：每词 start/end，单位秒；文件为 outputs/<id>.json 与 outputs/<id>.tsv
+结果：30 成功 / 0 失败；预测词数 572，参考词数 572
+评测状态：BOUNDARIES_PENDING
+  官方原文：目前没有人工词边界，清单标记 BOUNDARIES_PENDING，仅收集词级起止时间预测，
+            不计算边界准确率，也不要求用户补标。
+  因此本文件不含任何准确率数字；"572 = 572" 仅说明分词切分与参考文本一致，不等于边界时刻准确。
+耗时：模型加载 8.5 s；30 条推理 10.7 s
+依赖说明：nagisa 用 stub 替换（真实版依赖 dyNET，仅日语分词路径需要；本评测集为英文）

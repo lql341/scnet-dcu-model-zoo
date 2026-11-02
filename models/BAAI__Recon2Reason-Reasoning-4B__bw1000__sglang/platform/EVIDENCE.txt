@@ -1,0 +1,60 @@
+# 平台证据（文本版）—— Recon2Reason-Reasoning-4B × BW1000 × sglang
+
+> 本文件由已有日志重建，作为 `platform/` 截图的**文本替代**。
+> 赛题要求的是截图，最终仍需人工截一次；本文件用于快速核对数据一致性。
+
+- 模型：`BAAI/Recon2Reason-Reasoning-4B`
+- 卡型：`BW1000` × 1（TP=1）
+- 框架：`sglang 0.5.10rc0+das.opt2.alpha.dtk2604`
+- 精度：`bf16`
+- 验证日期：2026-11-02
+
+## 环境（取自 `logs/env.log`）
+```text
+image: image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+card:  BW1000   framework: sglang   precision: bf16
+dtk:   DTK_VERSION=2604
+
+== device ==
+crw-rw-rw- 1 nobody nogroup 508, 0 Oct 24 15:48 /dev/kfd
+crw-rw-rw- 1 nobody nogroup 507, 0 Oct 24 15:48 /dev/mkfd
+
+================================= System Management Interface ==================================
+================================================================================================
+HCU     Temp     AvgPwr     Perf     PwrCap     VRAM%      HCU%      Dec%      Enc%      Mode     
+0       51.0C    85.0W      auto     1000.0W    0%         0.0%      0.0%      0.0%      Normal   
+================================================================================================
+======================================== End of SMI Log ========================================
+
+
+== python / torch ==
+python: 3.10.12
+torch: 2.9.0
+HIP: 6.3.26113
+cuda_available: True
+device_count: 1
+Device: BW
+vram_GB: 64.0
+arch: gfx936:sramecc+:xnack-
+
+== components ==
+sglang: 0.5.10rc0+das.opt2.alpha.dtk2604
+triton: 3.5.1
+transformers: 5.3.0
+tokenizers: 0.22.2
+
+== pip list (key) ==
+flash-attn                        2.8.3+das.opt1.dtk2604.torch290.2605181419.g67729e
+flash_mla                         1.0.0+das.opt1.dtk2604.torch290.2604100931.g261aa8
+Flask                             3.1.3
+sglang                            0.5.10rc0+das.opt2.alpha.dtk2604.torch290.2605181752.g91be88
+sglang-kernel                     0.4.0+das.opt1.dtk2604.torch290.2605181752.g91be88
+sglang-router                     0.3.2+das.opt1.dtk2604.torch290.2605181752.g91be88
+tokenizers                        0.22.2
+torch                             2.9.0+das.opt1.dtk2604.2605140906.gcbed15
+torch_c_dlpack_ext                0.1.5
+torchaudio                        2.9.0+das.opt1.dtk2604.torch290.202604011034.geaa9e4
+torchvision                       0.24.0+das.opt1.dtk2604.torch290.2604091152.g66069c
+transformers                      5.3.0
+triton                            3.5.1+das.opt1.dtk2604.torch290.2605181637.gd4164b
+```

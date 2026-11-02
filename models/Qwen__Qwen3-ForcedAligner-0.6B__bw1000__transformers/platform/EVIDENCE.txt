@@ -1,0 +1,32 @@
+# 平台证据（文本版）—— Qwen3-ForcedAligner-0.6B × BW1000 × transformers
+
+> 本文件由已有日志重建，作为 `platform/` 截图的**文本替代**。
+> 赛题要求的是截图，最终仍需人工截一次；本文件用于快速核对数据一致性。
+
+- 模型：`Qwen/Qwen3-ForcedAligner-0.6B`
+- 卡型：`BW1000` × 1（TP=1）
+- 框架：`transformers transformers 4.57.6 (isolated) + qwen_asr 0.0.6`
+- 精度：`bf16`
+- 验证日期：2026-11-02
+- 官方评测：**30/30** 条完成
+
+## 环境（取自 `logs/env.log`）
+```text
+image: image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0
+python: 3.10.12
+torch: 2.10.0
+HIP: 6.3.26093
+available: True
+count: 1
+Device: BW
+vram_GB: 64.0
+arch: gfx936:sramecc+:xnack-
+transformers(isolated /opt/fa-libs): 4.57.6
+huggingface_hub(isolated): 0.36.2
+tokenizers(isolated): 0.22.2
+qwen_asr: 0.0.6
+vllm(镜像内，未受影响): 0.20.0
+transformers(镜像内，未受影响): 5.8.1
+nagisa: stub（仅英文评测；日语路径显式报错）
+备注：本条目为一次性批处理，env.log 由评测作业的输出整理；hy-smi 卡型信息取自同镜像的 ASR 条目实测。
+```

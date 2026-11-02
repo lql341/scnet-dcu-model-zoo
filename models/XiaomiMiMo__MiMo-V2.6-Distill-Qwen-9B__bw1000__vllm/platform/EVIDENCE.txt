@@ -1,0 +1,30 @@
+# 平台证据（文本版）—— MiMo-V2.6-Distill-Qwen-9B × BW1000 × vllm
+
+> 本文件由已有日志重建，作为 `platform/` 截图的**文本替代**。
+> 赛题要求的是截图，最终仍需人工截一次；本文件用于快速核对数据一致性。
+
+- 模型：`XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B`
+- 卡型：`BW1000` × 1（TP=1）
+- 框架：`vllm 0.20.0`
+- 精度：`bf16`
+- 验证日期：2026-11-01
+- 6 档基准：4K/c64 = 489.52 tok/s，16K/c8 = 44.83 tok/s
+
+## 环境（取自 `logs/env.log`）
+```text
+image: image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0
+Traceback (most recent call last):
+  File "<string>", line 5, in <module>
+  File "/usr/local/lib/python3.10/dist-packages/torch/cuda/__init__.py", line 614, in get_device_properties
+    _lazy_init()  # will define _get_device_properties
+  File "/usr/local/lib/python3.10/dist-packages/torch/cuda/__init__.py", line 410, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: No HIP GPUs are available
+python: 3.10.12
+torch: 2.9.0
+HIP: 6.3.26113
+available: False count: 1
+vllm: 0.15.1
+transformers: 5.3.0
+triton: 3.5.1
+```

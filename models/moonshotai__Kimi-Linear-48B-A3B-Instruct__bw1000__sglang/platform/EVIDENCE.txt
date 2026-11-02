@@ -1,0 +1,36 @@
+# 平台证据（文本版）—— Kimi-Linear-48B-A3B-Instruct × BW1000 × sglang
+
+> 本文件由已有日志重建，作为 `platform/` 截图的**文本替代**。
+> 赛题要求的是截图，最终仍需人工截一次；本文件用于快速核对数据一致性。
+
+- 模型：`moonshotai/Kimi-Linear-48B-A3B-Instruct`
+- 卡型：`BW1000` × 4（TP=4）
+- 框架：`sglang 0.5.10rc0+das.opt2.alpha.dtk2604`
+- 精度：`bf16`
+- 验证日期：2026-10-31
+- 6 档基准：4K/c64 = 839.0 tok/s，16K/c8 = 119.21 tok/s
+
+## 环境（取自 `logs/env.log`）
+```text
+image: image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+dtk: DTK_VERSION=2604
+
+================================= System Management Interface ==================================
+================================================================================================
+HCU     Temp     AvgPwr     Perf     PwrCap     VRAM%      HCU%      Dec%      Enc%      Mode     
+0       51.0C    76.0W      auto     1000.0W    0%         0.0%      0.0%      0.0%      Normal   
+1       52.0C    77.0W      auto     1000.0W    0%         0.0%      0.0%      0.0%      Normal   
+2       50.0C    85.0W      auto     1000.0W    0%         0.0%      0.0%      0.0%      Normal   
+3       51.0C    77.0W      auto     1000.0W    0%         0.0%      0.0%      0.0%      Normal   
+================================================================================================
+======================================== End of SMI Log ========================================
+
+python: 3.10.12
+torch: 2.9.0
+HIP: 6.3.26113
+available: True count: 4
+Device: BW x 4 vram_GB: 64.0 arch: gfx936:sramecc+:xnack-
+sglang: 0.5.10rc0+das.opt2.alpha.dtk2604
+triton: 3.5.1
+transformers: 5.3.0
+```
