@@ -165,3 +165,32 @@ MiMo / Kimi 两个条目一直带着这个参数所以没暴露；Recon2Reason �
 $PD exec <container> bash -lc 'pgrep -f launch_server >/dev/null' \
   || { echo "SERVER_PROCESS_DIED"; grep -iE "error|NameError|Traceback" "$WORK/repo/logs/server.log" | tail -8; exit 1; }
 ```
+
+## 17. `Qwen3VLForEmbedding` 两个框架都不支持
+
+**现象**：
+
+SGLang 0.5.10rc0：
+```
+ValueError: Cannot find model module. 'Qwen3VLForEmbedding' is not a registered model
+in the Transformers library ... and 'AutoModel' is not pre...
+```
+
+vLLM 0.20.0：
+```
+pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
+  Value error, Model architectures ['Qwen3VLForEmbedding'] are not supported for now.
+```
+
+**源码确认**（实测三个版本）：
+- sglang `v0.5.10rc0` / `v0.5.18` / `main` 的 `qwen3_vl.py` 都只有
+  `EntryClass = Qwen3VLForConditionalGeneration`，无 embedding 变体
+- 三个版本都没有 `qwen3_vl_embedding.py` 文件（HTTP 404）
+
+**影响范围**：`OpenBMB/Trident-Qwen3VL-2B` 这类嵌入模型无法用现成推理框架部署。
+
+**可行路径**：用官方代码（OpenBMB/Trident 的 `TridentQwen3VLBackend`，Transformers 直载）自建 serving；
+注意 query / doc 使用不同 instruction，属训练格式。
+
+**反面参照**：`Qwen3-ASR-1.7B` 的 `Qwen3ASRForConditionalGeneration` 在 vLLM 0.20 里是支持的，
+说明"非 CausalLM 架构"本身不是障碍，**关键是特定架构有没有被框架注册**。

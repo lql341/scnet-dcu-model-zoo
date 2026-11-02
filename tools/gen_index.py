@@ -25,7 +25,8 @@ def fmt(v):
 def main():
     ents = load()
     done = [e for e in ents if e['bench'] == 'yes']
-    part = [e for e in ents if e['bench'] != 'yes']
+    part = [e for e in ents if e['bench'] != 'yes' and e.get('status') != 'blocked']
+    blocked = [e for e in ents if e.get('status') == 'blocked']
 
     # ---------- INDEX.md ----------
     lines = ['# 实测索引', '',
@@ -53,10 +54,16 @@ def main():
                          f"| {e['bench_note'] or '—'} | [→](models/{e['_dir']}/) |")
         lines += ['']
 
-    lines += ['## 未完成 / 失败记录', '',
-              '跑不通的配置也留档，写明原因，不删。', '',
-              '| 组合 | 结果 | 原因 | 出处 |',
-              '| --- | --- | --- | --- |',
+    lines += ['## 失败记录（blocked）', '',
+              '跑不通的配置也留档，写明原因与证据，不删。', '',
+              '| 组合 | 结果 | 原因 | 详情 |',
+              '| --- | --- | --- | --- |']
+    for e in blocked:
+        lines.append(f"| {e['model']} × {e['card']} × {e['framework']} "
+                     f"| ❌ 服务无法启动 | {e['bench_note']} | [→](models/{e['_dir']}/) |")
+    lines += ['',
+              '| 组合 | 结果 | 原因 |',
+              '| --- | --- | --- |',
               '| Kimi-Linear × BW1000 × vLLM | ❌ 框架不支持 | vLLM 0.20 内置模型无 `kimi_linear`（只有 kimi_k25 / kimi_vl / kimi_audio） | gotchas #2 旁注 |',
               '| Kimi-Linear × BW1000 × SGLang × CUDA Graph | 🟡 未完成 | TP=4 报 `HIP error: invalid device ordinal` | gotchas #14 |',
               '| MiMo × K100-AI × vLLM | 🟡 仅 smoke | Notebook 内跑通，6 档基准未跑 | 见 README 附注 |',

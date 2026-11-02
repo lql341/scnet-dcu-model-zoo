@@ -1,0 +1,3 @@
+# 当前无额外依赖 —— 服务在框架加载阶段就失败，装包无法绕过。
+# 若要自建 serving（Transformers + OpenBMB/Trident 的 TridentQwen3VLBackend），
+# 需要：transformers>=4.57（镜像已有 5.8.1）、torch（镜像自带），以及 Trident 仓库代码。

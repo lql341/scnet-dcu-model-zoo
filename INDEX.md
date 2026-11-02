@@ -18,15 +18,19 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Recon2Reason-Reasoning-4B | BW1000 ×1 | sglang | bf16 | smoke | 150–150 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成的是视觉链路 smoke | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) |
 | RoboBrain2.5-8B-NV | BW1000 ×1 | sglang | bf16 | smoke | 150–200 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成视觉链路 smoke | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) |
-| Trident-Qwen3VL-2B | BW1000 ×1 | sglang | bf16 | smoke | 80–150 s | T02 检索类评测集与性能测法随分题材料下发，尚未获取；本件完成嵌入链路 smoke | [→](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) |
 | Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | smoke | 150–200 s | T04 语音类性能测法随分题材料下发，尚未获取 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
 
-## 未完成 / 失败记录
+## 失败记录（blocked）
 
-跑不通的配置也留档，写明原因，不删。
+跑不通的配置也留档，写明原因与证据，不删。
 
-| 组合 | 结果 | 原因 | 出处 |
+| 组合 | 结果 | 原因 | 详情 |
 | --- | --- | --- | --- |
+| Trident-Qwen3VL-2B × BW1000 × sglang | ❌ 服务无法启动 | 框架不支持 Qwen3VLForEmbedding 架构，服务无法启动 | [→](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) |
+| Trident-Qwen3VL-2B × BW1000 × vllm | ❌ 服务无法启动 | vLLM 0.20 不支持 Qwen3VLForEmbedding 架构，服务无法启动 | [→](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__vllm/) |
+
+| 组合 | 结果 | 原因 |
+| --- | --- | --- |
 | Kimi-Linear × BW1000 × vLLM | ❌ 框架不支持 | vLLM 0.20 内置模型无 `kimi_linear`（只有 kimi_k25 / kimi_vl / kimi_audio） | gotchas #2 旁注 |
 | Kimi-Linear × BW1000 × SGLang × CUDA Graph | 🟡 未完成 | TP=4 报 `HIP error: invalid device ordinal` | gotchas #14 |
 | MiMo × K100-AI × vLLM | 🟡 仅 smoke | Notebook 内跑通，6 档基准未跑 | 见 README 附注 |

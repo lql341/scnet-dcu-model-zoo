@@ -1,0 +1,1 @@
+{"status":"blocked","reason":"服务无法启动（架构不支持），未执行 smoke","evidence":"见 README §3 与 logs/server.log"}

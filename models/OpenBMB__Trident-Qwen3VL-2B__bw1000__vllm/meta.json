@@ -1,0 +1,28 @@
+{
+  "model_id": "OpenBMB/Trident-Qwen3VL-2B",
+  "org": "OpenBMB",
+  "model": "Trident-Qwen3VL-2B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.20.0",
+  "precision": "bf16",
+  "status": "blocked",
+  "bench": "no-material",
+  "bench_note": "vLLM 0.20 不支持 Qwen3VLForEmbedding 架构，服务无法启动",
+  "cold_start_s": [
+    150,
+    200
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-01"
+}

@@ -25,7 +25,7 @@ BF16 权重 2 分片约 17 GB，Apache-2.0。
 
 - 权重：`https://www.modelscope.cn/models/BAAI/RoboBrain2.5-8B-NV`
 - 镜像：见 `image.lock`
-- 提交仓库：https://developer.sourcefind.cn/codes/luql/robobrain2.5-8b-nv-bw1000-sglang
+- 提交仓库：https://developer.sourcefind.cn/codes/luql/robobrain25-8b-nv-bw1000-sglang
 
 ## 2. 验证环境
 
