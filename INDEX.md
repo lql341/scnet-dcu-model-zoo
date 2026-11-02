@@ -18,7 +18,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Recon2Reason-Reasoning-4B | BW1000 ×1 | sglang | bf16 | smoke | 150–150 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成的是视觉链路 smoke | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) |
 | RoboBrain2.5-8B-NV | BW1000 ×1 | sglang | bf16 | smoke | 150–200 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成视觉链路 smoke | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) |
-| Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | smoke | 150–200 s | 官方 T04 材料明确「不进行统一评分和性能比较」，不要求服务接口；本件按官方 300 条条件提交识别文本 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
+| Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | official-eval | 150–200 s | 官方 T04 明确「不进行统一评分和性能比较」，不要求服务接口；已按官方 300 条条件完成评测 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
 
 ## 失败记录（blocked）
 

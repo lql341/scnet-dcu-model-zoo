@@ -81,6 +81,9 @@ def main():
     for e in ents:
         if e['bench'] == 'yes':
             st = '✅ 6 档基准'
+        elif e.get('official_eval'):
+            oe = e['official_eval']
+            st = f"✅ 官方 {oe['ok']}/{oe['total']} 条完成"
         elif e['bench'] == 'not-required':
             st = '✅ 跑通（官方不要求性能对比）'
         elif e['status'] == 'smoke':

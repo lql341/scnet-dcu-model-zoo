@@ -1,0 +1,17 @@
+{
+  "total": 300,
+  "ok": 300,
+  "fail": 0,
+  "groups": {
+    "AISHELL-1": {
+      "n": 100,
+      "CER": 1.21,
+      "WER": 0.0
+    },
+    "LibriSpeech": {
+      "n": 200,
+      "CER": 0.65,
+      "WER": 2.86
+    }
+  }
+}

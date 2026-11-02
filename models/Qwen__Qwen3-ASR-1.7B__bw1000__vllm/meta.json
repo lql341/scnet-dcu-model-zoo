@@ -8,9 +8,9 @@
   "framework": "vllm",
   "framework_version": "0.20.0",
   "precision": "bf16",
-  "status": "smoke",
+  "status": "official-eval",
   "bench": "not-required",
-  "bench_note": "官方 T04 材料明确「不进行统一评分和性能比较」，不要求服务接口；本件按官方 300 条条件提交识别文本",
+  "bench_note": "官方 T04 明确「不进行统一评分和性能比较」，不要求服务接口；已按官方 300 条条件完成评测",
   "cold_start_s": [
     150,
     200
@@ -24,5 +24,23 @@
     "16k_c64": null
   },
   "optimized": false,
-  "verified_on": "2026-11-01"
+  "verified_on": "2026-11-01",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/qwen3_asr.jsonl",
+    "total": 300,
+    "ok": 300,
+    "fail": 0,
+    "metrics": {
+      "AISHELL-1_zh": {
+        "n": 100,
+        "CER": 1.21
+      },
+      "LibriSpeech_en": {
+        "n": 200,
+        "CER": 0.65,
+        "WER": 2.86
+      }
+    },
+    "note": "CER/WER 为本仓库自算，官方不要求评分"
+  }
 }

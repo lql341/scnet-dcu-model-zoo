@@ -98,9 +98,79 @@ python3 -m vllm.entrypoints.openai.api_server \
 
 单样本 **CER ≈ 8.3%**。需要注意：**这不是官方评测**——音频来自 macOS TTS，发音与真实录音差异大，且只有一条。它证明的是**链路可用**（音频解码 → 特征 → 编码器 → 解码器 → 文本后处理全部走通，`language` 前缀正确识别为 Chinese），不是模型精度。官方 WER/CER 需按分题材料下发的测试集跑。
 
-## 6. 精度测评
+## 6. 精度测评（官方条件，已完成）
 
-**未完成。** T04 的 WER/CER 评测集与 `baselines/` 为官方下发物，目前未获取；`verify.py` 在该文件缺失时主动 `[BLOCKED]` 退出，不产出任何分数。
+已按官方 `T03_T04模型可行性方案_框架数据接入评测` 的固定条件执行**全部 300 条**，**300 成功 / 0 失败**。
+
+### 执行口径（严格按官方规定）
+
+| 项 | 官方要求 | 本件执行 |
+| --- | --- | --- |
+| 输入 | **只传 `assets.audio`**，不传参考 `text`、不传 `language` 标签 | ✅ 一致 |
+| 解码 | `temperature=0`（greedy） | ✅ |
+| 生成长度 | `max_new_tokens=1024` | ✅ |
+| 语言 | `language=null`（自动识别） | ✅ 未传语言 |
+| 精度 | `dtype=bf16` | ✅ |
+| 输出 | `<id>.txt`（UTF-8） | ✅ 300 个，见 `official-eval/outputs/` |
+| 反馈表 | `condition_id,model,status,output_path,error,parameter_changes` | ✅ `official-eval/反馈表.csv` |
+| 环境说明 | 模型/权重版本、框架版本、设备型号与数量 | ✅ `official-eval/环境说明.txt` |
+
+### 测试集构成
+
+| 数据源 | 语言 | 条数 | 成功 |
+| --- | --- | ---: | ---: |
+| AISHELL-1 test | zh | 100 | 100 |
+| LibriSpeech test-clean | en | 100 | 100 |
+| LibriSpeech test-other | en | 100 | 100 |
+| **合计** | | **300** | **300** |
+
+### 结果（`official-eval/eval_result.json` 原文）
+
+```json
+{
+  "total": 300,
+  "ok": 300,
+  "fail": 0,
+  "groups": {
+    "AISHELL-1":   { "n": 100, "CER": 1.21, "WER": 0.0 },
+    "LibriSpeech": { "n": 200, "CER": 0.65, "WER": 2.86 }
+  }
+}
+```
+
+**关于这些数字的性质，必须说清**：
+
+- 官方明写「**不进行统一评分和性能比较**」，因此上面的 CER/WER 是**本仓库自算**的，
+  仅用于内部记录与横向参考，**不是官方评分**。算法见 `evaluate_official.py` 的 `cer()` / `wer()`：
+  - 中文：NFKC 归一化后去掉空白与标点，按**字符**算编辑距离
+  - 英文：NFKC + 大写 + 去标点 + 压缩空白，按**词**算 WER、按**字符**算 CER
+  - 聚合方式：CER 按字符数加权，WER 按句平均
+- 与官方模型卡给出的参考值对照（口径不同，仅供感知量级）：
+  模型卡报告 LibriSpeech clean/other WER 1.63 / 3.38、AISHELL-2 2.71；
+  本件 LibriSpeech 200 条（clean+other 各半）WER 2.86，量级一致。
+
+### 抽样核对（人工）
+
+| id | 参考文本 | 识别结果 |
+| --- | --- | --- |
+| `BAC009S0764W0121` | 甚至出现交易几乎停滞的情况 | `甚至出现交易几乎停滞的情况。` ✅ |
+| `1089-134686-0000` | HE HOPED THERE WOULD BE STEW FOR DINNER… | `He hoped there would be stew for dinner, turnips and carrots, …` ✅ |
+
+英文条目我们保留输出原文大小写与标点，仅用于展示；上述 CER/WER 计算前已做归一化。
+
+## 7. 性能参考
+
+**官方明确不要求**：T04 主文档原文「不限定框架或调用方式，不要求提供服务接口，**不进行统一评分和性能比较**」。
+因此本条的 `meta.bench` 取值为 `not-required`（不是缺材料）。
+
+已实测的运行相关数据（仅供参考）：
+
+| 指标 | 值 |
+| --- | --- |
+| 冷启动 | 150–200 s |
+| 显存 | 模型 4.7 GB，`--gpu-memory-utilization 0.85` |
+| 300 条评测耗时 | **35 s**（4 并发） |
+| 单条 4 s 音频 | 见 `logs/smoke.log` 的 `usage.duration` |
 
 ## 7. 性能参考
 

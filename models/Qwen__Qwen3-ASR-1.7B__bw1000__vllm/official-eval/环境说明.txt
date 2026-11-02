@@ -1,0 +1,17 @@
+模型及权重版本：Qwen/Qwen3-ASR-1.7B（ModelScope 快照，未指定 revision；BF16 权重 2 分片 4.7 GB）
+框架及版本：vLLM 0.20.0
+torch 版本：2.10.0（HIP 6.3.26093）
+triton：3.5.0　transformers：5.8.1
+设备信息：BW vram_GB: 64.0 arch: gfx936:sramecc+:xnack-
+镜像：image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0
+执行范围：official/t03-t04/conditions/qwen3_asr.jsonl，共 300 条
+  - AISHELL-1 test（zh）100 条
+  - LibriSpeech test-clean（en）100 条
+  - LibriSpeech test-other（en）100 条
+解码参数：temperature=0（greedy）、max_new_tokens=1024、language=null（自动识别）、dtype=bf16
+输入说明：仅使用条件清单的 assets.audio；**未传入参考 text 与 language 标签**
+产物：outputs/<id>.txt（UTF-8），共 300 个
+结果：300 成功 / 0 失败
+自算指标（官方不要求评分）：AISHELL-1 CER 1.21%；LibriSpeech CER 0.65% / WER 2.86%
+备注：本文件由 env.log 的真实读数生成；容器内 podman exec 环境未带 LD_LIBRARY_PATH 时
+     torch/vllm 版本会读成 unknown，故改为从 env.log 取值。
