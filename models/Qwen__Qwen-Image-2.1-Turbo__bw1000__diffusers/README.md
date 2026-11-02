@@ -94,3 +94,21 @@ sbatch container/submit.slurm                             # 全量 180 条
 - **`sigmas` 参数**：Turbo 版内置日程，只改 `num_inference_steps` 无效。
 - **显存**：32.5 GB 权重 + 2048×2048 的 latent，单卡 64 GB 需实测是否够；
   不够则需 `enable_model_cpu_offload()` 或降分辨率（后者会偏离官方条件，须记入 `parameter_changes`）。
+
+## 9. 阻塞实况（2026-11-03 实测，已停止推进）
+
+| 阶段 | 结果 |
+| --- | --- |
+| 权重下载 | ✅ 31 GB |
+| `QwenImage21Pipeline` 存在性 | ✅ diffusers 0.42.1 与 0.41.0 都内置 |
+| diffusers 0.42.1（最新） | ❌ 要求 **Python ≥ 3.11**，容器是 3.10 |
+| diffusers 0.41.0（支持 3.10） | ❌ 需要 `huggingface_hub.resolve_revision` 与 `RevisionResolutionError` |
+
+**关键证据**：`resolve_revision` 在实测的 **6 个 hub 版本里都不存在**
+（0.24.7 / 0.26.2 / 0.30.0 / 0.33.0 / 0.36.2 / 1.11.0），属上游"未来版本 API"。
+我写了 `hub_shim.py` 补 `resolve_revision`，仍缺 `RevisionResolutionError`，说明缺的是一整组 API。
+
+**因此本条目未产出任何图像。** 可行路径（未执行）：
+- 补全 shim（需逐个试出 diffusers 用到的全部缺失符号）
+- 或换 Python 3.11 基础镜像（需确认有 DCU 版 torch 3.11 wheel）
+- 或用官方仓库自带的推理脚本（若有，可绕开 diffusers 版本要求）

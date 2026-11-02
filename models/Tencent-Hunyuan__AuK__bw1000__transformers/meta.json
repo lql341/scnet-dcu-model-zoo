@@ -8,9 +8,9 @@
   "framework": "transformers",
   "framework_version": "AuK (源码) + torch 2.10 (镜像自带)",
   "precision": "bf16",
-  "status": "in-progress",
+  "status": "blocked",
   "bench": "not-required",
-  "bench_note": "官方 T03/T04 明确不进行统一评分和性能比较",
+  "bench_note": "依赖链阻塞：模型与引擎可加载，但音频解码依赖（torchcodec ABI 与 DCU torch 不兼容、librosa 装不进隔离目录）未能打通",
   "cold_start_s": [
     0,
     0

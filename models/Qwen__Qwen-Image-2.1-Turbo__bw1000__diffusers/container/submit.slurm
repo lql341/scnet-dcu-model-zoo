@@ -18,7 +18,7 @@ LIBP='/opt/hyhal/lib:/opt/hyhal/lib64:/opt/dtk/.hyhal/hsa/lib:/opt/dtk/.hyhal/hy
 
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
 echo "[host] node=$(hostname) tmp_free=${FREE}G"
-[ "$FREE" -lt 45 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
+[ "$FREE" -lt 70 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 mkdir -p "$XDG_RUNTIME_DIR"; chmod 700 "$XDG_RUNTIME_DIR"
 if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then $PD load -i "$HOST_IMAGE_TAR" >/tmp/load.log 2>&1; fi
 $PD image exists "$IMAGE" 2>/dev/null || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load.log 2>&1
@@ -30,19 +30,8 @@ $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypo
   --device /dev/kfd --device /dev/mkfd --device /dev/dri \
   -v /opt/hyhal:/opt/hyhal:ro -v "$HOST_MODEL_PATH":$MODEL_PATH:ro \
   -v "$WORK":/work -v "$WHEELS_HOST":/wheels:ro \
-  "$IMAGE" -c "
-export LD_LIBRARY_PATH=$LIBP:\$LD_LIBRARY_PATH
-export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
-echo '--- 镜像内版本 ---'
-python3 -c 'import torch,transformers;print(\"torch\",torch.__version__,\"| transformers\",transformers.__version__)'
-echo '--- 装 diffusers（--no-deps，不动镜像 torch/transformers）---'
-pip install -q --no-deps --target /opt/qi-libs /wheels/diffusers-*.whl 2>&1 | tail -2
-export PYTHONPATH=/opt/qi-libs:\$PYTHONPATH
-python3 -c 'import diffusers;print(\"diffusers\",diffusers.__version__);from diffusers import QwenImage21Pipeline;print(\"QwenImage21Pipeline OK\")' 2>&1 | tail -4
-cd /work/repo
-export MODEL_PATH='$MODEL_PATH' WIDTH=$WIDTH HEIGHT=$HEIGHT
-export COND_FILE=conditions/qwen_image.jsonl OUTDIR=outputs PROBE_ONLY=\${PROBE_ONLY:-0}
-python3 evaluate_official.py 2>&1 | tail -30
-" 2>&1 | grep -viE "subuid|rootless|Network file|level=warning"
+  -v "$REPO/container/inner.sh":/inner.sh:ro \
+  -e PROBE_ONLY="${PROBE_ONLY:-0}" \
+  "$IMAGE" /inner.sh 2>&1 | grep -viE "subuid|rootless|Network file|level=warning"
 echo "[host] outputs: $(ls "$WORK/repo/outputs" 2>/dev/null | wc -l) 个"
 echo "[host] DONE $(date +%T)"

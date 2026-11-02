@@ -8,9 +8,9 @@
   "framework": "diffusers",
   "framework_version": "diffusers 0.42.1",
   "precision": "bf16",
-  "status": "in-progress",
+  "status": "blocked",
   "bench": "not-required",
-  "bench_note": "官方 T03/T04 明确不进行统一评分和性能比较",
+  "bench_note": "依赖链阻塞：diffusers 0.41.0 需要 huggingface_hub.resolve_revision / RevisionResolutionError，这两个符号在任何已发布 hub 版本（0.24~1.11）中都不存在；diffusers 0.42.1 要求 Python≥3.11",
   "cold_start_s": [
     0,
     0

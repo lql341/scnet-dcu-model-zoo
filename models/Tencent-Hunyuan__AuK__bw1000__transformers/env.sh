@@ -23,4 +23,6 @@ export PORT=30000
 export TASK="tts"
 export LOAD_TIMEOUT=1800
 export WHEELS_HOST="/public/home/scnethr2601a10/wheels/auk"
+# torchcodec 是 cp310 二进制包，单独目录挂载；torchaudio 2.9 的 load() 依赖它
+export WHEELS_BIN_HOST="/public/home/scnethr2601a10/wheels/auk-bin"
 export AUK_SRC_HOST="/public/home/scnethr2601a10/AuK-src"
