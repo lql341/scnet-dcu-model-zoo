@@ -14,6 +14,7 @@
 
 - 权重：`https://www.modelscope.cn/models/Qwen/Qwen3-ASR-1.7B`
 - 镜像：`image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0`
+- 提交仓库：https://developer.sourcefind.cn/codes/luql/qwen3-asr-1.7b-bw1000-vllm
 
 ## 2. 验证环境
 

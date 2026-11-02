@@ -19,7 +19,7 @@ BF16 权重 2 分片约 8.3 GB，Apache-2.0。
 
 - 权重：`https://www.modelscope.cn/models/BAAI/Recon2Reason-Reasoning-4B`
 - 镜像：见 `image.lock`
-- 提交仓库：见 `docs/manual-push.md`（本条目尚未导出独立竞赛仓库）
+- 提交仓库：https://developer.sourcefind.cn/codes/luql/recon2reason-4b-bw1000-sglang
 
 ## 2. 验证环境
 
