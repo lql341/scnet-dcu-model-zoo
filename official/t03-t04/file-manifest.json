@@ -1,0 +1,2322 @@
+{
+  "status": "SELECTED_INPUTS_READY",
+  "date": "2026-10-29",
+  "files": [
+    {
+      "path": "data/aishell/data_aishell/transcript/aishell_transcript_v0.8.selected.txt",
+      "bytes": 8173,
+      "sha256": "d5863b3e0d3823493ce2e654f10344731528539b1305f3ca321e0ec377f4f879"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0121.wav",
+      "bytes": 134570,
+      "sha256": "46dbc998c9d1d48111267c40741dd3200f2e5bcf4075f8c4c97f4451160dce50"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0122.wav",
+      "bytes": 131724,
+      "sha256": "5760c7ace0923a499f605d373011c7aaf658e304a0999a493c63669c756384e1"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0123.wav",
+      "bytes": 128044,
+      "sha256": "2c566703c6b1b075568cac56810846a48bb127c740d7a36de66084816035dd42"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0124.wav",
+      "bytes": 167628,
+      "sha256": "efd1bdd02d9624688156a0c14404e52db130c0dc40da749d247caf9b44fe09e6"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0125.wav",
+      "bytes": 137996,
+      "sha256": "a07893010d11c87c8b2752c3960656f5516a1d66cb80706709482511eab85b16"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0126.wav",
+      "bytes": 112044,
+      "sha256": "d07d21f2a7c72a440e24982b3bf57da9899787425e5ff6505ab08a082fb278b1"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0127.wav",
+      "bytes": 142540,
+      "sha256": "d71591e70d4e5f35a793ea4d69dbfb5cddda2beb4b8d3e0409283e4b63a8d7ea"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0128.wav",
+      "bytes": 114316,
+      "sha256": "f5430b710e5b27a3174ee7e5964cc307eeee47443bba6fce32179a88e60b1a92"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0129.wav",
+      "bytes": 115082,
+      "sha256": "0d12af0837abd1c0526a92ecdcefb0f309d7bb5a540675b0308b2373932c0243"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0130.wav",
+      "bytes": 167980,
+      "sha256": "1a21763add9914c77978064719c2af8d35ca1c7f8471c3482d829d9b04a605f4"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0131.wav",
+      "bytes": 160044,
+      "sha256": "6df514cd243f7d23f23c96f1bb9512f3e30befa77a3a54191bb2d13f45463612"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0132.wav",
+      "bytes": 117100,
+      "sha256": "e7d9712ea6809ad347cdea03d8100a7488c6932ac3316ea2b42d21b490150878"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0133.wav",
+      "bytes": 113868,
+      "sha256": "737999eca038468ea42ba334e3309a4a50447085cd65d0dff9651f51bb3b767c"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0134.wav",
+      "bytes": 134028,
+      "sha256": "335b9197a16cca98525f1f41350f120f7c9e43d4fd53fb051d67f98134116582"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0135.wav",
+      "bytes": 124750,
+      "sha256": "b63fd172981a2a902fa180342075f53beacdf5771c393c04f263c878f1dec219"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0136.wav",
+      "bytes": 161356,
+      "sha256": "f2ff2213d0eaa0ffcf252f6c0cc35ce0651029e37b8bfef0f0e9adab4ba4da41"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0137.wav",
+      "bytes": 115596,
+      "sha256": "cc2da521919a65fb0586cb35dd1adadbba49fcf86f88a7218eaff967d5d452e7"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0138.wav",
+      "bytes": 114604,
+      "sha256": "11798305dc8eb4ff04f4741e901e42b870cfde5bc9d6f1b8fbfcef8848a6411c"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0139.wav",
+      "bytes": 106636,
+      "sha256": "3ce2fc07a225d7280a4dec09bca836da066248e8229d9094856b071cfd65bb36"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0140.wav",
+      "bytes": 197388,
+      "sha256": "fc27432d7c1e566b46bfe1e9b5f89063d0fc77a5687c934809bf079470b5f36b"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0141.wav",
+      "bytes": 80044,
+      "sha256": "d98ba3f134c52e6672e045149c4727d38732f1a40bd65a062c280f44908c0169"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0142.wav",
+      "bytes": 111180,
+      "sha256": "1f2d6676b2e94e0f4a37b9673e4d5269af889036efa61cd1794302760a773a65"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0143.wav",
+      "bytes": 227884,
+      "sha256": "f323eab1c0034aaa9956669eae5a64c126c0f2baa023c36d9a98e880fe28bbbe"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0144.wav",
+      "bytes": 219788,
+      "sha256": "11ff0fe34f269259dc2bd271b2696ac6182bae4fa3e23594a1ed9450e15779c2"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0145.wav",
+      "bytes": 171628,
+      "sha256": "ebb2d638d7a2cb84986357ee14dc650821a4cc5dd67685e81766d33d7cfa8816"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0146.wav",
+      "bytes": 119884,
+      "sha256": "f489f32ad2d4057e963ceb76ba60f69e22784fbafbeccd163f860943b4430874"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0147.wav",
+      "bytes": 101068,
+      "sha256": "8095cc2f2eb648d90bd5f58d8c7ae658cf2ffc9b241dd7632739efe88884100b"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0148.wav",
+      "bytes": 136716,
+      "sha256": "86a46d088066e38f726841d7e0ca064fd54baedc8e4a59ade3d74ce1b9c33d80"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0149.wav",
+      "bytes": 107052,
+      "sha256": "888aabd11153edc5a43d9c8d872ed09f3196fdbaf164ce2c1d427557c8a5aaa4"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0150.wav",
+      "bytes": 108396,
+      "sha256": "bd02f12c4648d160cd2acd61a6b153aa63a35b64637e90d7f479eab0ad4322ce"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0151.wav",
+      "bytes": 112044,
+      "sha256": "737b806bcbba8176250dd7159e66aeee971422e069ec6199177978988c6f5c5f"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0152.wav",
+      "bytes": 124078,
+      "sha256": "8192a3c2e8d2816b6c5bbd85fd0caaf27f142032f6548fe3e4d24eda230bb1ef"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0153.wav",
+      "bytes": 196076,
+      "sha256": "4f77e4f361282183b0f58cd624173ee935c01d9374f7a94bcff8a9d7dce63152"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0154.wav",
+      "bytes": 187820,
+      "sha256": "68b51ce605bfc9a46bdce4ae5553e5470f5d469abf12665260695aa919e1b8c2"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0155.wav",
+      "bytes": 109324,
+      "sha256": "c89ef13cba25c7bbab7a039d6003651c38a094c267b6d23359f883d9e9eb17be"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0156.wav",
+      "bytes": 116620,
+      "sha256": "9c00151beb2504e79b596421ea575437e800de03e09d7a2464006bab2bfb8fbf"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0157.wav",
+      "bytes": 126508,
+      "sha256": "e1f0ad21263b660fad2e212c036d8b9d9c85a0b4f10091e5078671e6d73f9d07"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0158.wav",
+      "bytes": 188174,
+      "sha256": "5f0593d94c19a401af60822b7ac389cf97be85053b9aa3496d43a0c3057d69a4"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0159.wav",
+      "bytes": 138604,
+      "sha256": "19eaf8354e7154722f3c97232f95f203256c9a7e853543c0c67971c1c88a31f9"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0160.wav",
+      "bytes": 171788,
+      "sha256": "97f369c225edb0304af0c4fb6061b66bd47746120126944b13b755072c840c23"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0161.wav",
+      "bytes": 168300,
+      "sha256": "617b1310e68229ed431dcfc6daf25701ffbd2708743306b7f4978cc9be00cc43"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0162.wav",
+      "bytes": 235820,
+      "sha256": "2cc465928c61b9a684d30a76420e96492f57d56288a5380f9f3950a6306a85b1"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0163.wav",
+      "bytes": 103182,
+      "sha256": "0b31cdb6fce84258b5169ec5c64747d2a953c2b1bb3c990e4de64a4bd6360325"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0164.wav",
+      "bytes": 178700,
+      "sha256": "c1da62dd294a1fe23b1dd76ba1435b9cee7a0d09fa70189687b5e60333fb67a4"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0165.wav",
+      "bytes": 137996,
+      "sha256": "ef76cc52dea6f221781b1f6406b9c07adeb84c91f39c5338554991044a608e45"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0166.wav",
+      "bytes": 66796,
+      "sha256": "7d4c91d452226d127b91ade861f1725fe49adaa974210fdce0384260d6fa2e9a"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0167.wav",
+      "bytes": 97930,
+      "sha256": "84ac49e1db8f7482878d8c1ebee7d7e686d93374e5782073922024ba7b9472fd"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0168.wav",
+      "bytes": 132432,
+      "sha256": "7f5350e9382d7b94424ff0f850545d614413d8c6415a75e00e33c77e9e9763a2"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0169.wav",
+      "bytes": 117454,
+      "sha256": "83bbaa5b2d22703d2d142eeb33058c2d0d454db05aee9be2210350b1802fc298"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0170.wav",
+      "bytes": 210446,
+      "sha256": "288916758826e6015369190eeff6847834434b4ec78192423a85e0b6d3f6e54b"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0171.wav",
+      "bytes": 204494,
+      "sha256": "7d12215a5599ea909822aacbe4a4a40d76cd35b645189e14391b4230ef18398d"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0172.wav",
+      "bytes": 160044,
+      "sha256": "ed2ba1b79a8ef1ed2fa01f401bb581dea49e6a5f96f7bdc2486711b00f9aefa7"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0173.wav",
+      "bytes": 151950,
+      "sha256": "1ce2010c6ad56c8cbb9f44450a4b9604030c6f56f2883f59f66c0271c66ed9a2"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0174.wav",
+      "bytes": 119084,
+      "sha256": "c7728eb6b80b2b61aa5375b362966bc083d8687cb62143c43a2e77ead0152607"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0175.wav",
+      "bytes": 175978,
+      "sha256": "82ae48ae269491af9fdacf2c92e2b0c8aad7972ac7b555e319426a6278287293"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0176.wav",
+      "bytes": 189228,
+      "sha256": "5fad31faa0610ba485bd4f0ab039f788a157922fff653f22606a23974a56bb83"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0177.wav",
+      "bytes": 135564,
+      "sha256": "f0ad174aeaddd53b4ef72204361a93105370a4a944040313eaf6a22d9b6a6c34"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0178.wav",
+      "bytes": 196876,
+      "sha256": "465b38663510afc4f7e2a100e7143c997f457dcf0be88bcf12129ecfbf038650"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0179.wav",
+      "bytes": 253642,
+      "sha256": "51792bc95be33075c1a8abb9afb76ad9f72943e84cd723cc8825b2678799b004"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0180.wav",
+      "bytes": 106602,
+      "sha256": "3221b0c732ea94fc39750197bc871701d200f15a2d7aa3922ee981a210bda4ce"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0181.wav",
+      "bytes": 192044,
+      "sha256": "b2f3bcacbea98ebf7e67b3e592a4849f0af016ffed327666bd1f39c9aa7cd438"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0183.wav",
+      "bytes": 110126,
+      "sha256": "14ec3a90acb68b1be8ddf5f31ebb6f4d5133bc48c0b3d69b393a4be561a5e743"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0184.wav",
+      "bytes": 182570,
+      "sha256": "5ea0ce23baa3a28828dd9f7a44ac562598a3b33e924a2c0464d017892e69b02f"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0185.wav",
+      "bytes": 98700,
+      "sha256": "5c4afdda1f90dbd1550e4fee9ff5bec67f4403f977f4203c50be89d2200aa301"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0186.wav",
+      "bytes": 135914,
+      "sha256": "97ec76895104ae1c1b3d9225168cf1708519739cb9b61047627fd5463ad650f6"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0187.wav",
+      "bytes": 192044,
+      "sha256": "92d080d218aa40c0e43c25a340b5596c433cf5accf3f64941387d5056598ce7c"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0188.wav",
+      "bytes": 127532,
+      "sha256": "8803a73ff5587218be060d73e77db341266e005ca2f7f0a8b21192f8e44c4b02"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0189.wav",
+      "bytes": 130670,
+      "sha256": "47788e162e07619f890b7af6d243fd308142f0dc93f0696cb2b9363cb1b37679"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0190.wav",
+      "bytes": 118602,
+      "sha256": "05cc7db87e4c70f64eb121a9488bbdac8deb6b56b13c4a339809b0c06562b773"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0191.wav",
+      "bytes": 185770,
+      "sha256": "b6fd21a6c16d45a7343d3f955f94cb548ec2872a01977dcbf375657d86aa361e"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0192.wav",
+      "bytes": 209900,
+      "sha256": "d0bbb50bf0f04bd783576286850e2bfc20c708e77dc87c6e2d1726f79c5d5efd"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0193.wav",
+      "bytes": 200974,
+      "sha256": "ad4dcda79e3158a7e6381bb8d2d27eceb5b9d07f5e5c968b94a8912395317635"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0194.wav",
+      "bytes": 100426,
+      "sha256": "7e1100a859ea79ddf489711af402d2a549948d89080c53deca56f9c6554b32f8"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0195.wav",
+      "bytes": 115692,
+      "sha256": "a9f37e1fef30bb583833549d1a31ee33ef7cffc7c1b886ae3dd970d8f7f40410"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0196.wav",
+      "bytes": 118122,
+      "sha256": "5e04b651b92d14197f79321f99b9d498c216443c85a10cc9f251c959226136e9"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0197.wav",
+      "bytes": 98252,
+      "sha256": "fcf7cdac3b32d72b4bf9c4789f72f80fcfafa7c953aad27a4cebf736aa2bf30a"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0198.wav",
+      "bytes": 182220,
+      "sha256": "6875cd55af88eebd34add3bd5aed9721391bbd36e304369bda9d7317ad23bef5"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0199.wav",
+      "bytes": 105806,
+      "sha256": "2910f1f97cdf9be18ec8071c6849c5ae2866351a613ef2da842681a234c25c35"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0200.wav",
+      "bytes": 96044,
+      "sha256": "1b789a0a32a05b435e6710bc2767ca49cbef285c5c9f72850df911ba50c01ac0"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0201.wav",
+      "bytes": 184494,
+      "sha256": "263b19510c95c32db4874449aadefc9b37c008e4816c18028eaf8fef463828e5"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0202.wav",
+      "bytes": 147052,
+      "sha256": "acefe3c1fc9814e108c96c9fcf9f91f4656d65269d91945e757090e228127aab"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0203.wav",
+      "bytes": 205260,
+      "sha256": "90671e6a9c8ee40f0f76061a0ff875509c5e68c9f650d6acb9ad3fa12f4c8412"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0204.wav",
+      "bytes": 168652,
+      "sha256": "6b69725444508aeea18a8fb34e02140e6a7501ce4c5d11438e1d532e475713c4"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0205.wav",
+      "bytes": 202442,
+      "sha256": "eb3fd6d4b8810a91faab2d712ef5b1c997bb09686a39d8a03e1e303027c899ab"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0206.wav",
+      "bytes": 121930,
+      "sha256": "7524ca4f85d516f52cf2cf5f194ce02a429c1dc04695cff9eb8c89b6c1446f94"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0207.wav",
+      "bytes": 169676,
+      "sha256": "0457b8e0836ca2e2b2b9d634f8860b857c701a7600c508e52d8e473ff9f95b1c"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0208.wav",
+      "bytes": 119532,
+      "sha256": "5cd0479318238808e186f48d2c33ce3f302fecfab4c8114400bb52dff0740b28"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0209.wav",
+      "bytes": 258220,
+      "sha256": "e48f4231f1bb8ff05f2f1214652257b9c1d9b052470e50bcf3d1fd674d517d95"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0210.wav",
+      "bytes": 125738,
+      "sha256": "183ff5b3a14da896b00b8d4ee10e21ebba5242adc69470c9a6ddb1300b356e41"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0211.wav",
+      "bytes": 149036,
+      "sha256": "c4b97ed7703342fececb6c11a9ab615f5d482a83fbe963795318e863577c407e"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0212.wav",
+      "bytes": 182922,
+      "sha256": "662496bac68a7a264f0d1841a18abb5be4cc07d3b82bb39e4187b37bc4feab4a"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0213.wav",
+      "bytes": 116302,
+      "sha256": "f5b3bec07e461b3ee867544d829e26671e009ede95a2f8b3a95d4d7d73a14a9f"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0214.wav",
+      "bytes": 171594,
+      "sha256": "756bad801ed6809da9ac140f880e4ea1d9608d482dcd237ff6af46ce55316cb3"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0215.wav",
+      "bytes": 176044,
+      "sha256": "ce96aa8d570cec3cb100d5c088d21ecef5dff82bfd3b6dcbf00f024165035f86"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0216.wav",
+      "bytes": 186060,
+      "sha256": "b1fe054be2b497375ff62b1b85141470130bde29d9b457f6bc2e415b8d8bb92f"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0217.wav",
+      "bytes": 97934,
+      "sha256": "8d766a1994712c8605400364089c1f40888c0e80a6e64c0f956399f3f928e8ca"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0218.wav",
+      "bytes": 170798,
+      "sha256": "a1bf5966c6b2e7475efef7ceef6aad6edf157b9c5b792e27f6f7b879f2d98b8e"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0219.wav",
+      "bytes": 212684,
+      "sha256": "d39da4cb97d052e76bbb2a43c8eb033114e4cad18c3153941917ea685e0e37aa"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0220.wav",
+      "bytes": 165358,
+      "sha256": "022b747cfb92dc738f95a262fded444df657c16feb872c2f4f02eb43bc7c70af"
+    },
+    {
+      "path": "data/aishell/data_aishell/wav/test/S0764/BAC009S0764W0221.wav",
+      "bytes": 131310,
+      "sha256": "84e0f78e4f3da5e1f6c70d33f4df4be8fe9ac7c908d2730d42f164b5287fee05"
+    },
+    {
+      "path": "data/dtu/reconstruction_config.json",
+      "bytes": 2130,
+      "sha256": "6ede183a3827a9bab09bb87d62a5f91662da88d91d83e1c843710b515efa54e0"
+    },
+    {
+      "path": "data/dtu/scan1/cameras.zip",
+      "bytes": 2385,
+      "sha256": "eb5e625119076f3fb733854f6dd5354cad7c9d71f36c25e440f541e6c1c2e920"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000000_cam.txt",
+      "bytes": 200,
+      "sha256": "64b4d1c9e9eec4f0578fa6d1be44f0dcb28a94e9d4b31c58949bed8c26131619"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000001_cam.txt",
+      "bytes": 197,
+      "sha256": "8bf32fd6c94ef2ee6a138af29f02dba3fb01efa806f96b6c7ba246ec5ef83644"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000002_cam.txt",
+      "bytes": 194,
+      "sha256": "0c86d075ed5fea31a0a56a1c0d223cfb825f29b776d0fd6d0b0d3f1f96f2dcb4"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000003_cam.txt",
+      "bytes": 198,
+      "sha256": "89d9b60f6e849fcb6bc168bc64b1646bb7bffad7ea05f14c82fa70d55bbfa30a"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000004_cam.txt",
+      "bytes": 198,
+      "sha256": "fe02688611567dc7272ea9fde7f211c7f7590c937588416b29a8f0995f25e6b7"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000005_cam.txt",
+      "bytes": 197,
+      "sha256": "aa9174b5f67ea1d7aab09b1cc0185e53840660acab7454d32516697a3f1bbb58"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000006_cam.txt",
+      "bytes": 198,
+      "sha256": "0aecacdca66d3eac89e3a4aaa883c2d7ca6be965c1fab828a7fe18eb22f7cc1b"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000007_cam.txt",
+      "bytes": 196,
+      "sha256": "fb24bbc7d661657b698a2cb2cd3a2a33f9a2d14264b6354479db4b5cf828cebf"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000008_cam.txt",
+      "bytes": 193,
+      "sha256": "0c5bf90849927918ecee5fc2d7af050e5e62b2ee4989d9d2500499c9d4b817c4"
+    },
+    {
+      "path": "data/dtu/scan1/cams/00000009_cam.txt",
+      "bytes": 196,
+      "sha256": "0cf99e5f49c66900dee0b48cebd4a9b682981d52fd2bd34741c1b1c587677c87"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000000.jpg",
+      "bytes": 705049,
+      "sha256": "19f6a6e79c3b86dc8a5c10deca00b039b5e877045e7bf8ecbc4d737a5ac0a023"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000001.jpg",
+      "bytes": 804062,
+      "sha256": "85be6fe7c236042468658983aabe773ab766fcf49e78499ef2a4fcd1889a75e7"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000002.jpg",
+      "bytes": 810722,
+      "sha256": "720925c16f8e7091f8f6bef13b064ec6b94d8999ccd2200ac1be483d79ac3f4d"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000003.jpg",
+      "bytes": 815968,
+      "sha256": "1a191c70cc2ef06d78ffee873abee4e155f06c15b7d8caf9032afcca9479790d"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000004.jpg",
+      "bytes": 727882,
+      "sha256": "dc0a99dd39ccefc89ada40235197c73d0f169fd563965a7ad4387f5c6937db20"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000005.jpg",
+      "bytes": 662464,
+      "sha256": "95700f17c6356e95113dab04fe32045b88de951c1881bad92adf5c666597c47e"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000006.jpg",
+      "bytes": 752359,
+      "sha256": "452e6244c621cf2e95e8ee04084bbd7b1d6bde82f7d9720e4c8d876de64b4cd7"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000007.jpg",
+      "bytes": 811286,
+      "sha256": "a31c593b51835dec4b6d3c505eb18a419c0711200c93dfa9931ae41a42010321"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000008.jpg",
+      "bytes": 796541,
+      "sha256": "9599df363b162591ce0af15b79e77e5ee072a9e9e637b6f27fc014a18c1ca70a"
+    },
+    {
+      "path": "data/dtu/scan1/images/00000009.jpg",
+      "bytes": 765960,
+      "sha256": "4d3946c79cad19610e25bdca3d2395e36c4606dd1236b6cf1cff6eba4c6132d8"
+    },
+    {
+      "path": "data/dtu/scan10/cameras.zip",
+      "bytes": 2385,
+      "sha256": "4687d898c25522e54eec53c878b66f982598039d9e968cf3b90c00df6fbba2a8"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000000_cam.txt",
+      "bytes": 200,
+      "sha256": "64b4d1c9e9eec4f0578fa6d1be44f0dcb28a94e9d4b31c58949bed8c26131619"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000001_cam.txt",
+      "bytes": 197,
+      "sha256": "8bf32fd6c94ef2ee6a138af29f02dba3fb01efa806f96b6c7ba246ec5ef83644"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000002_cam.txt",
+      "bytes": 194,
+      "sha256": "0c86d075ed5fea31a0a56a1c0d223cfb825f29b776d0fd6d0b0d3f1f96f2dcb4"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000003_cam.txt",
+      "bytes": 198,
+      "sha256": "89d9b60f6e849fcb6bc168bc64b1646bb7bffad7ea05f14c82fa70d55bbfa30a"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000004_cam.txt",
+      "bytes": 198,
+      "sha256": "fe02688611567dc7272ea9fde7f211c7f7590c937588416b29a8f0995f25e6b7"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000005_cam.txt",
+      "bytes": 197,
+      "sha256": "aa9174b5f67ea1d7aab09b1cc0185e53840660acab7454d32516697a3f1bbb58"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000006_cam.txt",
+      "bytes": 198,
+      "sha256": "0aecacdca66d3eac89e3a4aaa883c2d7ca6be965c1fab828a7fe18eb22f7cc1b"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000007_cam.txt",
+      "bytes": 196,
+      "sha256": "fb24bbc7d661657b698a2cb2cd3a2a33f9a2d14264b6354479db4b5cf828cebf"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000008_cam.txt",
+      "bytes": 193,
+      "sha256": "0c5bf90849927918ecee5fc2d7af050e5e62b2ee4989d9d2500499c9d4b817c4"
+    },
+    {
+      "path": "data/dtu/scan10/cams/00000009_cam.txt",
+      "bytes": 196,
+      "sha256": "0cf99e5f49c66900dee0b48cebd4a9b682981d52fd2bd34741c1b1c587677c87"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000000.jpg",
+      "bytes": 429981,
+      "sha256": "2d7b7deac5310080260ed218246a206013da1147449417a803e9923ca7567f78"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000001.jpg",
+      "bytes": 458617,
+      "sha256": "545049da99d0d8d05c98ca1b8f43522f1ffcd6b7f2b4d489893fb74f89ada00b"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000002.jpg",
+      "bytes": 508763,
+      "sha256": "9d3c316f47d52bf466c7982746f3bec45c82c5f0213e86a545ca16d66f5c22a8"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000003.jpg",
+      "bytes": 446025,
+      "sha256": "3179860114dee2e5398331c478521f0aeafa6470b154ad4c2d2e5bd032e4c258"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000004.jpg",
+      "bytes": 438883,
+      "sha256": "95c5b2d24347abd5c8a03667050cb08ee1f0f024c2bd2a58104a71affa6a639b"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000005.jpg",
+      "bytes": 467592,
+      "sha256": "a293394dbff1b3b7df5dcc829fe0c1e5b2996d20073d6a1afbc3558fbcee5535"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000006.jpg",
+      "bytes": 466702,
+      "sha256": "8b08f26550362c45b4b6875b6ec86a1e9dc38f9745cd19ac21a575ccb8003039"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000007.jpg",
+      "bytes": 495252,
+      "sha256": "bb1fbb17643850064fb46fbfc971588bebb9312d864ba18099991e3bb17b16de"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000008.jpg",
+      "bytes": 555781,
+      "sha256": "6209ba9d1d51b29829a4b50af7eaa3cc8cf98b119e82af514348172d8b8179a8"
+    },
+    {
+      "path": "data/dtu/scan10/images/00000009.jpg",
+      "bytes": 525591,
+      "sha256": "76901caad9b5fb7c43f62fdb80aa0b7910f793ebdeae1c692884ce2b81354e17"
+    },
+    {
+      "path": "data/dtu/scan11/cameras.zip",
+      "bytes": 2385,
+      "sha256": "a37d506a7ad2240697fe49e7a9a732f51912a9dcf3f18ac4b4d8e044d5709bf9"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000000_cam.txt",
+      "bytes": 200,
+      "sha256": "64b4d1c9e9eec4f0578fa6d1be44f0dcb28a94e9d4b31c58949bed8c26131619"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000001_cam.txt",
+      "bytes": 197,
+      "sha256": "8bf32fd6c94ef2ee6a138af29f02dba3fb01efa806f96b6c7ba246ec5ef83644"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000002_cam.txt",
+      "bytes": 194,
+      "sha256": "0c86d075ed5fea31a0a56a1c0d223cfb825f29b776d0fd6d0b0d3f1f96f2dcb4"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000003_cam.txt",
+      "bytes": 198,
+      "sha256": "89d9b60f6e849fcb6bc168bc64b1646bb7bffad7ea05f14c82fa70d55bbfa30a"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000004_cam.txt",
+      "bytes": 198,
+      "sha256": "fe02688611567dc7272ea9fde7f211c7f7590c937588416b29a8f0995f25e6b7"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000005_cam.txt",
+      "bytes": 197,
+      "sha256": "aa9174b5f67ea1d7aab09b1cc0185e53840660acab7454d32516697a3f1bbb58"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000006_cam.txt",
+      "bytes": 198,
+      "sha256": "0aecacdca66d3eac89e3a4aaa883c2d7ca6be965c1fab828a7fe18eb22f7cc1b"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000007_cam.txt",
+      "bytes": 196,
+      "sha256": "fb24bbc7d661657b698a2cb2cd3a2a33f9a2d14264b6354479db4b5cf828cebf"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000008_cam.txt",
+      "bytes": 193,
+      "sha256": "0c5bf90849927918ecee5fc2d7af050e5e62b2ee4989d9d2500499c9d4b817c4"
+    },
+    {
+      "path": "data/dtu/scan11/cams/00000009_cam.txt",
+      "bytes": 196,
+      "sha256": "0cf99e5f49c66900dee0b48cebd4a9b682981d52fd2bd34741c1b1c587677c87"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000000.jpg",
+      "bytes": 552512,
+      "sha256": "e0b77e9c26592eebded30fe07ea4afdce82d0220db76f75b396e3581af3764d7"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000001.jpg",
+      "bytes": 552490,
+      "sha256": "0b4e6439dccf6f46738079b3a6af811d6e9c16bbca927ecc6ba7a42020d33c1a"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000002.jpg",
+      "bytes": 555872,
+      "sha256": "60f9dfde6671ee1f1fffa2bb89790a3f3ea1a3317c8def8fb604aaccb92a827e"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000003.jpg",
+      "bytes": 563656,
+      "sha256": "b662c8814b56154d07d09763e54624d9c19af2ba57c4186dc5fa78487cee15a1"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000004.jpg",
+      "bytes": 541260,
+      "sha256": "6bc3dbc7c4d3503dd183fd882bf5d4fc603312cea3c107cb800ac101f0b43565"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000005.jpg",
+      "bytes": 544897,
+      "sha256": "e5afb289651d0df6baaafd69239ef8e425125e16dd288e90bda10bcd1ffce281"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000006.jpg",
+      "bytes": 567582,
+      "sha256": "788f5cad5d2f57f4e2091f57f0fbeaaf7c181e5de49e24897f33477d814f9163"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000007.jpg",
+      "bytes": 554913,
+      "sha256": "219543412098e1ea4ee3b4938576de464d58135f2105fd8749c9936b54b5de7a"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000008.jpg",
+      "bytes": 541239,
+      "sha256": "bf06829cf179e28eed575323ae1f44d0f65be2c1ce5454f4662fcaa83a7f70f1"
+    },
+    {
+      "path": "data/dtu/scan11/images/00000009.jpg",
+      "bytes": 544291,
+      "sha256": "8d7d402bf81d48986bef36cbd4f64673fb03bcefbc7f33195892476f1ab72970"
+    },
+    {
+      "path": "data/dtu/scan4/cameras.zip",
+      "bytes": 2385,
+      "sha256": "246eeeb6655ccc4cd072c324b390741a99c60b8c56d2e4117a9ba8cea2def48c"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000000_cam.txt",
+      "bytes": 200,
+      "sha256": "64b4d1c9e9eec4f0578fa6d1be44f0dcb28a94e9d4b31c58949bed8c26131619"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000001_cam.txt",
+      "bytes": 197,
+      "sha256": "8bf32fd6c94ef2ee6a138af29f02dba3fb01efa806f96b6c7ba246ec5ef83644"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000002_cam.txt",
+      "bytes": 194,
+      "sha256": "0c86d075ed5fea31a0a56a1c0d223cfb825f29b776d0fd6d0b0d3f1f96f2dcb4"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000003_cam.txt",
+      "bytes": 198,
+      "sha256": "89d9b60f6e849fcb6bc168bc64b1646bb7bffad7ea05f14c82fa70d55bbfa30a"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000004_cam.txt",
+      "bytes": 198,
+      "sha256": "fe02688611567dc7272ea9fde7f211c7f7590c937588416b29a8f0995f25e6b7"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000005_cam.txt",
+      "bytes": 197,
+      "sha256": "aa9174b5f67ea1d7aab09b1cc0185e53840660acab7454d32516697a3f1bbb58"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000006_cam.txt",
+      "bytes": 198,
+      "sha256": "0aecacdca66d3eac89e3a4aaa883c2d7ca6be965c1fab828a7fe18eb22f7cc1b"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000007_cam.txt",
+      "bytes": 196,
+      "sha256": "fb24bbc7d661657b698a2cb2cd3a2a33f9a2d14264b6354479db4b5cf828cebf"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000008_cam.txt",
+      "bytes": 193,
+      "sha256": "0c5bf90849927918ecee5fc2d7af050e5e62b2ee4989d9d2500499c9d4b817c4"
+    },
+    {
+      "path": "data/dtu/scan4/cams/00000009_cam.txt",
+      "bytes": 196,
+      "sha256": "0cf99e5f49c66900dee0b48cebd4a9b682981d52fd2bd34741c1b1c587677c87"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000000.jpg",
+      "bytes": 754963,
+      "sha256": "b6469e52b158a66da675c9b3950b628a0d723ed8460402d55ef8b9caac3d80c4"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000001.jpg",
+      "bytes": 866038,
+      "sha256": "63e196c6e16082f221b57bc848781dd781460ad24b9fc4091690d7ee346024ab"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000002.jpg",
+      "bytes": 875374,
+      "sha256": "9d71cd8032b8c20c15d308e3ab324e5abdfff5c4ecbd867ce3972c3948337fa1"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000003.jpg",
+      "bytes": 868785,
+      "sha256": "afba6999b4e28debdbea9e9d4a8aaaf919f0ee571de5a476716c0a4446cd34e7"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000004.jpg",
+      "bytes": 772250,
+      "sha256": "b2a83c0ffecf350fa9df7423ea4e05428c3fcb0d1d42f50c0dca609fefc89a24"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000005.jpg",
+      "bytes": 692720,
+      "sha256": "a74a0cf83f9dca236310ca1afa6c6cdb9614878facbd22f8308d2f5463c01fe0"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000006.jpg",
+      "bytes": 801342,
+      "sha256": "37437536bb83f789278ce7b82621e5ec930e7c376ea1b7958db84da531dec6e0"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000007.jpg",
+      "bytes": 862445,
+      "sha256": "4eb4d634eee18680a4c5fba38360ac38e22d5857ed23aadfedde9299f15d1168"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000008.jpg",
+      "bytes": 857498,
+      "sha256": "172813af51c918b004ed58d1b2966ff21175048e5f35c6e4c02797cc5f420920"
+    },
+    {
+      "path": "data/dtu/scan4/images/00000009.jpg",
+      "bytes": 822935,
+      "sha256": "3772f7a530fb6d586421a0ba2e75faae562d8d6014c8751cbd101d3acc88bf18"
+    },
+    {
+      "path": "data/dtu/scan9/cameras.zip",
+      "bytes": 2385,
+      "sha256": "897492bb200a396b053233947a748680551b3598888616bdf1267918c5edac96"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000000_cam.txt",
+      "bytes": 200,
+      "sha256": "64b4d1c9e9eec4f0578fa6d1be44f0dcb28a94e9d4b31c58949bed8c26131619"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000001_cam.txt",
+      "bytes": 197,
+      "sha256": "8bf32fd6c94ef2ee6a138af29f02dba3fb01efa806f96b6c7ba246ec5ef83644"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000002_cam.txt",
+      "bytes": 194,
+      "sha256": "0c86d075ed5fea31a0a56a1c0d223cfb825f29b776d0fd6d0b0d3f1f96f2dcb4"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000003_cam.txt",
+      "bytes": 198,
+      "sha256": "89d9b60f6e849fcb6bc168bc64b1646bb7bffad7ea05f14c82fa70d55bbfa30a"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000004_cam.txt",
+      "bytes": 198,
+      "sha256": "fe02688611567dc7272ea9fde7f211c7f7590c937588416b29a8f0995f25e6b7"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000005_cam.txt",
+      "bytes": 197,
+      "sha256": "aa9174b5f67ea1d7aab09b1cc0185e53840660acab7454d32516697a3f1bbb58"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000006_cam.txt",
+      "bytes": 198,
+      "sha256": "0aecacdca66d3eac89e3a4aaa883c2d7ca6be965c1fab828a7fe18eb22f7cc1b"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000007_cam.txt",
+      "bytes": 196,
+      "sha256": "fb24bbc7d661657b698a2cb2cd3a2a33f9a2d14264b6354479db4b5cf828cebf"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000008_cam.txt",
+      "bytes": 193,
+      "sha256": "0c5bf90849927918ecee5fc2d7af050e5e62b2ee4989d9d2500499c9d4b817c4"
+    },
+    {
+      "path": "data/dtu/scan9/cams/00000009_cam.txt",
+      "bytes": 196,
+      "sha256": "0cf99e5f49c66900dee0b48cebd4a9b682981d52fd2bd34741c1b1c587677c87"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000000.jpg",
+      "bytes": 517611,
+      "sha256": "dbe47b85fb1f316444525b06772fb0ea1b4108ec78ea1830880c354630da22cc"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000001.jpg",
+      "bytes": 553797,
+      "sha256": "8bcd2bb152bfc487db16f73452b399199d3946203dd74afeb8a254501d696fa2"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000002.jpg",
+      "bytes": 530786,
+      "sha256": "3853f1c6db859fd45ecd6d54f1a871938804df5812c9276bbe252896d3e78d5d"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000003.jpg",
+      "bytes": 493036,
+      "sha256": "0a8cdad6c6a467fd18d62b20ada90de3b865631b987893ca4def79a39551b78c"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000004.jpg",
+      "bytes": 397926,
+      "sha256": "19c240473311d6c4b3df58d2b513d474cac5a5fcd23a446f88e161066db7b6a0"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000005.jpg",
+      "bytes": 402084,
+      "sha256": "ce076106cd8ed6aa427ca4c2148bd48c4fd4a23a31ef6b0f36dffd7f7123e843"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000006.jpg",
+      "bytes": 470238,
+      "sha256": "7ff371a0926203867bbf49fa4877e41ae623ae538597e4baa06b5450f2b26a60"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000007.jpg",
+      "bytes": 538844,
+      "sha256": "690c13d2cd2145680b295b04385ddcf2c66d61afff33e8af51153deab2a96019"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000008.jpg",
+      "bytes": 564479,
+      "sha256": "9b8d64ff1df61dca2026cfe6256e0d893b928f5ea9e0584f12603fdeec82c464"
+    },
+    {
+      "path": "data/dtu/scan9/images/00000009.jpg",
+      "bytes": 607467,
+      "sha256": "858865b8f5a0a973320454abed7b2d5f05720b25cc42add597bfb74dacf82967"
+    },
+    {
+      "path": "data/dtu/selected_members.json",
+      "bytes": 5743,
+      "sha256": "ce05dfd547fb3aabe5cb47c14f2060287ea3bea1abbf7b28bfcb1acf77663063"
+    },
+    {
+      "path": "data/geneval/evaluation_metadata.jsonl",
+      "bytes": 9122,
+      "sha256": "2524d38ddfe500a28c32a7e1f84fe83fdc00a30180911f562e9d855fe09a9d84"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0000.flac",
+      "bytes": 183318,
+      "sha256": "30885601173f96b0d8ddd020dc959b055c6c1582b85a33e3fcab8c4b08ed94c2"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0001.flac",
+      "bytes": 58350,
+      "sha256": "3fc09ec6d4cc496c530b2019b17bd8fc8ef8a43d6697090971dd1d52cc3d4d89"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0002.flac",
+      "bytes": 116299,
+      "sha256": "66277a3fa3df407261dc2a3ce685a7ceef19999ab0c10531bee5257cb64cb59d"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0003.flac",
+      "bytes": 51750,
+      "sha256": "d8692f61518fe07b45d4dad54e026c1d04f3fc016b0d39923d05fcbcff684563"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0004.flac",
+      "bytes": 96214,
+      "sha256": "5658bd6183a1360eca5f58d618ca2efbb5f1fdcd74332b849549e722cc65d6fe"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0005.flac",
+      "bytes": 160804,
+      "sha256": "e1de54742a0e04615bb7fb80ef9a613fc03ec91ed4f1548e8f0e96aac024361f"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0006.flac",
+      "bytes": 178673,
+      "sha256": "cd6c37cf12d5a9394fe1e997c2a068aa598a431a489d40279e2bbddbfc2436f5"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0007.flac",
+      "bytes": 73844,
+      "sha256": "c310a0558d2a9f3698a25675ce61c6ba1de232f2acb35ee8d096e504d0fe4299"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0008.flac",
+      "bytes": 116087,
+      "sha256": "1bdf7eede41ca2cc8883defb66bbd2e59ec93bf2d587327cb051d0ae427495ae"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0009.flac",
+      "bytes": 175867,
+      "sha256": "a2808efab49a93b7194d07e868b0cd04586379c2f44a08b8c6f969d92accf922"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0010.flac",
+      "bytes": 88000,
+      "sha256": "38f99d2ee3f3b8ef24b90baeb9f7572b09d28a98a0d6080643e6b0237047d75d"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0011.flac",
+      "bytes": 219140,
+      "sha256": "c65e16be3ef92c11a31a9c2c4c570542eb2ed66153150a7c4cca00c01b30a4e2"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0012.flac",
+      "bytes": 194669,
+      "sha256": "35c698b1e8468fcfa2e726ae69f34a165fd7b4bec9297fc11cfe744cdda413fa"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0013.flac",
+      "bytes": 135927,
+      "sha256": "abeec9e59254d6db3d624853704f082a1c6f28918301549dfbc93eba17e6b42d"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0014.flac",
+      "bytes": 43955,
+      "sha256": "a18c81f8bb1bea70a226008e95a9b8d2e4f897a56dad5ef332f4f843f230a129"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0015.flac",
+      "bytes": 94200,
+      "sha256": "4440e0bd69dac77ba559eb1f3f04b59067924a49bee6b723d77dc1bc2367c3f3"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0016.flac",
+      "bytes": 65039,
+      "sha256": "0395ee9d489d945eb92835a7b53a214dccf5454674e813730e2e134cb01c033b"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0017.flac",
+      "bytes": 152855,
+      "sha256": "4f268e938bf51a214ccad50e38bab32117b0a73708669999302a3d61a239a2d6"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0018.flac",
+      "bytes": 264362,
+      "sha256": "b8a5a3b85bee6bb8464083ed10da866d2a23be38a602e79c5de7362bddf992d6"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0019.flac",
+      "bytes": 244954,
+      "sha256": "dde10b08d59f3dfa89a9b8731ffb0b39da00ac2b5b23115c2700ea312d5ff8cf"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0020.flac",
+      "bytes": 280859,
+      "sha256": "a18205ab3f714b8b94a242ee83fae52639e1730fdd14d179ca6b72ece6794019"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0021.flac",
+      "bytes": 112798,
+      "sha256": "65fed77809380e14e0eca62e875ac5a6ffb59fc3ef28c258b22fcd8d19d4f7d8"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0022.flac",
+      "bytes": 193546,
+      "sha256": "1b1089d178fedc160faff4349d75f0e0d3d42390983c1cbba0cec146bb933327"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0023.flac",
+      "bytes": 223816,
+      "sha256": "abf6b6fb970728598e2b6375e56e23bb9b9aded13e39d21d1d01625302140424"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0024.flac",
+      "bytes": 202558,
+      "sha256": "afbd260aa399b391a4361f7f649a899b48d138c82ce574fa19fb9ba6050250f0"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0025.flac",
+      "bytes": 111729,
+      "sha256": "9934498b7116a4615d5f53ca2ea193e90de210ed89c3b472d29c644173544537"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0026.flac",
+      "bytes": 71544,
+      "sha256": "b227236c3de109d57e2a9cfd3e383d1c928479334c26517e44d560e959e7e3ad"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0027.flac",
+      "bytes": 55137,
+      "sha256": "37ce07bf0134668962e092239c28205922641d1728dc0c79d52c951de3631e88"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0028.flac",
+      "bytes": 149824,
+      "sha256": "623ff761fcde7f6d41716c9889f2bc99a798eced81b7f3bf5a680f760cd9dd51"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0029.flac",
+      "bytes": 86703,
+      "sha256": "7f824865381e4799e1144317518c65faf1b60595bc1b32e12be5ba49e3406875"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0030.flac",
+      "bytes": 56674,
+      "sha256": "c34eca555b34763a3ec2e4790f848cba338af56b387ac2a4e2ec2bc53b713ac5"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0031.flac",
+      "bytes": 111837,
+      "sha256": "e9d6ee47f526a14a2210f4a131b77b1265057a56f8830f27d71413170a1b7fc3"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0032.flac",
+      "bytes": 71176,
+      "sha256": "ba1d2185ad72cd3142e6309865859a8e9e5dfdc91ab046adfcc07338c5a0f0f0"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0033.flac",
+      "bytes": 65119,
+      "sha256": "496cd4b7e5aa21889d577e6fbaad1d443ff82358151923481d92dc9d21d87087"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0034.flac",
+      "bytes": 95266,
+      "sha256": "3a8cdc39d586351cc5a7fb677e1eaa93c6759e5e8df68864d76b7bb104ccc6dd"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0035.flac",
+      "bytes": 65168,
+      "sha256": "47c73820877229aa83ee2105a3c1aeb5f0fa7749134e4f16024c815232f5e655"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0036.flac",
+      "bytes": 67768,
+      "sha256": "1bda5af10c11f1f310ebc29580e502efe1194607e97f29b63378e7729668c6d0"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686-0037.flac",
+      "bytes": 89332,
+      "sha256": "ed9bb6efb1d01e14b7bc7cf96b6b9f4d49883c029e4c596f23bad1a949a67127"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134686/1089-134686.trans.txt",
+      "bytes": 4575,
+      "sha256": "4ff1228139bf9bd5f3ce026a87bfd642e9b20f82ee38c616fa581e56111ec309"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0000.flac",
+      "bytes": 39105,
+      "sha256": "1007b1827cd385e3ded575a48811d419d31c495a31784ed260ccfd9fcac2731f"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0001.flac",
+      "bytes": 93689,
+      "sha256": "22e7e8b3d30d19b754965bafe3ffe486a5a05afaf4ef6f07540ac2ef8c8a9656"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0002.flac",
+      "bytes": 208421,
+      "sha256": "9497c37720210d231ba12c9003198dce01fd236069bed08c0523739b4150becf"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0003.flac",
+      "bytes": 43331,
+      "sha256": "88801d179809e0a18105b4640373058d43fa39c49a93a41d256077dac3ae825e"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0004.flac",
+      "bytes": 98084,
+      "sha256": "a9038fc57e961736534b754f38a91daf44c0bd88f57a463fb9a9ee74f36f66b4"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0005.flac",
+      "bytes": 101116,
+      "sha256": "542593a5e06264473197c097acd101abcde9f77eaedc7677853f67684ea44271"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0006.flac",
+      "bytes": 112424,
+      "sha256": "62eaa2466aa4e3250f53c684d6888187315fb44d1360b2cc32e724e3328c66fe"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0007.flac",
+      "bytes": 68111,
+      "sha256": "1a83af5a11bd5355195766726a444d9d25278f01405078f0b7811943ce96f595"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0008.flac",
+      "bytes": 283169,
+      "sha256": "2094358202ab772ff2cb1674600c879a68ac8faa5b33d16a7d4ae86adbcf207d"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0009.flac",
+      "bytes": 360123,
+      "sha256": "11b43ade12501f613e4d81b5f4ab18f0f751d8ce8fd60130cd66f0cb8fdbedc0"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0010.flac",
+      "bytes": 55104,
+      "sha256": "07ad430239f7dd79371705993df4ac713dc482cdba2fe19856ae7804913f6b55"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0011.flac",
+      "bytes": 352662,
+      "sha256": "4559e5a5b29b668e1ec306ba8241b01d0afb25c7c2fda4608d5cf81965e056e3"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0012.flac",
+      "bytes": 273433,
+      "sha256": "80d508b2ebb0089ecfdaf9572bf3d04f84133030e3d8c1b08638f4a14f2443de"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0013.flac",
+      "bytes": 298843,
+      "sha256": "a409e61cc18dc5980e058a9bba3987b8cbf2ef5b748f0977121286c61bdedd28"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0014.flac",
+      "bytes": 87482,
+      "sha256": "5af0c598b32b6a7a21e0715ed463c2f6650477f006dbe9af7395f3d31624ee98"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0015.flac",
+      "bytes": 56212,
+      "sha256": "a420abe232f070415b097dd87b1f66b8836bc584ee3c628ee3d8ddf5906b6b31"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0016.flac",
+      "bytes": 168538,
+      "sha256": "dfc5585231bc0e2f512980f5d51c303553ecbf3d383b767046ba0c9ee9c1a4d3"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0017.flac",
+      "bytes": 218004,
+      "sha256": "d6f15e2895f7e9d1ee6a49c0831f8e08e8b83ad2bd02cc78f89a213319a4e453"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0018.flac",
+      "bytes": 52188,
+      "sha256": "4c76900c0c378ade0e747ce79913cb47f2a130515f39e4020898dd701df3c8c9"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0019.flac",
+      "bytes": 59562,
+      "sha256": "db1df6784db8918bb85ab136306c5bc2a1209a294f3b11a678365339df22dd1d"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0020.flac",
+      "bytes": 85008,
+      "sha256": "1b7d78200da35324d6f4b17fd6ff3338c5eb91decbb15d54d41316ffe108dfc2"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0021.flac",
+      "bytes": 245590,
+      "sha256": "6c01dceb0d06a5129b262b8494dd4096b5f70d4a71d63fe8271e9cad63a060a2"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0022.flac",
+      "bytes": 108156,
+      "sha256": "5b844f3fa16b5df93dc4c00c750a57ed9dbd2ab835a1d107436b1534b2dc9bda"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0023.flac",
+      "bytes": 147622,
+      "sha256": "5a3dcd46cb562ab92c7e72d453a422613b48c85279f54fbb3379c1496e7bbd65"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0024.flac",
+      "bytes": 48903,
+      "sha256": "567379950547241dbcf87a4cce5d23e47e66291e89cc81cbe632ac741cb670e8"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691-0025.flac",
+      "bytes": 147319,
+      "sha256": "11033a4002739e4615b4d2477e84a43e94db6dd20d94a55f067dca01eccee86a"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1089/134691/1089-134691.trans.txt",
+      "bytes": 3368,
+      "sha256": "4bc2865a1f551435a27bb840cae0ce726275b63eb5dc171344b1a09b2f556b6a"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0000.flac",
+      "bytes": 159035,
+      "sha256": "4a10149395cb5af8aa5d04ef3adb49b3980baa93114d0851046e6343744b26cb"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0001.flac",
+      "bytes": 145808,
+      "sha256": "3022b442af790536b60f18abe88b5376418a208f2774547b8d9700d4ef00bb03"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0002.flac",
+      "bytes": 297743,
+      "sha256": "e32c0f449f89c8e9e6d742482910660e3a63cd7fe3d511c641eefde6cf13f459"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0003.flac",
+      "bytes": 205807,
+      "sha256": "a013400c991a40062cb4f458d247cfd6dac24fa0016bf6e2eac7a3e8e08b8ae8"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0004.flac",
+      "bytes": 171311,
+      "sha256": "8c29126fd45deee12f8368556dd6847a03bde9ac2b1241110fe9391964bf8bc4"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0005.flac",
+      "bytes": 140231,
+      "sha256": "d94b8c28ac1fa90b2641f97e1e4e02c8b6d4de203b4f8c2fea00240a743afccf"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0006.flac",
+      "bytes": 40221,
+      "sha256": "1f3cd38fcd11de325482d3f67037ede0abadd9b5cf4a0734182017951f26c63b"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0007.flac",
+      "bytes": 221440,
+      "sha256": "fb4ab915829db56145a8bd4549f0d8983ed1ff38fbc0f06dc732078a462fe9da"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0008.flac",
+      "bytes": 325534,
+      "sha256": "e6950b66c87af69077dafc33b2d52b6ad6779735506bf12dc4f73938be869cc9"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0009.flac",
+      "bytes": 363440,
+      "sha256": "f5bd36156c4be312917bb118ead088ba2782a545ffbe5c6a925e6522583cba06"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0010.flac",
+      "bytes": 97250,
+      "sha256": "22bda5e7b49d6964cb7cd63a32887eb2a06e537ff89f5130211bfabd10ea6b5b"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0011.flac",
+      "bytes": 250165,
+      "sha256": "a0111946a79f5267b218115188280f16f2e4c9d0c056f4e73db4253c06ff9a8e"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0012.flac",
+      "bytes": 229796,
+      "sha256": "f5d17436f62f00084d2ece7fbc41dee68a5de114ffa2892777c789dafb6e8f3a"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0013.flac",
+      "bytes": 50658,
+      "sha256": "5febd6b89261544bc20d3083f67dd0db777ed2bf37a807865cf82accaedc65c4"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0014.flac",
+      "bytes": 71734,
+      "sha256": "23d118b9f76dcac8c2d5889e9a977a0560f21872337bd81fdbf9c0fa1544446a"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0015.flac",
+      "bytes": 260423,
+      "sha256": "e240fb6f94c69a1c94563bf932f9c1b4adc8867ab6af6da648a8079831d53f5c"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0016.flac",
+      "bytes": 260247,
+      "sha256": "84b26176ee7c13d16776b788e18fdd8485850c8248b8e5425c031849c15239ed"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0017.flac",
+      "bytes": 94301,
+      "sha256": "b5fb1ef5484a7a2ea821d229c470f46488f220243b7744918eb483d289a487e2"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0018.flac",
+      "bytes": 204893,
+      "sha256": "ce2bfa8dbe6300070e7125813245c259ac054b36b4b59cc380aefbdbed896858"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0019.flac",
+      "bytes": 230498,
+      "sha256": "4fff5e6a89bd8cd955570ef4b4eee3a0728bb8ce98b9b814179c1ba6a669685b"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0020.flac",
+      "bytes": 175460,
+      "sha256": "d78ad2d56c35d12b9182946617a2969949a93d58bfba8ff12ceaf50e7fabc266"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0021.flac",
+      "bytes": 238465,
+      "sha256": "6db99ff4034f423c6c466647fac9c92eeb84d14be54688c74b2b4a6ae27e1b8a"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0022.flac",
+      "bytes": 153357,
+      "sha256": "1bc389a8865b5289d1f1d32a7005b36e030967ae264e24667fee8fea7c18c2ab"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0023.flac",
+      "bytes": 366208,
+      "sha256": "2a2b1566f7d49c7a96e438841ac5e01199f708c291c21ebadf1e591e3f0d128f"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0024.flac",
+      "bytes": 245306,
+      "sha256": "01f486b17fb7d1145652a1a96c58a379917affa2ffbdd3df0a29b781508f0208"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0025.flac",
+      "bytes": 133652,
+      "sha256": "74c35b43c3cd77b72c61fd8e4ccd1bd83a7c13f7eb8ec0a8f89211241b6a4f1b"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0026.flac",
+      "bytes": 324871,
+      "sha256": "29aabf0312d5766c081ef99b4fee74e7fdbce61dd3b287b860bd672aea4c4933"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0027.flac",
+      "bytes": 177394,
+      "sha256": "4318521c4bbefddfd0751a3de8b9ab7e1fdb3ee009b9e2c4e85e7d229df82196"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0028.flac",
+      "bytes": 302975,
+      "sha256": "9796764cc991f9f0c3daa90c75d464260c0a3ffc4d282171df4696ce0963d5a7"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0029.flac",
+      "bytes": 59115,
+      "sha256": "dda0cac1d5c1bfa95fe61e8a1baff50facd58923a0d6f18f262f783dd2cf8dc1"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0030.flac",
+      "bytes": 34095,
+      "sha256": "6c568a355c878517157dac880701f60b1b85e5c6215aff31519408e24c1d7c5f"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0031.flac",
+      "bytes": 70565,
+      "sha256": "08584f8b87cd859e9212f1730979ed141623f35e38995a88ba50747d04cdc222"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0032.flac",
+      "bytes": 178339,
+      "sha256": "3f0ba99f17ec41ab8a82b60bf2fbc537d7de57eef18142e478876881ed95798f"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0033.flac",
+      "bytes": 105678,
+      "sha256": "3b68197c36cfb8bbaebb927cd05a45e32f9766c3430f381baa88159f91771428"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0034.flac",
+      "bytes": 330414,
+      "sha256": "0bacc57e5eb92a2d0dac085a4239c39ac8a7d4d59358e4153451d36ff267cedd"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604-0035.flac",
+      "bytes": 50372,
+      "sha256": "c34dac58945801001f483ea117c02de87906f3221c0844f21a0557acdcd85180"
+    },
+    {
+      "path": "data/LibriSpeech/test-clean/1188/133604/1188-133604.trans.txt",
+      "bytes": 6630,
+      "sha256": "e09993b7722cf430295f55c1b22c8bdc9956848df27bd8c823888c62850a22dd"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0000.flac",
+      "bytes": 246143,
+      "sha256": "e372271ee706749e64dff36a05bebbf47176c9b1d4fcea6aef355e4181d79cc5"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0001.flac",
+      "bytes": 240635,
+      "sha256": "d4756c1be4bcbee8eddb2283d77f3da2f13e0a88955bc35b586b16cc19f67c3f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0002.flac",
+      "bytes": 57639,
+      "sha256": "fe137c8c67227afcbd53978b2dc99d2220c0c1197d2a460cc66bf41f24408282"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0003.flac",
+      "bytes": 99550,
+      "sha256": "19710e2645de72c5c88ab8ded05c6538665487eb44d9df62997268ff237a2b5c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0004.flac",
+      "bytes": 86661,
+      "sha256": "223ff135fcf54e64334ce971b74c075ef2bef4bf0ae32ff48c0f4118ab21e191"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0005.flac",
+      "bytes": 86462,
+      "sha256": "b7e70bfc9b4ffa2ce31e5e705a8b65f2f5205275a138764d2b7cb1672958edd7"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0006.flac",
+      "bytes": 155461,
+      "sha256": "292c91e1045262973aabe9cd7a5ef37ec014ff1394f67326079efe3bd9abe05d"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0007.flac",
+      "bytes": 135622,
+      "sha256": "de4deef5036c6c67974dff3a321884fd5dc508994c2285fd76a5204b0525aa4a"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0008.flac",
+      "bytes": 79345,
+      "sha256": "def814c2f1f7193e4cac3f559d85e847fb6ebfa8f29440a23b43b132c1bd72d7"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0009.flac",
+      "bytes": 63822,
+      "sha256": "6f0136e76e974a5512e3ecbd97590dc63e96ff64224708e4964aba7f30a3b136"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0010.flac",
+      "bytes": 135792,
+      "sha256": "d04edabad3388bc654ea75d2ac8bfbb909a39ae5d0024c947c9470a7f58606b2"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0011.flac",
+      "bytes": 245206,
+      "sha256": "4089a7fee9c799dc5f5d6c6f3c53e68e49e7cf700125817ce7e7fab75e7ce1b4"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0012.flac",
+      "bytes": 61650,
+      "sha256": "08fae3a55dca9a5df393b586c2de2091751cda6c5c415985d55e28970ea7fcf1"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0013.flac",
+      "bytes": 180492,
+      "sha256": "6969a1c3231efffb34acada8d005e50ebcce241ae77fc312e7925ab1023ceaf3"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0014.flac",
+      "bytes": 43489,
+      "sha256": "cf64f4541d5cf779c8113354983bb9d3bec403001adfae3f6cc260a3cfeaae4c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0015.flac",
+      "bytes": 47259,
+      "sha256": "dad48e93520d2032e204176549592d1b4a45f899e8ab791e6dc6c459138e4029"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0016.flac",
+      "bytes": 91745,
+      "sha256": "6ebf20718317e52b7d4ddb7229d361fae1ea28c6a82823636fa5fde45d00dd22"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0017.flac",
+      "bytes": 154723,
+      "sha256": "0e3387e655f0327a7d869c5ff360fb81c61f7af655f32857fb6492c0a48c8695"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0018.flac",
+      "bytes": 233530,
+      "sha256": "1e6ecc3023573a58692480e93146dcb8dac2cd36fdb8e8d0c1fc57d329ae9d08"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0019.flac",
+      "bytes": 63505,
+      "sha256": "c14eafbbcb872180effc1acabc99b2f3640d3256701377b22ab78477eddec370"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0020.flac",
+      "bytes": 67466,
+      "sha256": "bee6ac4bab7d505e8c518fd5083643c0de6d7f6a14e4d696592fa3ccd626d536"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0021.flac",
+      "bytes": 94188,
+      "sha256": "7d3d97236a92c0f9fafa0ce992dbdb9c6b28c8d023feb3b75afdcdc55be26ae1"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0022.flac",
+      "bytes": 234514,
+      "sha256": "1a0e39e8fd1284eb285f34b411f9ef34c519f3bd5d2ce71ce899619460283990"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0023.flac",
+      "bytes": 43364,
+      "sha256": "a9d71954e81613c0da5acc2bc0e773a1d897e35194d8fe5bac076337c4018d76"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0024.flac",
+      "bytes": 145679,
+      "sha256": "69d1c2dd8d2b725777eadf3daf9a2f765ad947f4674cc2a72012cda4cf5486a7"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0025.flac",
+      "bytes": 68586,
+      "sha256": "32c8f2fb1850c0a0b7f944f83b699dfd7762b1aa0cd2e7418cbb1b158c87a04d"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0026.flac",
+      "bytes": 64928,
+      "sha256": "37532a09a664f62a1cbacb5c763014fdccc6ae4d6ed92536c7b9f7ae98164ee5"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0027.flac",
+      "bytes": 79377,
+      "sha256": "881ee8baa535b03669d122b34dd1137553a99e05270411da738397b647c36169"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0028.flac",
+      "bytes": 33076,
+      "sha256": "6f36e87f4b9b5c5e239737c92b0e96df26aaa1163b61b15e8b15a067060c256b"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0029.flac",
+      "bytes": 90888,
+      "sha256": "ed9ba856d3fc380ee573b67a07ece2027d12cfe6d74d6c5614acde86f4c189d9"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0030.flac",
+      "bytes": 224334,
+      "sha256": "187b0524be76908de52878f8824f2d69faddceed4ca7be42d1912497fbe7c486"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0031.flac",
+      "bytes": 305140,
+      "sha256": "8d0a55c6aa5f164557e8778b570ec30842cba9942aaff8ee12a7eebe21b8dc44"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0032.flac",
+      "bytes": 303846,
+      "sha256": "3beb5901f705bb574c72813b50024e328fb4e1500382106c602438b9004613cd"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0033.flac",
+      "bytes": 150789,
+      "sha256": "a0d2fd65246cbe8c93f673ce21fc2f81618a0969b3be1047bf41f0cd8a2fd6b8"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0034.flac",
+      "bytes": 272356,
+      "sha256": "cf3446d0495d9587405553c7a35db90927d66aa881fefb9dcc71f32eaa51f7b9"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0035.flac",
+      "bytes": 203507,
+      "sha256": "a06eb22d356f264a1ca02ad54c133dde015764db13bbc17af1e6c2bd9de55dda"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0036.flac",
+      "bytes": 96892,
+      "sha256": "29d12d0ba905cde6c084fb0fbb0ecbe8a7acb4f628254d489f94ae32f259a0bf"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0037.flac",
+      "bytes": 42684,
+      "sha256": "af919e9badfe49a37be8f19250c2908f22b9d1687ed06e84539a3a5e724ed1cd"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0038.flac",
+      "bytes": 71361,
+      "sha256": "4818e9df1861d277d5e99cbe9731db94e9d7f7c0d75dec5182772e2b75444260"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0039.flac",
+      "bytes": 70251,
+      "sha256": "6263b50e9a90d87b86e108cf8b7d40283743e0ae99c2c31ebdf3a7092e89daf1"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0040.flac",
+      "bytes": 339168,
+      "sha256": "511536a92aefdbf4859518b9a43cb3c15124b73b52d1a79138c84bf79f7cf10f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0041.flac",
+      "bytes": 114524,
+      "sha256": "221422b7667e022a023227fc09d3b38400650a86e41711c3596801703e1d6827"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0042.flac",
+      "bytes": 57751,
+      "sha256": "fd6cb3dd281de3d91f0f3445d03fec7b352ed7c704fe490640ae395b65a461b7"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0043.flac",
+      "bytes": 62806,
+      "sha256": "65f42ac8ea0770d34f8f0d98f71bb1e263a8d7785bbd4ee3a76a93d1ebd603aa"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0044.flac",
+      "bytes": 54018,
+      "sha256": "fca3747a9d1ab0ebcee0b5c09e9b01148cd938ad04331bafa83e22b3e63740b6"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0045.flac",
+      "bytes": 95694,
+      "sha256": "ba271b9a4234cd79cbb500e4d32fe4f5b673bd6a98ef0ea9e5ce9c66ae830955"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0046.flac",
+      "bytes": 57653,
+      "sha256": "078cb5853bbd7d5892b284999b89b5e8a858ee0e131b2bedda398d70dc38dfd8"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0047.flac",
+      "bytes": 34872,
+      "sha256": "f2238cd51f1b8868ff262010d1842be69646f9419a4400d2f2cee0bc42ec1f42"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0048.flac",
+      "bytes": 155733,
+      "sha256": "4452a1716e005c33d12ff31403d63d28530f4f7b297af639904ca45b264f3dba"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0049.flac",
+      "bytes": 93980,
+      "sha256": "3a7fce03046923313dde27408217b39b990a1e53d1653388b271348c5a84f707"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0050.flac",
+      "bytes": 99355,
+      "sha256": "55e6288c85007839ffbbcdd34f92ed13310738fb563d2f732398313d34da5499"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0051.flac",
+      "bytes": 119344,
+      "sha256": "12f4d8fdf3c62846e36e6cd8360efd4fee18074245d8b156c03c602962e079a1"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0052.flac",
+      "bytes": 125655,
+      "sha256": "fa26bd59faf8fb740e8d1a72092fb13ab95dda92174cafdc3ca724952545efa9"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0053.flac",
+      "bytes": 105544,
+      "sha256": "9b589b602633bea1316f9522825ab981992ed223bf3e46901b9125508da80e60"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0054.flac",
+      "bytes": 58987,
+      "sha256": "959451cebd9daa1ba3ab0993625d5763385e37f462ce0064fd4eca39ce02b368"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0055.flac",
+      "bytes": 49017,
+      "sha256": "e5bd666d9301acc8608fdec7949a2e4d8dfe893936b477173f901355cbe3c772"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0056.flac",
+      "bytes": 123689,
+      "sha256": "b44dd9f31b329b10011b27127257b5ba28ec4c0851eefa9bf24089aa84ea0d7c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0057.flac",
+      "bytes": 141634,
+      "sha256": "750f36fa6578704fb7b90a2d5a8a0f2bbf8b88e02159f880dc9d79b9f77b0a9f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0058.flac",
+      "bytes": 69148,
+      "sha256": "1de3a394a0dda1755962831fa706d0a127db30a315773d5cb230af02b8f68480"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0059.flac",
+      "bytes": 64122,
+      "sha256": "45abe81f8fe54d503f824cae4a49520285818933396c04d3524fc0e176d1bf02"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0060.flac",
+      "bytes": 174184,
+      "sha256": "56cc3fbe1ed5f720aa78f48b03c919dfae02f45e30f924a788220a7d9a65e1ba"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0061.flac",
+      "bytes": 61778,
+      "sha256": "491e4f9df151ffa7929f0642f1c81c890c37cbd10b26d0fca477155500dc26d3"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0062.flac",
+      "bytes": 53584,
+      "sha256": "d355cda69e66e4eef25cc408e7e11b5f3c7b5876671fa1d8bba0c334985f4ed1"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0063.flac",
+      "bytes": 85786,
+      "sha256": "7b2b09195bd3e898b8a4a34f10b0eb25e9b69fcd061ce0b9234ab9f2da5fd7b3"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0064.flac",
+      "bytes": 147179,
+      "sha256": "c154e10b354631fac446a3f8692a3b14df4008f88f638bf6bfd98becd85e3cb8"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0065.flac",
+      "bytes": 79563,
+      "sha256": "3837313ee1a7e5608417fe77fe7ae6cda1bac719668a01367a3634ce50b28e2f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0066.flac",
+      "bytes": 58083,
+      "sha256": "93e24ac03d41e0aa9abe3d8258a5b42a9255706acda6469820d164a709f511cd"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0067.flac",
+      "bytes": 78639,
+      "sha256": "6415d531d3eadc57737b5988fbfaa76340f491479704c22e544f576e7e899d29"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0068.flac",
+      "bytes": 132966,
+      "sha256": "a936afc105c70a929b12568074dbfca176578474f8746645a4325586bdf41bfe"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0069.flac",
+      "bytes": 102674,
+      "sha256": "19a583b1e3af629ecedc575de21bccc961441949f4bf47e464e8cf733590b4a0"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0070.flac",
+      "bytes": 84130,
+      "sha256": "5b33b6fee44763bb1d4a4cd187acb3ca593907bf69e06397d6a372e51b236add"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0071.flac",
+      "bytes": 70518,
+      "sha256": "7c0e754e319d97dfc4909b92cd36f65ce145f13e5e9b2377be2ff6ff7e630d8e"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0072.flac",
+      "bytes": 106298,
+      "sha256": "d95997ac827dc6bae68fcd91053cad9a29774bdcc92aaf9ed73a59f60927c79f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0073.flac",
+      "bytes": 134858,
+      "sha256": "3358819c38745eef5d33fcd42756a83b8d4c38f97452386cdec30623d11b0982"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0074.flac",
+      "bytes": 184584,
+      "sha256": "3fb73bbef927cfd89a5f196ff62e1de89da51342ebcd100970fc348f99e9135c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0075.flac",
+      "bytes": 51292,
+      "sha256": "51d9d2497dc9ab71f33dfbd98cfd44419986926f08c4cb5d1c051374ca94a636"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0076.flac",
+      "bytes": 70272,
+      "sha256": "ad6be664f01b3a091a32c9e42b8cd9166cb5d40a84bc2089d5156365121081d7"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0077.flac",
+      "bytes": 53605,
+      "sha256": "1ebbb735cbc69878d708c62e3614cc2f8d0acbef82fa28c5d6a4d9fae4970a7c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0078.flac",
+      "bytes": 52844,
+      "sha256": "ffff8b39605a7cfb7a5c34062cd4bf2cc166f75ee02d3f26ffd563046f11673f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0079.flac",
+      "bytes": 68091,
+      "sha256": "9b32a15ee749a141c15999cb8f4ad7acd5f2c07ef12268b903e885cc48de08d8"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0080.flac",
+      "bytes": 68288,
+      "sha256": "15e845c359f4fc17edd8821eff152b48f9e5d1a44a6490b8c28dbd4117ecf781"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0081.flac",
+      "bytes": 106308,
+      "sha256": "086c6b2ae1d3d401a8329a5b4adeca541c34f7275c1c843298554afe7e080800"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0082.flac",
+      "bytes": 66057,
+      "sha256": "8f7c9ab335299baa211657901fe6ed514fbbd424d5129838e7235bc76cbaf21c"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0083.flac",
+      "bytes": 73408,
+      "sha256": "dfb5b749fa2e2a1e852f7b4978a2c326b17c1ae8f3d58f27b6ed735489d9dc48"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0084.flac",
+      "bytes": 141854,
+      "sha256": "3714c5c0ec3a7fc022545f1ba30447144a9b4007ec37beb3e5f055a70d57ff22"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0085.flac",
+      "bytes": 76674,
+      "sha256": "2bc5f9ce6961802b4e8c9032bc02cdfe361d3f4ea8655996721e03779cec5e81"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0086.flac",
+      "bytes": 63771,
+      "sha256": "278391ed819ace4fc261177d25c762f354812782461caa31214a264223b67965"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0087.flac",
+      "bytes": 110893,
+      "sha256": "79314774a76066a7abe9fcca02043d1afbaa9438a3ad777c7a708a097b077dd4"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0088.flac",
+      "bytes": 115822,
+      "sha256": "9ce36b58e4bf519c08c6f18ee0396853c499973c4b49784b6387d7b523627a1d"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0089.flac",
+      "bytes": 111149,
+      "sha256": "a50158648347185e49692287285f168ec1425984a589cdc6ac3dd884c40809da"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0090.flac",
+      "bytes": 157065,
+      "sha256": "d7423239ae21b8033203b6d758fa6bc676ccb5df57674e87864ac1672da19c0d"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0091.flac",
+      "bytes": 103128,
+      "sha256": "7cc0b76d798e97d6d83af0836660d35c8e2a12a9ef04582633244f440b6e74f4"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0092.flac",
+      "bytes": 94298,
+      "sha256": "d59afce4c5556cdcd3025976c8bc356eec9d96c051c3aef59858f61b7c1e2a95"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0093.flac",
+      "bytes": 180346,
+      "sha256": "84f8b5f1acf692e50ec31ac39341310e124793dae0e86fbcb50934c4a81b3fa8"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0094.flac",
+      "bytes": 138727,
+      "sha256": "c1294e2d50d15207de7c54ee588df1b2a79143dba0e48eb9b2d524d0b216d84f"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285-0095.flac",
+      "bytes": 99332,
+      "sha256": "719617d1f0778d5070f5b132ddef3af32b3b922f91a9b2a7c55c974df935af77"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1688/142285/1688-142285.trans.txt",
+      "bytes": 9364,
+      "sha256": "a95d73df1a82bf8887584dd3df4972b0b192a5aadd5be5f98ab932e410fc0c72"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1998/15444/1998-15444-0000.flac",
+      "bytes": 246697,
+      "sha256": "a525ac76fdd07fc62b6705ab995e54477bcd622f4edd34334eae8b751fec5ef0"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1998/15444/1998-15444-0001.flac",
+      "bytes": 117641,
+      "sha256": "996cf36ef615e5a92c2743b633314008ecaf1599c8a5d07004a18f5e0fe6a06d"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1998/15444/1998-15444-0002.flac",
+      "bytes": 166355,
+      "sha256": "e9195b20455ca58eaaa27047a93bebc504cfa0828e990c26daf0edd9adf857cb"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1998/15444/1998-15444-0003.flac",
+      "bytes": 137180,
+      "sha256": "c1d1ab51a7200fe26c05ab1d1ef4d8cc86deee1a6849211f412304ef3ce22186"
+    },
+    {
+      "path": "data/LibriSpeech/test-other/1998/15444/1998-15444.trans.txt",
+      "bytes": 616,
+      "sha256": "101cff1daf434280cbf29ca7b0c9cc92ac5f303ae60f24f29324f104eee6d1ab"
+    },
+    {
+      "path": "data/provenance/geneval_selection.json",
+      "bytes": 19746,
+      "sha256": "bbc34dd5561659b66cc6e792743c9e9541dc02efc69ecefed72e2460555fea05"
+    },
+    {
+      "path": "data/provenance/mirror_revisions.json",
+      "bytes": 283,
+      "sha256": "e2350a0c5043e929929331c40374c3597a4efb5d496831fff296cfb6e948c184"
+    },
+    {
+      "path": "data/provenance/source_files.json",
+      "bytes": 1086,
+      "sha256": "53dcf752f74a5e2684052fbe7544bf180aed4f0a24ee32817cde00c4fb41186e"
+    },
+    {
+      "path": "data/seedtts/en/meta.lst",
+      "bytes": 4531,
+      "sha256": "e65a5254def7b00e7bfd7c4f8d6674cf1337383bb9bca3f803ef00adcaa49f8e"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_10119832.wav",
+      "bytes": 187436,
+      "sha256": "af3ac928e98cdb171c9abdc611813f2cc40c52b71167790b785628104f81f389"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_103675.wav",
+      "bytes": 311340,
+      "sha256": "1559628954a0117c81775b1a730ee46dd1c40ce099baaf1cc958bac6dd210330"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_10933823.wav",
+      "bytes": 373592,
+      "sha256": "0750ca1cccec0515e69bca3907adcfb95335e35e2bb74358e88071426e9accf2"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_120405.wav",
+      "bytes": 291064,
+      "sha256": "1ea6c705b6d9cf2564395a8f6c89f39b10585a67e9c0fa81ffe3a202e2e51bba"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_1205005.wav",
+      "bytes": 177708,
+      "sha256": "17e740dd04c5072c440d6ee717f3105eb307f07309fb9db48f4032f7865cfca1"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_123125.wav",
+      "bytes": 216620,
+      "sha256": "7b83861f73dc8f8e90e5d859117941656dfee0e1915e5f19ce45e7f5da312a01"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_125386.wav",
+      "bytes": 191020,
+      "sha256": "148025c5844bbe3a744c5ce422882442bf93f5fdbc95b090aec3eaa20b336bab"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_137148.wav",
+      "bytes": 243870,
+      "sha256": "f92d2c69aa3756fb12ca1d44caae8e472e57f06e8d544d0e61758d2bf63225a2"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_13900.wav",
+      "bytes": 221484,
+      "sha256": "bb1af82bc4377c50de1b8f59d6751e04eeaef60a947e97b54a842935d753f4d3"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_1416089.wav",
+      "bytes": 214316,
+      "sha256": "864870c683eb5f7fdf47b8b79497a948406c2d1ebd3d9044fbd7927ea7f1254a"
+    },
+    {
+      "path": "data/seedtts/en/prompt-wavs/common_voice_en_15265.wav",
+      "bytes": 314540,
+      "sha256": "e9b755e301f5659e48c3f268880a336200437f19e206bd8a21fb5e51b78d26f0"
+    },
+    {
+      "path": "data/seedtts/zh/meta.lst",
+      "bytes": 3662,
+      "sha256": "1c7474839da36e6a921cde199f688e18077f759077227c5e8e9f9345cb87e8ce"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00000309-00000300.wav",
+      "bytes": 243244,
+      "sha256": "631608f5c8b931ece1d45adc7f40a3b3b0ae2ec056a8a08a3565b04cc5750a4b"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004501-00000032.wav",
+      "bytes": 289324,
+      "sha256": "1280a95715ecdd2dfb3da9eb303f67e9a87a23071a06668416cb0b9e156a86e0"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004504-00000062.wav",
+      "bytes": 198188,
+      "sha256": "8321bfebcc27f54737deeb4d0f2498f53de45228b5d4bc7b6d712a9a7161ab52"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004505-00000093.wav",
+      "bytes": 195628,
+      "sha256": "6a9bccc3feed3d89250b23c3117fecf7e4fdada04f08002dad23fc7fcd629256"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004506-00000023.wav",
+      "bytes": 255788,
+      "sha256": "7954f48a79e4478750d07eb88a4b88a61fde5476e8d5bd0a45dbdbe5b02c6f4b"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004507-00000099.wav",
+      "bytes": 246060,
+      "sha256": "bfa639a29c8f644ee642b24b62db45e7a1cd27b39a3fb478db5dcfdabce7a028"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004508-00000066.wav",
+      "bytes": 196652,
+      "sha256": "3d17b104e8a6a1403e0b53fd669dc021ed8c223f35fa414750c3f38ca8ab549c"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004509-00000108.wav",
+      "bytes": 216108,
+      "sha256": "4db9ed60dac2dbfd7f5cb0cd38a9392451263e0c41a9b360b6e7fadb6a57aec2"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004510-00000116.wav",
+      "bytes": 206636,
+      "sha256": "98143363f8beb7938c4f6d8344f07fbd2b5d40bd0d8214c9637ff70012563d9e"
+    },
+    {
+      "path": "data/seedtts/zh/prompt-wavs/00004511-00000098.wav",
+      "bytes": 214316,
+      "sha256": "739ab2183a65576f14eec6f72ea7de6954e02014491b2876b1c528feea4ba5bc"
+    },
+    {
+      "path": "data/vbench/all_dimension.selected.txt",
+      "bytes": 606,
+      "sha256": "e40d4d81d8c018203c2be11eff56becdebdde48d56cfd13ac4497de4936b6afe"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A black and white abstract video featuring mesmerizing bubbles.jpg",
+      "bytes": 611537,
+      "sha256": "8517b29db37c27eb5a22571d5eb8b8d051cbd6936f8c4e9cc2e009c8cca79a16"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A boiling pot cooking vegetables.jpg",
+      "bytes": 2732201,
+      "sha256": "bcd0caf9e029d23155bad6fdbb1c08fb999aeedd56810b445ae0ebc7c9dd30fa"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A budding and blossoming flower bud seedling.jpg",
+      "bytes": 985108,
+      "sha256": "0d1abd442a2eb060d59483c6623bdfd77716760e532c7273bf364b9088a34c12"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A bunch of cars are driving on a highway.jpg",
+      "bytes": 916246,
+      "sha256": "f1086f404427b61788d7eae56d4644598e977936f91737aa88630c4ccc948c8c"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A group of people in a yellow raft is rowing through turbulent waters.jpg",
+      "bytes": 562545,
+      "sha256": "3fa285b66235ee23b9c8ba89c1c10f1bfad2f4de857fab6ecdca1fb5fd139040"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A little girl, lost in thought, is quietly sitting on the bus.jpg",
+      "bytes": 2070148,
+      "sha256": "df478c34492d93f27c220d3bab554c70297ecbf35b0a929ae6a7ab4a839520ee"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A man and woman dressed as sugar skulls in a field of flowers, sharing a loving gaze with each other.jpg",
+      "bytes": 976413,
+      "sha256": "a72259d4af3a15f0cc011412b58bc62f01ffea47208464a591dff607c7ceb61a"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A man in a black suit and a sombrero, shouting loudly.jpg",
+      "bytes": 1451248,
+      "sha256": "46cabd689701413a8d178b947d3183f1b5404d1cdfcceb85667d0cdac66c0234"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A person is making dumplings.jpg",
+      "bytes": 2058885,
+      "sha256": "4db772d80a7fc18c5adf2088d0f1d6714baf447fe9276cc996ff4b34942fa7f4"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A person is pouring water into a teacup.jpg",
+      "bytes": 1282539,
+      "sha256": "f929498b3dc97c0a858c874c6a645d0f9a7c5628e629c3b12680fdac6cd9a890"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A person is using tongs to pick up meat from a plate.jpg",
+      "bytes": 613761,
+      "sha256": "a10fc408d45eb506d0ea49a2fe43dc699b4caacebcbbafe13e4b96f79746580a"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A person is whisking eggs, and the egg whites and yolks are gently streaming out.jpg",
+      "bytes": 464187,
+      "sha256": "bdc2d6cc453c351dc08ca35780e1cc2c61c707594b23f2eda33c51aad7b16103"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A red sports car driving through sand, kicking up a large amount of dust.jpg",
+      "bytes": 426144,
+      "sha256": "64be84f0019db17706afa2d8d61c035e0c4e68db109e39669b64d2b1e47f07ab"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A space station orbited above the Earth.jpg",
+      "bytes": 580736,
+      "sha256": "6b75415b269317f97c832702f9e4a2df2302e4d552e678445bb8f721ca7d9956"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A teddy bear is climbing over a wooden fence.jpg",
+      "bytes": 992577,
+      "sha256": "1d5a7bc7ca8de8c4b562e7baa91b17d96cb1d18d145ad6fc1bd84c6cb7ab5498"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A yellow boat is cruising in front of a bridge.jpg",
+      "bytes": 3329643,
+      "sha256": "409aa68acbee36a290906a85727ba93e2c59771b5059c4e7bbb78707dabe0752"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/A young boy is lifting a bundle of dry grass wrapped in waterproof fabric over his head.jpg",
+      "bytes": 1387525,
+      "sha256": "17a8a801ffcfa89c9e796948439486f32329f36a1f2df56965487d967e65f96d"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/An old person is holding a cup on the street, and people around are curiously looking at him.jpg",
+      "bytes": 1397108,
+      "sha256": "4fd65ae74ce8f138b7585f18bfbd40e7552aec354d61a5cf4de8ad32b0efee71"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/Chopsticks are picking up noodles from the bowl.jpg",
+      "bytes": 1151176,
+      "sha256": "21cb955b9b2ed1f0915a8bff37fbc3789cdb9823a00955d8bba67e2369773b9d"
+    },
+    {
+      "path": "data/vbench_i2v/crop/16-9/Chopsticks are slowly picking up the buns from the plastic container.jpg",
+      "bytes": 363914,
+      "sha256": "f9284988fbafa0d1c50ec6c0425314b60592e3568e435b086bc10a1c8e4b3141"
+    },
+    {
+      "path": "data/vbench_i2v/i2v-bench-info.selected.json",
+      "bytes": 7886,
+      "sha256": "bcb35d572939759b0139c1f7006a1f2c89d20422497e9ea48a05093a7530ff1f"
+    },
+    {
+      "path": "data/下载记录.md",
+      "bytes": 4812,
+      "sha256": "80dc2f7f1d8074c0573f51ef71200c5c2c7e32e27dc9cdf346f9fd7858d89d17"
+    }
+  ],
+  "total_bytes": 102371145
+}

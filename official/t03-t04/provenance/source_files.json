@@ -1,0 +1,17 @@
+{
+  "geneval": {
+    "url": "https://raw.githubusercontent.com/djghosh13/geneval/main/prompts/evaluation_metadata.jsonl",
+    "retrieved_via": "https://ghfast.top/https://raw.githubusercontent.com/djghosh13/geneval/main/prompts/evaluation_metadata.jsonl",
+    "sha256": "5c48e0813e812e3c373fa5c8ed07a8f0a483be30272b4427b0559c8048e67c13"
+  },
+  "vbench_i2v": {
+    "url": "https://raw.githubusercontent.com/Vchitect/VBench/master/vbench2_beta_i2v/vbench2_i2v_full_info.json",
+    "retrieved_via": "https://ghfast.top/https://raw.githubusercontent.com/Vchitect/VBench/master/vbench2_beta_i2v/vbench2_i2v_full_info.json",
+    "sha256": "8cf4d34dc11779a336c216a1a71d482927cfa24a1bf736ab5c92425609f129f8"
+  },
+  "world_pipeline": {
+    "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/HY-World-2.0/main/hyworld2/worldrecon/pipeline.py",
+    "retrieved_via": "https://ghfast.top/https://raw.githubusercontent.com/Tencent-Hunyuan/HY-World-2.0/main/hyworld2/worldrecon/pipeline.py",
+    "sha256": "7f8b895420989161c433d56f11c01de8b75cc2a36c9758f69da59a0938d7a665"
+  }
+}

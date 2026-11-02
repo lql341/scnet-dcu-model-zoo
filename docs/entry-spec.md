@@ -28,7 +28,7 @@ models/<org>__<model>__<card>__<framework>[__<precision>]/
 | `env_check.sh` | ✅ | 采集环境 → `logs/env.log` |
 | `run.sh` | ✅ | 起服务 → `logs/server.log` |
 | `smoke.sh` | ✅ | Smoke 测试 → `logs/smoke.log` |
-| `bench.sh` | ⚠️ | 有 6 档基准的条目必需；否则放 `bench/NA.md` 说明原因与已测指标 |
+| `bench.sh` | ⚠️ | `bench = yes` 的条目必需；否则放 `bench/NA.md` 说明原因 |
 | `bench/NA.md` | ⚠️ | `meta.bench = no-material` 时必需 |
 | `verify.py` | ✅ | 精度验证；无官方基线时须主动 `[BLOCKED]` 退出 |
 | `preflight_lib.py` | ⚠️ | 用 `bench.sh` 的条目必需（压测前置校验） |
@@ -72,7 +72,7 @@ models/<org>__<model>__<card>__<framework>[__<precision>]/
   "framework_version": "0.5.10rc0+das.opt2.alpha.dtk2604",
   "precision": "bf16",
   "status": "bench",              // smoke | bench | blocked | partial
-  "bench": "yes",                  // yes | no-material（测法未下发）
+  "bench": "yes",                  // yes | no-material（测法未下发）| not-required（官方不要求）
   "bench_note": "",                // bench=no-material 时写明原因
   "cold_start_s": [280, 360],
   "throughput": {                  // bench=yes 时必填，单位 output tok/s
@@ -105,6 +105,17 @@ models/<org>__<model>__<card>__<framework>[__<precision>]/
 3. **压测结果必须过有效性校验**（`TTFT != 0` 且吞吐不超物理上限），否则不得写入 README §7
 4. **性能数字必须与 `bench/summary.md` 逐字一致**，`lint` 会比对
 5. 同一卡型/框架/负载下的"优化前"数据存 `bench-baseline-v1/`，供复核
+
+## 6.5 `bench` 三种取值的判据
+
+| 取值 | 何时用 | 依据 |
+| --- | --- | --- |
+| `yes` | 已完成 6 档 ×2 基准 | T01/T02 文本类，官方要求 `bench.sh` |
+| `no-material` | 测法或评测集尚未下发，**暂时做不了** | 等待官方 |
+| `not-required` | 官方明确**不做**统一评分与性能比较 | T03/T04：「不进行统一评分和性能比较」 |
+
+**不要把"做不了"和"不需要做"混为一谈**：前者是阻塞，后者是已解释清楚的不适用。
+T04 语音类条目应从 `no-material` 改成 `not-required`。
 
 ## 7. 体积
 

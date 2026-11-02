@@ -1,16 +1,18 @@
-# 本条目未做 6 档基准
+# 本条目不需要 6 档基准
 
-**原因**：赛题 §三 规定「文本 / 多模态理解类用 `bench.sh`，**生成类与语音类的测法随分题材料下发**」。
-语音类的性能测法尚未下发，因此不适用通用的 4K/16K × 并发 1/8/64 六档负载
-（语音请求是「音频时长 → 转写文本」，输入长度不以 token 计量）。
+**依据**：官方 T04 主文档原文——
 
-**已实测的性能相关数据**：
+> 不限定框架或调用方式，不要求提供服务接口，**不进行统一评分和性能比较**。
+
+因此 T04 语音类条目的 `meta.bench` 取值为 `not-required`，不是"缺材料"。
+
+**官方要求的是**：按 `formal/conditions/qwen3_asr.jsonl` 的 300 条固定条件执行，
+返回每条的实际识别文本（`<id>.txt`）+ 反馈表 + 环境说明。
+
+**已实测的性能相关数据**（仅供参考，官方不要求）：
 
 | 指标 | 值 |
 | --- | --- |
 | 冷启动 | 150–200 s |
-| 显存占用 | `--gpu-memory-utilization 0.85`（模型仅 4.7 GB） |
-| 单条 4 s 音频延迟 | 见 `logs/smoke.log`（`usage.duration`） |
-
-**拿到官方测法后**：补 `bench.sh`、`bench/summary.md` 与 `round1/round2.jsonl`，
-并把 `meta.json` 的 `bench` 从 `no-material` 改为 `yes`、清空 `bench_note`。
+| 显存 | 模型 4.7 GB，`--gpu-memory-utilization 0.85` |
+| 单条 4 s 音频 | 见 `logs/smoke.log` 的 `usage.duration` |

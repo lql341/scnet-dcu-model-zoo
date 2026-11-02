@@ -1,0 +1,1032 @@
+[
+  {
+    "original_line": 1,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "bench",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a bench"
+    }
+  },
+  {
+    "original_line": 2,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "cow",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a cow"
+    }
+  },
+  {
+    "original_line": 3,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "bicycle",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a bicycle"
+    }
+  },
+  {
+    "original_line": 4,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "clock",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a clock"
+    }
+  },
+  {
+    "original_line": 5,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "carrot",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a carrot"
+    }
+  },
+  {
+    "original_line": 6,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "suitcase",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a suitcase"
+    }
+  },
+  {
+    "original_line": 7,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "fork",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a fork"
+    }
+  },
+  {
+    "original_line": 8,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "surfboard",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a surfboard"
+    }
+  },
+  {
+    "original_line": 9,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "refrigerator",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a refrigerator"
+    }
+  },
+  {
+    "original_line": 10,
+    "metadata": {
+      "tag": "single_object",
+      "include": [
+        {
+          "class": "cup",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a cup"
+    }
+  },
+  {
+    "original_line": 81,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "bench",
+          "count": 1
+        },
+        {
+          "class": "sports ball",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a bench and a sports ball"
+    }
+  },
+  {
+    "original_line": 82,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "toothbrush",
+          "count": 1
+        },
+        {
+          "class": "snowboard",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a toothbrush and a snowboard"
+    }
+  },
+  {
+    "original_line": 83,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "toaster",
+          "count": 1
+        },
+        {
+          "class": "oven",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a toaster and an oven"
+    }
+  },
+  {
+    "original_line": 84,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "broccoli",
+          "count": 1
+        },
+        {
+          "class": "vase",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a broccoli and a vase"
+    }
+  },
+  {
+    "original_line": 85,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "tennis racket",
+          "count": 1
+        },
+        {
+          "class": "wine glass",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a tennis racket and a wine glass"
+    }
+  },
+  {
+    "original_line": 86,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "fork",
+          "count": 1
+        },
+        {
+          "class": "knife",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a fork and a knife"
+    }
+  },
+  {
+    "original_line": 87,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "hair drier",
+          "count": 1
+        },
+        {
+          "class": "cake",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a hair drier and a cake"
+    }
+  },
+  {
+    "original_line": 88,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "horse",
+          "count": 1
+        },
+        {
+          "class": "giraffe",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a horse and a giraffe"
+    }
+  },
+  {
+    "original_line": 89,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "horse",
+          "count": 1
+        },
+        {
+          "class": "computer keyboard",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a horse and a computer keyboard"
+    }
+  },
+  {
+    "original_line": 90,
+    "metadata": {
+      "tag": "two_object",
+      "include": [
+        {
+          "class": "toothbrush",
+          "count": 1
+        },
+        {
+          "class": "carrot",
+          "count": 1
+        }
+      ],
+      "prompt": "a photo of a toothbrush and a carrot"
+    }
+  },
+  {
+    "original_line": 180,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "clock",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "clock",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two clocks"
+    }
+  },
+  {
+    "original_line": 181,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "backpack",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "backpack",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two backpacks"
+    }
+  },
+  {
+    "original_line": 182,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "handbag",
+          "count": 4
+        }
+      ],
+      "exclude": [
+        {
+          "class": "handbag",
+          "count": 5
+        }
+      ],
+      "prompt": "a photo of four handbags"
+    }
+  },
+  {
+    "original_line": 183,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "frisbee",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "frisbee",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two frisbees"
+    }
+  },
+  {
+    "original_line": 184,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "sports ball",
+          "count": 3
+        }
+      ],
+      "exclude": [
+        {
+          "class": "sports ball",
+          "count": 4
+        }
+      ],
+      "prompt": "a photo of three sports balls"
+    }
+  },
+  {
+    "original_line": 185,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "bear",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "bear",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two bears"
+    }
+  },
+  {
+    "original_line": 186,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "tie",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "tie",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two ties"
+    }
+  },
+  {
+    "original_line": 187,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "sink",
+          "count": 4
+        }
+      ],
+      "exclude": [
+        {
+          "class": "sink",
+          "count": 5
+        }
+      ],
+      "prompt": "a photo of four sinks"
+    }
+  },
+  {
+    "original_line": 188,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "toothbrush",
+          "count": 2
+        }
+      ],
+      "exclude": [
+        {
+          "class": "toothbrush",
+          "count": 3
+        }
+      ],
+      "prompt": "a photo of two toothbrushs"
+    }
+  },
+  {
+    "original_line": 189,
+    "metadata": {
+      "tag": "counting",
+      "include": [
+        {
+          "class": "person",
+          "count": 3
+        }
+      ],
+      "exclude": [
+        {
+          "class": "person",
+          "count": 4
+        }
+      ],
+      "prompt": "a photo of three persons"
+    }
+  },
+  {
+    "original_line": 260,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "fire hydrant",
+          "count": 1,
+          "color": "blue"
+        }
+      ],
+      "prompt": "a photo of a blue fire hydrant"
+    }
+  },
+  {
+    "original_line": 261,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "car",
+          "count": 1,
+          "color": "pink"
+        }
+      ],
+      "prompt": "a photo of a pink car"
+    }
+  },
+  {
+    "original_line": 262,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "cup",
+          "count": 1,
+          "color": "purple"
+        }
+      ],
+      "prompt": "a photo of a purple cup"
+    }
+  },
+  {
+    "original_line": 263,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "cow",
+          "count": 1,
+          "color": "blue"
+        }
+      ],
+      "prompt": "a photo of a blue cow"
+    }
+  },
+  {
+    "original_line": 264,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "boat",
+          "count": 1,
+          "color": "yellow"
+        }
+      ],
+      "prompt": "a photo of a yellow boat"
+    }
+  },
+  {
+    "original_line": 265,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "umbrella",
+          "count": 1,
+          "color": "blue"
+        }
+      ],
+      "prompt": "a photo of a blue umbrella"
+    }
+  },
+  {
+    "original_line": 266,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "elephant",
+          "count": 1,
+          "color": "blue"
+        }
+      ],
+      "prompt": "a photo of a blue elephant"
+    }
+  },
+  {
+    "original_line": 267,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "elephant",
+          "count": 1,
+          "color": "yellow"
+        }
+      ],
+      "prompt": "a photo of a yellow elephant"
+    }
+  },
+  {
+    "original_line": 268,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "bicycle",
+          "count": 1,
+          "color": "red"
+        }
+      ],
+      "prompt": "a photo of a red bicycle"
+    }
+  },
+  {
+    "original_line": 269,
+    "metadata": {
+      "tag": "colors",
+      "include": [
+        {
+          "class": "suitcase",
+          "count": 1,
+          "color": "purple"
+        }
+      ],
+      "prompt": "a photo of a purple suitcase"
+    }
+  },
+  {
+    "original_line": 354,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "teddy bear",
+          "count": 1
+        },
+        {
+          "class": "dog",
+          "count": 1,
+          "position": [
+            "right of",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a dog right of a teddy bear"
+    }
+  },
+  {
+    "original_line": 355,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "kite",
+          "count": 1
+        },
+        {
+          "class": "wine glass",
+          "count": 1,
+          "position": [
+            "above",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a wine glass above a kite"
+    }
+  },
+  {
+    "original_line": 356,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "cup",
+          "count": 1
+        },
+        {
+          "class": "couch",
+          "count": 1,
+          "position": [
+            "below",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a couch below a cup"
+    }
+  },
+  {
+    "original_line": 357,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "cow",
+          "count": 1
+        },
+        {
+          "class": "laptop",
+          "count": 1,
+          "position": [
+            "left of",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a laptop left of a cow"
+    }
+  },
+  {
+    "original_line": 358,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "hair drier",
+          "count": 1
+        },
+        {
+          "class": "fork",
+          "count": 1,
+          "position": [
+            "above",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a fork above a hair drier"
+    }
+  },
+  {
+    "original_line": 359,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "baseball bat",
+          "count": 1
+        },
+        {
+          "class": "tie",
+          "count": 1,
+          "position": [
+            "right of",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a tie right of a baseball bat"
+    }
+  },
+  {
+    "original_line": 360,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "fork",
+          "count": 1
+        },
+        {
+          "class": "stop sign",
+          "count": 1,
+          "position": [
+            "above",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a stop sign above a fork"
+    }
+  },
+  {
+    "original_line": 361,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "skateboard",
+          "count": 1
+        },
+        {
+          "class": "bird",
+          "count": 1,
+          "position": [
+            "below",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a bird below a skateboard"
+    }
+  },
+  {
+    "original_line": 362,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "tv",
+          "count": 1
+        },
+        {
+          "class": "apple",
+          "count": 1,
+          "position": [
+            "above",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of an apple above a tv"
+    }
+  },
+  {
+    "original_line": 363,
+    "metadata": {
+      "tag": "position",
+      "include": [
+        {
+          "class": "potted plant",
+          "count": 1
+        },
+        {
+          "class": "train",
+          "count": 1,
+          "position": [
+            "above",
+            0
+          ]
+        }
+      ],
+      "prompt": "a photo of a train above a potted plant"
+    }
+  },
+  {
+    "original_line": 454,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "wine glass",
+          "count": 1,
+          "color": "purple"
+        },
+        {
+          "class": "apple",
+          "count": 1,
+          "color": "black"
+        }
+      ],
+      "prompt": "a photo of a purple wine glass and a black apple"
+    }
+  },
+  {
+    "original_line": 455,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "bus",
+          "count": 1,
+          "color": "green"
+        },
+        {
+          "class": "microwave",
+          "count": 1,
+          "color": "purple"
+        }
+      ],
+      "prompt": "a photo of a green bus and a purple microwave"
+    }
+  },
+  {
+    "original_line": 456,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "skis",
+          "count": 1,
+          "color": "green"
+        },
+        {
+          "class": "airplane",
+          "count": 1,
+          "color": "brown"
+        }
+      ],
+      "prompt": "a photo of a green skis and a brown airplane"
+    }
+  },
+  {
+    "original_line": 457,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "computer keyboard",
+          "count": 1,
+          "color": "yellow"
+        },
+        {
+          "class": "sink",
+          "count": 1,
+          "color": "black"
+        }
+      ],
+      "prompt": "a photo of a yellow computer keyboard and a black sink"
+    }
+  },
+  {
+    "original_line": 458,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "oven",
+          "count": 1,
+          "color": "pink"
+        },
+        {
+          "class": "motorcycle",
+          "count": 1,
+          "color": "green"
+        }
+      ],
+      "prompt": "a photo of a pink oven and a green motorcycle"
+    }
+  },
+  {
+    "original_line": 459,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "parking meter",
+          "count": 1,
+          "color": "purple"
+        },
+        {
+          "class": "laptop",
+          "count": 1,
+          "color": "red"
+        }
+      ],
+      "prompt": "a photo of a purple parking meter and a red laptop"
+    }
+  },
+  {
+    "original_line": 460,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "skateboard",
+          "count": 1,
+          "color": "yellow"
+        },
+        {
+          "class": "computer mouse",
+          "count": 1,
+          "color": "orange"
+        }
+      ],
+      "prompt": "a photo of a yellow skateboard and an orange computer mouse"
+    }
+  },
+  {
+    "original_line": 461,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "skis",
+          "count": 1,
+          "color": "red"
+        },
+        {
+          "class": "tie",
+          "count": 1,
+          "color": "brown"
+        }
+      ],
+      "prompt": "a photo of a red skis and a brown tie"
+    }
+  },
+  {
+    "original_line": 462,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "skateboard",
+          "count": 1,
+          "color": "pink"
+        },
+        {
+          "class": "train",
+          "count": 1,
+          "color": "black"
+        }
+      ],
+      "prompt": "a photo of a pink skateboard and a black train"
+    }
+  },
+  {
+    "original_line": 463,
+    "metadata": {
+      "tag": "color_attr",
+      "include": [
+        {
+          "class": "handbag",
+          "count": 1,
+          "color": "white"
+        },
+        {
+          "class": "bed",
+          "count": 1,
+          "color": "purple"
+        }
+      ],
+      "prompt": "a photo of a white handbag and a purple bed"
+    }
+  }
+]

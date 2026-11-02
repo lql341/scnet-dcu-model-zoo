@@ -45,7 +45,7 @@ need = ['model_id','org','model','card','cards_used','tp','framework','framework
         'precision','status','bench','cold_start_s','throughput','optimized','verified_on']
 missing = [k for k in need if k not in m]
 if missing: print(f'  ✗ meta.json 缺字段 {missing}'); sys.exit(1)
-if m['bench'] not in ('yes','no-material'):
+if m['bench'] not in ('yes','no-material','not-required'):
     print(f"  ✗ meta.bench 取值非法: {m['bench']}"); sys.exit(1)
 if m['bench'] == 'yes':
     if not os.path.exists(os.path.join(d,'bench','summary.md')):
@@ -55,7 +55,8 @@ if m['bench'] == 'yes':
             print(f'  ✗ bench=yes 但缺 bench/{f}'); sys.exit(1)
 else:
     if not m.get('bench_note'):
-        print('  ✗ bench=no-material 必须在 bench_note 写明原因'); sys.exit(1)
+        if not m.get('bench_note'):
+            print('  ✗ bench!=yes 必须在 bench_note 写明原因'); sys.exit(1)
 
 # env.sh 的 IMAGE 必须与 image.lock 的 repository:tag 一致
 env = open(os.path.join(d,'env.sh'), encoding='utf-8').read()

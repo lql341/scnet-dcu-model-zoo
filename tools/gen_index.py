@@ -79,7 +79,14 @@ def main():
            '| 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |',
            '| --- | --- | --- | --- | --- | --- | --- | --- |']
     for e in ents:
-        st = '✅ 6 档基准' if e['bench'] == 'yes' else ('✅ 跑通（bench 口径未下发）' if e['status'] == 'smoke' else e['status'])
+        if e['bench'] == 'yes':
+            st = '✅ 6 档基准'
+        elif e['bench'] == 'not-required':
+            st = '✅ 跑通（官方不要求性能对比）'
+        elif e['status'] == 'smoke':
+            st = '✅ 跑通（bench 口径未下发）'
+        else:
+            st = e['status']
         mat.append(f"| [{e['model']}](models/{e['_dir']}/) | {e['card']} ×{e['cards_used']} | {e['framework']} "
                    f"| {e['precision']} | {st} | {fmt(e['throughput'].get('4k_c64'))} "
                    f"| {fmt(e['throughput'].get('16k_c8'))} |")
