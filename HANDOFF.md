@@ -207,6 +207,7 @@ git -c credential.helper='!f() { echo "password=$(cat ~/.sourcefind-token)"; }; 
 | **GitHub `lql341/scnet-dcu-model-zoo`** | ✅ **权威积累**（知识库 + 条目 + 日志），6.7 MB |
 | **GitLab `luql/scnet-dcu-model-zoo`** | ✅ **同源镜像**（同一仓库推两个 remote，`sourcefind`），给比赛平台侧可读 |
 | GitLab `luql/*`（7 个 public 单件） | 参赛单件快照（早期按条目拆的） |
+| 集群 `~/models/` 权重 | 🔁 用完即删（策略见 `docs/weights-policy.md`），配额仅 400 G |
 | 集群 `~/zoo-images/` | ✅ **镜像归档**：2 个 tar.gz + `MANIFEST.md` + `assets/`（wheel 集、AuK 源码） |
 | ❌ `/public/home/luql` | 无法写入（SSH 被拒），等恢复后需搬 `~/zoo-images` |
 
