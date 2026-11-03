@@ -35,13 +35,16 @@ mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
 NCARD=$(scontrol show job -o "$SLURM_JOB_ID" 2>/dev/null | tr ' ' '\n' | grep -m1 -oE 'gres/dcu=[0-9]+' | cut -d= -f2)
 [ -z "${NCARD:-}" ] && NCARD=$(echo "${CUDA_VISIBLE_DEVICES:-0}" | awk -F, '{print NF}')
 [ "${NCARD:-0}" -lt 1 ] && NCARD=1
-# 不覆盖可见性：容器只挂了 cgroup 允许的设备，HIP 自己枚举即可
-# （实测 SLURM_JOB_GPUS=0,3,4,7 而 CUDA_VISIBLE_DEVICES=0,1,2,3，硬写 0,1,2,3 会指到不存在的设备）
-VIS=""
+# 可见性：本集群 Slurm 不设 HIP_VISIBLE_DEVICES，容器默认能看到 cgroup 允许的全部卡。
+# 【坑】若传 -e HIP_VISIBLE_DEVICES=""（空串）会被 torch 解释成"零张卡"，
+# 报 `RuntimeError: No HIP GPUs are available`（实测踩过）。所以空值就不要传。
+VIS=""   # 一律不传：容器靠 cgroup 限制，torchrun 自己枚举
+VISARGS=()
+[ -n "$VIS" ] && VISARGS=(-e HIP_VISIBLE_DEVICES="$VIS" -e CUDA_VISIBLE_DEVICES="$VIS")
 echo "[host] 卡数=$NCARD (CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset} SLURM_JOB_GPUS=${SLURM_JOB_GPUS:-unset})  run $(date +%T)"
 $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypoint=/bin/bash \
   --device /dev/kfd --device /dev/mkfd --device /dev/dri \
-  -e HIP_VISIBLE_DEVICES="$VIS" -e CUDA_VISIBLE_DEVICES="$VIS" \
+  "${VISARGS[@]}" \
   -v /opt/hyhal:/opt/hyhal:ro \
   -v "$HOST_MODEL_PATH":$MODEL_PATH:ro -v "$WORK":/work -v "$ASSETS":/assets:ro \
   -v "$WAN_SRC_HOST":/wan-src:ro -v "$WHEELS_HOST":/wheels:ro -v "$WHEELS_QI_HOST":/wheels-qi:ro \

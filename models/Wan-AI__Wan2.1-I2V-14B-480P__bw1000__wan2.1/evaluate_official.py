@@ -112,12 +112,17 @@ def main():
                 except Exception:
                     pass
             if r.returncode != 0 or not (os.path.exists(out) and os.path.getsize(out) > TOL_BYTES):
-                # torchrun 的报错是多行，只取最后一行会拿到分隔线；保留末 15 行到分片日志
-                tail = ((r.stderr or "") + (r.stdout or "")).strip().splitlines()[-15:]
-                print("[wan] ---- 子进程末 15 行 ----", flush=True)
-                for ln in tail:
-                    print("   |", ln, flush=True)
-                raise RuntimeError((tail[-1][:200] if tail else f"rc={r.returncode}"))
+                # stdout 会被 tqdm 刷屏，必须**分别**保留 stderr 尾部（真正的错误在 stderr）
+                err = (r.stderr or "").strip().splitlines()[-25:]
+                out = (r.stdout or "").strip().splitlines()[-5:]
+                print(f"[wan] ---- 子进程退出码 {r.returncode}；stderr 末 25 行 ----", flush=True)
+                for ln in err:
+                    print("   E|", ln[:400], flush=True)
+                print("[wan] ---- stdout 末 5 行 ----", flush=True)
+                for ln in out:
+                    print("   O|", ln[:300], flush=True)
+                last = ([x for x in err if x.strip()] or ["<stderr 为空>"])[-1]
+                raise RuntimeError(last[:300])
             rows.append({"id": it["id"], "status": "成功", "path": out,
                          "bytes": os.path.getsize(out), "sec": round(time.time() - t1, 1)})
             print(f"[wan] {n}/{len(mine)} OK {it['id']}  {time.time()-t1:.0f}s  {(os.path.getsize(out)/1e6):.1f}MB", flush=True)

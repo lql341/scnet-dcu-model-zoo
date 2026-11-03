@@ -62,8 +62,16 @@ fi
 pids=""
 for i in $(seq 0 $((TOTAL-1))); do
   # 每进程只看见一张卡；不要 unset HIP_VISIBLE_DEVICES（会越界枚举宿主的 8 张卡）
-  HIP_VISIBLE_DEVICES=${VIS_FOR_SHARD:-$i} SHARD_INDEX=$i SHARD_TOTAL=$TOTAL FSDP=$FSDP \
-    python3 evaluate_official.py > "logs/shard/shard$i.log" 2>&1 &
+  # 分片（非 FSDP）：每个进程绑定一张卡；FSDP：必须让所有进程都看到全部卡，
+  # 且不能传空的 HIP_VISIBLE_DEVICES（空串会被 torch 当成"零张卡"→ No HIP GPUs are available）
+  if [ "$FSDP" = "1" ]; then
+    env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
+      SHARD_INDEX=$i SHARD_TOTAL=$TOTAL FSDP=1 \
+      python3 evaluate_official.py > "logs/shard/shard$i.log" 2>&1 &
+  else
+    HIP_VISIBLE_DEVICES=$i SHARD_INDEX=$i SHARD_TOTAL=$TOTAL FSDP=0 \
+      python3 evaluate_official.py > "logs/shard/shard$i.log" 2>&1 &
+  fi
   pids="$pids $!"
   echo "[wan] shard $i -> pid $! (HIP_VISIBLE_DEVICES=$i)"
   [ "$PROBE" = "1" ] && break
