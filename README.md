@@ -35,6 +35,8 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 镜像归档与迁移（防止上游删除导致不可复现）：
 
 - 归档位置与还原方式：[docs/image-archive.md](docs/image-archive.md)
+- **换机器/镜像被删后如何重建一个条目**：[docs/repro.md](docs/repro.md)
+- 调优过程原件（48 个 slurm + 配方）：[sweeps/2026-10-11-probes/](sweeps/2026-10-11-probes/)
 - 推送到自有命名空间（手动）：[docs/manual-push.md](docs/manual-push.md)
 
 ```bash

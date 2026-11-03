@@ -20,9 +20,9 @@
 
 在 **BW1000（海光 DCU）** 上跑通 8 个「模型 × 框架」组合，其中 **3 个有完整 6 档性能基准**、
 **2 个完成官方条件评测（ASR 300/300、ForcedAligner 30/30）**。
-本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因全部重定位并修掉，正在跑官方全量条件：
-- AuK：真正卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec；已出音频，单条 150 s
-- Qwen-Image：真正卡点 = 装给 diffusers 的 hub 版本低于其元数据要求（0.36.2 < 1.32）；已 6/6 出 2048×2048
+本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因重定位并修掉，**两个都已跑完官方全量条件**：
+- AuK：卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec → **120/120**，4.4 s/条
+- Qwen-Image：卡点 = hub 版本低于 diffusers 元数据要求（0.36.2 < 1.32）→ **180/180**，19.8 s/张
 **没有任何精度数据能对齐官方基线 —— 因为 T01/T02 的 `baselines/` 从未下发。**
 
 ---
@@ -228,6 +228,7 @@ zoo/
 │   ├── environment.md         硬件/软件/镜像能力实测
 │   ├── manual-push.md         手动推镜像到 SCNet 镜像库
 │   ├── image-archive.md       镜像归档与还原
+│   ├── repro.md               ★ 从归档重建任一条目的端到端手册
 │   ├── repo-layout.md         为什么单仓库 + 体积策略
 │   ├── platform-checklist.md  platform/ 截图清单
 │   ├── landscape.md           93 个公开仓库竞争盘点
@@ -346,8 +347,8 @@ python3 -m pip download --no-deps --dest wheels \
 | --- | --- | --- |
 | Qwen3-ASR-1.7B | **300/300** | AISHELL-1(zh,100) CER **1.21%** / LibriSpeech(en,200) CER **0.65%** WER **2.86%** |
 | Qwen3-ForcedAligner-0.6B | **30/30** | 词级时间戳，预测 572 词 = 参考 572 词；`BOUNDARIES_PENDING` **官方不评分** |
-| Qwen-Image-2.1-Turbo | 🟡 探针 6/6 → 全量 180 条进行中 | 2048×2048、8 步 + KV cache，单图 **~20.7 s**（≈1 h/卡跑完 180 条） |
-| AuK | 🟡 探针已出音频 → 全量 120 条进行中 | 6.08 s @ 24 kHz 单声道，单条 **~150 s**（≈5 h/卡跑完 120 条） |
+| Qwen-Image-2.1-Turbo | ✅ **180/180** | 2048×2048、8 步 + KV cache，单图 **19.8 s**，全量 3558 s（59 min/卡） |
+| AuK | ✅ **120/120** | 24 kHz 单声道，单条 **4.4 s**，全量 531 s；时长 3.08–12.46 s 全部 ≥ 官方 `duration_min_s` |
 
 **Kimi CUDA Graph 回退的稳定性已闭环**（原 P1-4）：同配置 round1 vs round2 六档差异
 +2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2%，即 16K/c64 的 −6.3% 是**配置级回退**而非抖动，
@@ -368,8 +369,8 @@ python3 -m pip download --no-deps --dest wheels \
 | RoboBrain2.5-8B × SGLang | 🟡 `smoke` | ✅ | 同上 |
 | Trident-2B × SGLang | ❌ `blocked` | — | 框架不支持 `Qwen3VLForEmbedding` |
 | Trident-2B × vLLM | ❌ `blocked` | — | 同上 |
-| AuK × transformers | 🟡 `official-eval` 进行中 | — | 根因已修正（wheel tag + torchaudio.save）；单条 150 s，全量 ≈5 h |
-| Qwen-Image-2.1-Turbo × diffusers | 🟡 `official-eval` 进行中 | — | 根因已修正（hub 1.33.0）；探针 6/6，单图 20.7 s，全量 ≈1 h |
+| AuK × transformers | ✅ `official-eval` 120/120 | ✅ | 根因已修正（wheel tag + torchaudio.save）；531 s 全量 |
+| Qwen-Image-2.1-Turbo × diffusers | ✅ `official-eval` 180/180 | ✅ | 根因已修正（hub 1.33.0）；3558 s 全量，19.8 s/张 |
 
 ---
 
