@@ -53,10 +53,16 @@ cd /work/repo
 mkdir -p outputs logs/shard
 TOTAL=${SHARD_TOTAL:-1}
 PROBE=${PROBE_ONLY:-0}
+FSDP=${FSDP:-0}
+if [ "$FSDP" = "1" ]; then
+  # FSDP：一个视频由 8 卡共同推理 → 不分片，逐条串行（官方 --dit_fsdp --t5_fsdp）
+  echo "[wan] FSDP 模式：不分片，逐条串行"
+  TOTAL=1
+fi
 pids=""
 for i in $(seq 0 $((TOTAL-1))); do
   # 每进程只看见一张卡；不要 unset HIP_VISIBLE_DEVICES（会越界枚举宿主的 8 张卡）
-  HIP_VISIBLE_DEVICES=$i SHARD_INDEX=$i SHARD_TOTAL=$TOTAL \
+  HIP_VISIBLE_DEVICES=${VIS_FOR_SHARD:-$i} SHARD_INDEX=$i SHARD_TOTAL=$TOTAL FSDP=$FSDP \
     python3 evaluate_official.py > "logs/shard/shard$i.log" 2>&1 &
   pids="$pids $!"
   echo "[wan] shard $i -> pid $! (HIP_VISIBLE_DEVICES=$i)"

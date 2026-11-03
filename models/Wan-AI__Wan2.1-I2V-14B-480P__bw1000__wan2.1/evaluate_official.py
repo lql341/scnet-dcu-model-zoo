@@ -70,8 +70,13 @@ def main():
             continue
         p = it.get("params") or {}
         img = resolve_image(it, asset_root, os.path.dirname(cond))
-        cmd = [
-            sys.executable, "generate.py",
+        fsdp = os.environ.get("FSDP", "0") == "1"
+        nproc = int(os.environ.get("FSDP_NPROC", "8"))
+        # 单卡 64 GB 装不下 14B + UMT5-XXL（实测 --offload_model 与 --t5_cpu 仍 OOM）：
+        # 改用官方推荐的多卡 FSDP（--dit_fsdp --t5_fsdp，不需要 xfuser，非序列并行）
+        launcher = ["torchrun", f"--nproc_per_node={nproc}", "--master_port", str(29500 + (os.getpid() % 500))]
+        cmd = launcher + [
+            "generate.py",
             "--task", task,
             "--size", f"{int(p.get('width', 832))}*{int(p.get('height', 480))}",
             "--ckpt_dir", ckpt,
@@ -91,6 +96,8 @@ def main():
         # 把 T5 放 CPU 可省约 11 GB；再不够就用官方 --dit_fsdp + torchrun 多卡切分。
         if os.environ.get("T5_CPU", "0") == "1":
             cmd.append("--t5_cpu")
+        if fsdp:
+            cmd += ["--dit_fsdp", "--t5_fsdp"]
         t1 = time.time()
         try:
             r = subprocess.run(cmd, cwd=src, capture_output=True, text=True, timeout=6 * 3600)

@@ -1,6 +1,6 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> 最后更新：2026-11-03（夜）　余额 **4344.02**（起始 4405.96）
+> 最后更新：2026-11-03（深夜）　余额 **4324.87**（起始 4405.96，今日用约 **81 卡时**）
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -354,6 +354,36 @@ python3 -m pip download --no-deps --dest wheels \
 +2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2%，即 16K/c64 的 −6.3% 是**配置级回退**而非抖动，
 结论稳定可用。
 
+### 7.1 vLLM 16K 档：配置层面无解（2026-11-03，三轮扫描）
+
+同模型同卡，vLLM 16K 比 SGLang 慢 5–7 倍，**五条旋钮全试过、全无效**：
+
+| 旋钮 | 结果 |
+| --- | --- |
+| `--max-num-batched-tokens` 2048 / 8192 | 无变化 |
+| `VLLM_ROCM_USE_AITER=1` | 无变化（内核仍不可用） |
+| `VLLM_ATTENTION_BACKEND=FLASH_ATTN` | 无变化 |
+| `--kv-cache-dtype fp8` | **负优化**（16K/c8 44.9→34.4） |
+| `--tp 2` | 启动失败（podman 不继承 `HIP_VISIBLE_DEVICES`，已记 gotchas #21） |
+
+根因：`Cannot use ROCm custom paged attention kernel → Triton 兜底`。
+完整数据 `models/XiaomiMiMo__*__vllm/sweep/results-2026-11-03.md`。
+**这条结论的价值**：要补上只能自建镜像（重编 aiter / 试 v0 引擎 / 或改用 SGLang），
+正好指向「镜像归档 → 自有镜像」的长期方向。
+
+### 7.2 T03/T04 官方 8 个模型的覆盖
+
+| 模型 | 状态 | 备注 |
+| --- | --- | --- |
+| Qwen-Image-2.1-Turbo | ✅ 180/180 | 19.8 s/张 |
+| AuK | ✅ 120/120 | 4.4 s/条 |
+| Qwen3-ASR-1.7B | ✅ 300/300 | CER 1.21% / 0.65% |
+| Qwen3-ForcedAligner | ✅ 30/30 | 官方不评分 |
+| **Wan2.1-I2V-14B-480P** | 🟡 条目已就绪，卡在显存 | 单卡 64 GB OOM（`--offload_model` + `--t5_cpu` 都不够）→ 转 8 卡 FSDP，作业 1026191 排队中 |
+| **HY-OmniWeaving** | 🟡 权重 52 GB 已下 | 官方代码 `Tencent-Hunyuan/OmniWeaving`；依赖 pins 与镜像冲突（torch>=2.6 / transformers 4.57.1 / diffusers 0.32.2） |
+| MiniMax-Music3 | ⬜ 源未找到 | ModelScope 404；官方 README 标 CUDA |
+| HY-World-2.0 | ⬜ 基本不可行 | 174.7 GB > 配额，且需 FA3(Hopper) |
+
 ---
 
 ## 8. 进度（活文档，每次更新）
@@ -371,6 +401,8 @@ python3 -m pip download --no-deps --dest wheels \
 | Trident-2B × vLLM | ❌ `blocked` | — | 同上 |
 | AuK × transformers | ✅ `official-eval` 120/120 | ✅ | 根因已修正（wheel tag + torchaudio.save）；531 s 全量 |
 | Qwen-Image-2.1-Turbo × diffusers | ✅ `official-eval` 180/180 | ✅ | 根因已修正（hub 1.33.0）；3558 s 全量，19.8 s/张 |
+| Wan2.1-I2V-14B-480P × 官方代码 | 🟡 `smoke`（条目就绪、跑不通） | — | 单卡 OOM → 8 卡 FSDP；两个补丁已入库（惰性 dashscope、CLI 补 `--negative_prompt`） |
+| HY-OmniWeaving × 官方代码 | ⬜ 未开始 | — | 权重已下，等 Wan 跑通后再评估（同源 Hunyuan 视频栈） |
 
 ---
 
@@ -400,6 +432,9 @@ python3 -m pip download --no-deps --dest wheels \
 | P1-3 | Recon2Reason / RoboBrain 的 **int8/int4** | 各 3–5 卡时 | 量化件单独计件；**但都要等 P0-1 的基线** |
 | P1-4 | ~~Kimi CUDA Graph 二次确认~~ | ✅ 已完成 | round1/round2 六档差异 ≤2.6%，−6.3% 是配置级回退，结论稳定 |
 | P1-5 | **把 cp310 轮子规则固化成工具** | 0.5 h | `tools/fetch_wheels.sh`：统一 `--python-version 310 --abi cp310`，防再犯 gotchas #18 |
+| P1-7 | **Wan2.1 8 卡 FSDP 跑通** | 4–6 卡时 | 作业 `1026191`；`--dit_fsdp --t5_fsdp`，先 PROBE_ONLY=1 |
+| P1-8 | **HY-OmniWeaving 适配** | 4–8 卡时 | 官方代码 + 独立依赖环境（transformers 4.57.1 / diffusers 0.32.2）；风险高，排在 Wan 之后 |
+| P1-9 | **vLLM v0 引擎对比** | 0.5 卡时 | `VLLM_USE_V1=0` 是否绕开 Triton paged decode（gotchas #21 的下一步） |
 | P1-6 | **两轮审自己的结论** | 0.5 h | 本轮教训：两个「blocked」都是工程错，`blocked` 以后必须附「已核对 `requires_dist` / wheel tag」证据 |
 
 ### 🟢 P2 —— 材料已备但需 8 卡 / 大空间

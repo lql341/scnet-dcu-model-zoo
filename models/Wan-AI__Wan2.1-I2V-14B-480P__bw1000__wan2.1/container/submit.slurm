@@ -39,6 +39,6 @@ $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypo
   -v "$HOST_MODEL_PATH":$MODEL_PATH:ro -v "$WORK":/work -v "$ASSETS":/assets:ro \
   -v "$WAN_SRC_HOST":/wan-src:ro -v "$WHEELS_HOST":/wheels:ro -v "$WHEELS_QI_HOST":/wheels-qi:ro \
   -v "$REPO/container/inner.sh":/inner.sh:ro \
-  -e MODEL_PATH="$MODEL_PATH" -e WAN_SRC=/wan-src -e SHARD_TOTAL="$NCARD" -e PROBE_ONLY="${PROBE_ONLY:-0}" -e OFFLOAD_MODEL="${OFFLOAD_MODEL:-True}" -e ASSET_ROOT=/assets -e T5_CPU="${T5_CPU:-1}" \
+  -e MODEL_PATH="$MODEL_PATH" -e WAN_SRC=/wan-src -e SHARD_TOTAL="$NCARD" -e PROBE_ONLY="${PROBE_ONLY:-0}" -e OFFLOAD_MODEL="${OFFLOAD_MODEL:-True}" -e ASSET_ROOT=/assets -e T5_CPU="${T5_CPU:-1}" -e FSDP="${FSDP:-0}" -e FSDP_NPROC="$NCARD" \
   "$IMAGE" /inner.sh 2>&1 | grep -viE "subuid|rootless|Network file|level=warning"
 echo "[host] outputs=$(ls "$WORK/repo/outputs" 2>/dev/null | wc -l)  DONE $(date +%T)"
