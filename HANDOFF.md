@@ -93,7 +93,7 @@ scp zzeshell-hz1:/public/.../work/<dir>/repo/logs/{env,server,smoke}.log models/
 
 ```bash
 # 本机 clone 后上传
-cd ~/Downloads && git clone --depth 1 https://github.com/Tencent-Hunyuan/AuK.git AuK-src
+cd ~/Downloads/pi-test/sources && git clone --depth 1 https://github.com/Tencent-Hunyuan/AuK.git AuK-src
 rsync -az --exclude .git -e "ssh -o BatchMode=yes" AuK-src/ zzeshell-hz1:/public/home/scnethr2601a10/AuK-src/
 ```
 
@@ -146,11 +146,16 @@ git -c credential.helper='!f() { echo "password=$(cat ~/.sourcefind-token)"; }; 
 
 | 路径 | 内容 |
 | --- | --- |
-| `~/Downloads/pi-test/zoo/` | **主仓库**（11 条目 + docs + tools + official） |
-| `~/Downloads/pi-test/` | 全部 slurm 脚本与探测归档（`zz_probe*.slurm`、`sweep_*.slurm`、`archive_*.slurm` 等） |
-| `~/Downloads/AuK-src/` | AuK 源码（因集群连不上 GitHub，本机 clone） |
-| `~/Downloads/超算互联网 × 光合..._赛事详情.zip` | 赛事详情原文 |
-| `~/Downloads/T03_T04模型可行性方案_框架数据接入评测.zip` | **官方 T03/T04 材料（99 MB）** |
+**约定：本机所有与本项目相关的东西都在 `~/Downloads/pi-test/` 下，不再往 `~/Downloads/` 顶层散放。**
+
+| 路径 | 内容 |
+| --- | --- |
+| `~/Downloads/pi-test/zoo/` | **主仓库**（13 条目 + docs + tools + official + sweeps），GitHub/GitLab 双远端 |
+| `~/Downloads/pi-test/sources/` | 上游源码 clone（`AuK-src`、`Wan2.1-src`、`OmniWeaving-src`；集群连不上 GitHub 时靠这里上传） |
+| `~/Downloads/pi-test/slurm-archive/` | 早期 48 个实验 slurm + `RECIPE.md` + 竞品盘点（**副本已入 `zoo/sweeps/2026-10-11-probes/`**，这里是原件） |
+| `~/Downloads/pi-test/scripts/` | 本机侧工具（`nb_create.py`、`nb_exec.py`、`push_sourcefind.sh`、`dl_t03.slurm`） |
+| `~/Downloads/pi-test/assets/` | 官方原始包（`T03_T04模型可行性方案_框架数据接入评测.zip` 99 MB；`赛事详情.zip` 仍在 Downloads，属离线材料） |
+| `~/Downloads/pi-test/{bw-vllm,kimi,mimo}-repo/`、`k100ai-repo-artifacts/`、`out/` | 早期按条目拆的仓库快照，仅作回溯，勿再写入 |
 | `~/.sourcefind-token` | GitLab PAT |
 | `~/.harbor-pass` | ❌ 不存在（Harbor 凭据未获取） |
 | `~/.agents/skills/scnet-hpc/` | 集群操作 skill |
