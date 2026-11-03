@@ -91,7 +91,7 @@ def main():
             "--sample_solver", str(p.get("sample_solver", "unipc")),
             "--base_seed", str(int(it.get("seed") or 42)),
             "--offload_model", os.environ.get("OFFLOAD_MODEL", "True"),
-            "--save_file", out,
+            "--save_file", os.path.abspath(out),  # 必须绝对路径：generate.py 按 cwd(=源码目录) 解析
         ]
         # 显存：14B bf16 + UMT5-XXL 在 64 GB 单卡上会 OOM（实测 Offloading 仍打满 63.98 GB），
         # 把 T5 放 CPU 可省约 11 GB；再不够就用官方 --dit_fsdp + torchrun 多卡切分。
@@ -101,9 +101,16 @@ def main():
             cmd += ["--dit_fsdp", "--t5_fsdp"]
         t1 = time.time()
         try:
+            # 完整落盘 stdout/stderr（torchrun 的 NCCL 关闭日志会淹没真正的错误，
+            # 只保留"最后 N 行"必然丢掉根因 —— 实测连丢两次）
+            os.makedirs("logs/shard", exist_ok=True)
             errfile = f"/tmp/wan_elastic_err_{os.getpid()}.json"
             env = dict(os.environ, TORCHELASTIC_ERROR_FILE=errfile)
-            r = subprocess.run(cmd, cwd=src, capture_output=True, text=True, timeout=6 * 3600, env=env)
+            elog = f"logs/shard/stderr_{it['id']}.log"
+            olog = f"logs/shard/stdout_{it['id']}.log"
+            with open(elog, "w", encoding="utf-8") as fe, open(olog, "w", encoding="utf-8") as fo:
+                r = subprocess.run(cmd, cwd=src, text=True, timeout=6 * 3600, env=env,
+                                   stdout=fo, stderr=fe)
             if r.returncode != 0 and os.path.exists(errfile):
                 try:
                     print("[wan] ---- TORCHELASTIC_ERROR_FILE ----", flush=True)
@@ -112,16 +119,18 @@ def main():
                 except Exception:
                     pass
             if r.returncode != 0 or not (os.path.exists(out) and os.path.getsize(out) > TOL_BYTES):
-                # stdout 会被 tqdm 刷屏，必须**分别**保留 stderr 尾部（真正的错误在 stderr）
-                err = (r.stderr or "").strip().splitlines()[-25:]
-                out = (r.stdout or "").strip().splitlines()[-5:]
-                print(f"[wan] ---- 子进程退出码 {r.returncode}；stderr 末 25 行 ----", flush=True)
-                for ln in err:
-                    print("   E|", ln[:400], flush=True)
-                print("[wan] ---- stdout 末 5 行 ----", flush=True)
-                for ln in out:
-                    print("   O|", ln[:300], flush=True)
-                last = ([x for x in err if x.strip()] or ["<stderr 为空>"])[-1]
+                # 从完整日志里挑出真正的根因行（跳过 NCCL teardown 噪声）
+                import re as _re
+                lines = open(elog, encoding="utf-8", errors="replace").read().splitlines()
+                hits = [l for l in lines
+                        if _re.search(r"Traceback|Error|error:|OOM|out of memory|assert", l)
+                        and "NCCL" not in l and "nccl" not in l]
+                print(f"[wan] ---- 退出码 {r.returncode}；错误日志 {elog}（{len(lines)} 行），根因候选 {len(hits)} 条 ----", flush=True)
+                for ln in hits[:8]:
+                    print("   E|", ln[:300], flush=True)
+                for ln in lines[-6:]:
+                    print("   T|", ln[:250], flush=True)
+                last = (hits or lines or ["<空>"])[-1]
                 raise RuntimeError(last[:300])
             rows.append({"id": it["id"], "status": "成功", "path": out,
                          "bytes": os.path.getsize(out), "sec": round(time.time() - t1, 1)})
