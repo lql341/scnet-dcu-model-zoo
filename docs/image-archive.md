@@ -10,23 +10,49 @@
 ## 归档位置
 
 ```
-/public/home/scnethr2601a10/zoo-images/          (chmod 755，同集群账号可读)
-├── mimo-sglang-bw10000_1.1.1.tar.gz             7.9 GB
-├── vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz         8.7 GB
+/public/home/scnethr2601a10/zoo-images/
+├── mimo-sglang-bw10000_1.1.1.tar.gz             7.9 GB  sha256 f16125ba…
+├── vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz         8.7 GB  sha256 986f95a3…
 ├── MANIFEST.md                                  digest + sha256 + 还原命令
+├── sha256-all.txt                               两个 tar 的实测摘要
+├── assets/                                      依赖与源码（体积小，重建难）
+│   ├── wheels-auk-cp310.tar.gz   104 MB         librosa 链 + AuK 依赖，全部 cp310
+│   ├── wheels-qi-cp310.tar.gz      6.6 MB       diffusers 0.41.0 + hub 1.33.0（可解析的版本对）
+│   ├── wheels-fa310.tar.gz        37 MB         ForcedAligner 的 transformers/hub/qwen_asr
+│   ├── AuK-src.tar.gz             30 MB         AuK 源码（集群直连 GitHub 不通）
+│   └── assets-sha256.txt
 ├── archive_images.slurm / archive_vllm.slurm    生成脚本
 └── verify_archive.slurm                         还原验证脚本
 ```
 
 > 位置在临时 Slurm 账户名下。**待 `luql` 账号恢复该集群 SSH 后应搬到 `/public/home/luql/zoo-images/`**
 > （见 `ARTIFACTS.md`）。当前该目录 `chmod 755` + 文件 `644`，`luql` 可直接 `cp` 走。
+>
+> **为什么把 wheel 也归档**：这两个镜像里没有 librosa / diffusers，而“按 cp312 下载的轮子
+> 装进 py3.10 镜像”曾把两个条目误判成 blocked（`docs/gotchas.md` #18）。镜像 + 正确的 wheel
+> 集合才是完整可复现单元，缺一个就退化成“能跑但跑不出东西”。
+
+### 为什么没有第二份离线副本
+
+实测从本机拉归档的速度：**16.4 MB / 289 s ≈ 57 KB/s**，17 GB 需 ~80 小时，不可行。
+所以集群内 `zoo-images/` 是**唯一**归档副本，抗风险靠三件事，不靠“再拷一份到同一块盘”：
+
+1. `sha256` + manifest（本文件）—— 发现损坏
+2. `verify_archive.slurm` 的 load + smoke —— 证明可还原
+3. **推到自己命名的 Harbor 命名空间**（`docs/manual-push.md`）—— 真正脱离临时账号，**等 P0-6 的 Harbor 凭据**
+
+反向说明：权重（194 GB）**不归档**，ModelScope 可 24 MB/s 重下；镜像是上游账号的、随时可能消失，
+必须归档。
 
 ## 两个镜像
 
-| 文件名 | 源镜像 | digest | 压缩后 |
-| --- | --- | --- | --- |
-| `mimo-sglang-bw10000_1.1.1.tar.gz` | `dcu/linshp/base/mimo-sglang-bw10000:1.1.1` | `sha256:db981c466e74…` | 7.9 GB |
-| `vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | `dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0` | `sha256:0793026099b5…` | 8.7 GB |
+| 文件名 | 源镜像 | manifest digest | 压缩后 | tar sha256 |
+| --- | --- | --- | --- | --- |
+| `mimo-sglang-bw10000_1.1.1.tar.gz` | `dcu/linshp/base/mimo-sglang-bw10000:1.1.1` | `sha256:db981c46…` | 7.9 GB | `f16125ba6dcb3020aaef33b89d390508f99aad980d7436286f043ed68596d77a` |
+| `vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | `dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0` | `sha256:07930260…` | 8.7 GB | `986f95a3e5599f024797e41faa614f72cbd5a6c87e5e97f71c172f730269d45f` |
+
+（tar sha256 已于 2026-11-03 全量重算写入集群 `zoo-images/sha256-all.txt`；
+完整清单（含 assets/ 与还原命令）见集群 `zoo-images/MANIFEST.md`。）
 
 没有做任何修改：`load` 后的镜像名与上游完全相同（`dcu/linshp/base/...`），
 说明 tar 直接来自上游镜像，未经重新构建。

@@ -8,6 +8,11 @@
 > 参赛仓库：<https://developer.sourcefind.cn/codes/luql>（7 个 public）
 >
 > **本文件是活文档。每次会话结束前更新「§8 进度」与「§9 TODO」。**
+>
+> **第一原则：镜像与经验 > 比赛提交。** 比赛是一次性的，经验与可复现环境是下次的起点。
+> 因此每次会话收尾固定四件：① 新用过的镜像归档到 `~/zoo-images/` 并更新 MANIFEST；
+> ② 新踩的坑写进 `docs/gotchas.md`；③ 三件套（lint / gen_index / quota）；
+> ④ **推两个远端**（GitHub `origin` + GitLab `sourcefind`）。
 
 ---
 
@@ -194,9 +199,18 @@ git -c credential.helper='!f() { echo "password=$(cat ~/.sourcefind-token)"; }; 
 
 | 位置 | 内容 |
 | --- | --- |
-| **GitHub `lql341/scnet-dcu-model-zoo`** | ✅ **权威积累，6.7 MB，11 条目，lint 全过** |
-| **GitLab `luql/*`（7 个 public）** | 参赛单件快照 |
+| **GitHub `lql341/scnet-dcu-model-zoo`** | ✅ **权威积累**（知识库 + 条目 + 日志），6.7 MB |
+| **GitLab `luql/scnet-dcu-model-zoo`** | ✅ **同源镜像**（同一仓库推两个 remote，`sourcefind`），给比赛平台侧可读 |
+| GitLab `luql/*`（7 个 public 单件） | 参赛单件快照（早期按条目拆的） |
+| 集群 `~/zoo-images/` | ✅ **镜像归档**：2 个 tar.gz + `MANIFEST.md` + `assets/`（wheel 集、AuK 源码） |
 | ❌ `/public/home/luql` | 无法写入（SSH 被拒），等恢复后需搬 `~/zoo-images` |
+
+**推送命令（两个远端都要推）**：
+```bash
+cd ~/Downloads/pi-test/zoo
+git push -q origin main        # GitHub（权威）
+git push -q sourcefind main    # GitLab（镜像，token 在 ~/.sourcefind-token）
+```
 
 ---
 
@@ -370,7 +384,7 @@ python3 -m pip download --no-deps --dest wheels \
 | P0-3 | ~~确认 T03 图片尺寸 2048×2048 还是 1024×1024~~ | ✅ **已自行解决**：条件清单 `params.width/height` 写的就是 2048（以机器可读为准），无需等人 |
 | P0-4 | 确认 **T04 到底要不要 2% 基线门槛**（赛事详情 §五要求比基线；T03/T04 材料说"不进行统一评分"） | ASR/FA 的自算指标能否作为验收依据 |
 | P0-5 | 恢复 **`luql` 在郑州集群的 SSH 密钥** | 镜像归档与数据无法搬到永久账号 |
-| P0-6 | 拿 **Harbor 凭据**（个人中心→访问控制，找"镜像仓库"） | 7 个条目报告里写的是别人（`linshp`）的镜像，不合"镜像提交到镜像库"要求 |
+| P0-6 | 拿 **Harbor 凭据**（个人中心→访问控制，找"镜像仓库"） | ⬆️ **升为第一优先**：按新原则，镜像归档是核心资产；只有推到自己命名空间才能真正摆脱「上游删仓 + 临时账号回收」两个风险；顺带也解决了比赛对镜像归属的要求 |
 | P0-7 | 确认 **`scnethr2601a10` 是否赛事账号** | 若否，BW1000 全线作废（`luql` 进不了 `hx1hdnormal`） |
 | P0-8 | 补 `platform/` 截图（17 条清单见 `docs/platform-checklist.md`） | 7 个条目都空着 |
 
@@ -378,6 +392,8 @@ python3 -m pip download --no-deps --dest wheels \
 
 | # | 事项 | 预估 | 解法 |
 | --- | --- | --- | --- |
+| P1-0 | **知识库双远端同步**（本轮已建） | 每次 1 min | `git push origin main && git push sourcefind main`；GitLab 仓 `luql/scnet-dcu-model-zoo` 已建 |
+| P1-0b | **依赖归档**（本轮已做） | 新增一个就归档 | `~/zoo-images/assets/wheels-*-cp310.tar.gz` + `MANIFEST.md` |
 | P1-1 | **AuK 官方 120 条收尾** | 已花 ~1 卡时，余 5 卡时 | 作业 `1022507` 已带续跑（已有产物跳过）；跑完后回填 `反馈表.csv` / `eval_result.json` / README §5–7 |
 | P1-2 | **Qwen-Image 官方 180 条收尾** | 已花 ~1 卡时，余 1 卡时 | 作业 `1022166`；跑完后抽查 3 张尺寸 + 回填 §5–7 |
 | P1-3 | Recon2Reason / RoboBrain 的 **int8/int4** | 各 3–5 卡时 | 量化件单独计件；**但都要等 P0-1 的基线** |

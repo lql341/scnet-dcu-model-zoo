@@ -25,10 +25,28 @@
 ## 迁移现状
 
 - ✅ **有效产物已随本仓库进入 Git**（`models/*/logs/`、`models/*/bench/`）
-- ⬜ 权重与镜像 tar **未迁移**：均可重新获取（ModelScope 24 MB/s、Harbor 内网 pull），
-  且合计 141 GB，迁移成本高于重建成本
+- ✅ **镜像已归档**：`zoo-images/` 下 2 个 tar.gz + `MANIFEST.md` + sha256（见 `docs/image-archive.md`）
+- ✅ **依赖 wheel / 源码已归档**：`zoo-images/assets/`（cp310 轮子集 + AuK-src）
+- ⬜ 权重（194 GB）**不归档**：ModelScope 24 MB/s 可重下，备份无意义
 - ⬜ 若要整体归档到永久账号：需先恢复永久账号在该集群的 SSH 密钥
   （实测 `luql@zzeshell.scnet.cn` 报 `Permission denied (publickey)`）
+
+## 价值排序（本项目的第一原则）
+
+**镜像与经验 > 比赛提交。**
+
+比赛提交是一次性的；而“哪些参数能开、哪个版本能装、哪个坑会导致假数据”的经验，
+和“上游随时可能删掉的那个镜像”，是下次遇到同类国产卡时真正的起点。因此：
+
+| 资产 | 去哪 | 频次 |
+| --- | --- | --- |
+| 踩坑/配方/环境实测 | `docs/gotchas.md`、`docs/environment.md`、本文件 | 每次会话结束前 |
+| 启动脚本与 slurm 模板 | `models/*/container/`、`tools/` | 同上 |
+| 基准/评测原始日志 | `models/*/logs/`、`models/*/bench/` | 同上 |
+| **镜像 tar.gz + wheel 集** | 集群 `~/zoo-images/`（+ 待推自有 Harbor 命名空间） | 新镜像用一次就归档 |
+| 比赛反馈表/截图 | 各条目的 `official-eval/`、`platform/` | 有余力再补 |
+
+**不要为了刷分重复消耗卡时**；卡时优先买“新知识”（新模型/新框架/新踩坑）和“可复现性”（归档/还原验证）。
 
 ## 重建成本
 
