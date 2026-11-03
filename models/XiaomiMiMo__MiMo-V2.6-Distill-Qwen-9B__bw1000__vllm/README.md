@@ -352,6 +352,24 @@ python verify.py --selfcheck     # → selfcheck OK
 
 两件均在各自框架内做了参数扫描并取最优，SGLang 在 6 档全部领先，16K 档差距最大（5 倍）。差异来源可进一步分析（KV cache 布局、MoE 调度、线性注意力路径的实现差异），不属于本次适配范围。
 
+### 7.1 长上下文（16K）专项调查 —— 配置层面无解
+
+16K 档比同模型 SGLang 慢 5–7 倍，2026-11-03 做了三轮扫描（共 ~3 卡时），
+完整数据见 [`sweep/results-2026-11-03.md`](sweep/results-2026-11-03.md)：
+
+| 旋钮 | 16K/c1 | 16K/c8 | 判定 |
+| --- | --- | --- | --- |
+| base（mns 128 / mem 0.95） | 8.20 | 44.88 | 基准 |
+| `--max-num-batched-tokens` 8192 / 2048 | 8.21 / 8.20 | 48.83 / 44.91 | 无影响 |
+| `VLLM_ROCM_USE_AITER=1` | 8.20 | 44.92 | 无影响（内核仍不可用） |
+| `VLLM_ATTENTION_BACKEND=FLASH_ATTN` | 8.17 | 44.76 | 无影响 |
+| `--kv-cache-dtype fp8` | 7.60 | 34.43 | **负优化** |
+| `--tensor-parallel-size 2` | — | — | 启动失败（可见性/初始化问题） |
+
+根因线索：`Cannot use ROCm custom paged attention kernel, falling back to Triton implementation`，
+即 **DCU 上的 paged decode 只有 Triton 兜底实现**，TPOT 是 SGLang 的 5 倍。
+要真正补上需要自建镜像（重编 aiter / 试 v0 引擎 / 改用 SGLang），不在本条目范围内。
+
 ## 8. 注意事项
 
 > 主动说明的问题不扣分，评审复跑时才发现会打回。

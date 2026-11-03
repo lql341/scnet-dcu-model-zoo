@@ -260,3 +260,35 @@ img = pipe(prompt=it["prompt"],
 ```
 **顺带解决口径争议**：2048 vs 1024 的争论不用问人——清单里写的就是 2048，
 以清单为准，并把差异记进 README。
+
+## 21. vLLM 在 DCU 上的 16K decode 慢 5–7 倍，且**任何参数都改不动**
+
+**现象**：同模型（MiMo-9B）同卡，16K 档 vLLM 8.19 tok/s vs SGLang 41.47（c1）、
+44.83 vs 308.72（c8）。TPOT 从 4K 的 47.9 ms 涨到 119.3 ms（SGLang 约 24 ms）。
+
+**启动日志唯一的线索**：
+```
+WARNING [chunked_prefill_paged_decode.py:400] Cannot use ROCm custom paged attention kernel,
+        falling back to Triton implementation.
+```
+
+**逐条排除（三轮扫描，共 ~3 卡时，见
+`models/XiaomiMiMo__*__vllm/sweep/results-2026-11-03.md`）**：
+
+| 试过的旋钮 | 结果 |
+| --- | --- |
+| `--max-num-batched-tokens` 2048 / 8192 | 无变化（默认已开 chunked prefill） |
+| `VLLM_ROCM_USE_AITER=1` | 无变化，警告照旧 |
+| `VLLM_ATTENTION_BACKEND=FLASH_ATTN` | 无变化 |
+| `--kv-cache-dtype fp8` | **更差**（TPOT 119→127 ms） |
+| `--tensor-parallel-size 2` | 启动失败（见下条坑） |
+
+**结论**：这是**内核缺失**，不是配置问题。要补只能自建镜像（重编 aiter / 换 v0 引擎 / 改用 SGLang）。
+
+**两条附带的新坑**：
+
+1. **压测客户端不能放 vLLM 镜像**：`ModuleNotFoundError: No module named 'sglang'`。
+   服务用 vLLM 镜像、压测必须用 SGLang 镜像（双容器，见条目 `container/submit.slurm`）。
+2. **podman 不继承 Slurm 的 `HIP_VISIBLE_DEVICES`**：多卡 vLLM 报
+   `local_world_size (2) must be less than or equal to the number of visible devices (1)`。
+   必须显式 `-e HIP_VISIBLE_DEVICES="$HIP_VISIBLE_DEVICES"`（**既不要 unset，也不要指望自动继承**）。

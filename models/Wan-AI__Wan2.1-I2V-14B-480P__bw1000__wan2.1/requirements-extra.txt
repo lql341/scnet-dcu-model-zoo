@@ -1,0 +1,6 @@
+# 不安装 Wan2.1 的 pinned 依赖（会破坏镜像 DCU 版 torch）。
+# 实际做法：--no-deps 隔离安装到 /opt/wan-libs + PYTHONPATH 前置
+#   easydict / ftfy / imageio / imageio-ffmpeg / regex      （cp310 轮子）
+#   diffusers 0.41.0 + huggingface_hub 1.33.0               （复用 Qwen-Image 条目那套，见 env.sh WHEELS_QI_HOST）
+# 刻意不装：flash_attn（DCU 无可用构建）、dashscope（prompt 扩写属可选功能，评测不用）
+# 镜像自带且必须用其 DCU 版：torch 2.9.0+das / torchvision / transformers 5.3.0

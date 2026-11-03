@@ -58,6 +58,7 @@ python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
 | [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 官方 300/300 条完成 | — | — |
 | [Qwen3-ForcedAligner-0.6B](models/Qwen__Qwen3-ForcedAligner-0.6B__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 30/30 条完成 | — | — |
 | [AuK](models/Tencent-Hunyuan__AuK__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 120/120 条完成 | — | — |
+| [Wan2.1-I2V-14B-480P](models/Wan-AI__Wan2.1-I2V-14B-480P__bw1000__wan2.1/) | BW1000 ×8 | wan2.1 | bf16 | ✅ 跑通（官方不要求性能对比） | — | — |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |
 | [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | BW1000 ×4 | sglang | bf16 | ✅ 6 档基准 | 839.00 | 119.21 |
