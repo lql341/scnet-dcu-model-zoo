@@ -61,54 +61,68 @@ sbatch container/submit.slurm                             # 全量 180 条
 
 ## 5. Smoke 测试
 
-⚠️ **待填**（等探针作业完成）。`PROBE_ONLY=3` 会先跑 3 条并输出尺寸与耗时。
+`PROBE_ONLY=6`（前 6 条真实条件，非自造 prompt）：**6/6 成功，0 失败**，产物 2048×2048 PNG。
+
+| 指标 | 实测 |
+| --- | --- |
+| 单图耗时 | **~20.7 s**（124 s / 6 张，含 8 步去噪 + VAE 解码 + PNG 落盘） |
+| 尺寸 | 2048×2048（与 `conditions/qwen_image.jsonl` 的 `params` 一致） |
+| 显存 | 单卡 64 GB 足够，无需 offload |
 
 ## 6. 精度测评（官方条件）
 
-⚠️ **待填**。官方条件：`formal/conditions/qwen_image.jsonl`，60 输入 × 3 seed（42/2026/1234）= **180 条**，
-输出**固定 2048×2048**，产物按 `<id>.png` 命名。
+官方条件：`conditions/qwen_image.jsonl`，60 输入 × 3 seed（42/2026/1234）= **180 条**，
+输出固定 2048×2048，产物 `<id>.png`。**官方不进行统一评分和性能比较**，故不计算 CLIP score / FID。
 
-**官方不进行统一评分和性能比较**，因此本条目不计算 CLIP score / FID。
+所有生成参数**直接取自条件清单**（2026-11-03 修正）：
 
-### ⚠️ 一个需要官方确认的口径冲突
+```json
+{"width": 2048, "height": 2048, "num_inference_steps": 8,
+ "guidance_scale": 1.0, "schedule": "checkpoint", "use_kv_cache": true, "dtype": "bf16"}
+```
+
+此前 `evaluate_official.py` 写死 `use_kv_cache=True` 却不传 `num_inference_steps`，
+实际按 pipeline 默认 **40 步**跑，与官方条件不符（8 步）。现已逐条读取，见 `docs/gotchas.md` #20。
+
+180 条 × ~20.7 s ≈ **1 h/卡**。
+
+### 关于 2048 vs 1024 的口径
 
 | 来源 | 原文 | 适用 |
 | --- | --- | --- |
-| 赛事详情 §三 T03 | 「采用 **1024×1024** 的图片输出作为文生图的**性能测试**标准」 | 性能测试 |
-| 本次 T03 材料 | 「**输出尺寸固定为 2048×2048**，输出图像」 | 质量测试的固定条件 |
+| 赛事详情 §三 T03 | 「采用 **1024×1024** 作为文生图**性能测试**标准」 | 性能测试 |
+| 本次 T03 材料（含条件清单 `params`） | 「输出尺寸固定为 **2048×2048**」 | 质量测试的固定条件 |
 
-两者一个说性能、一个说质量，可能并不矛盾。**本条目按材料要求用 2048×2048**，
-若官方另有口径需调整尺寸并重跑。
+**本条目按材料 + 条件清单执行 2048×2048**（机器可读的是 2048，以它为准）。
 
 ## 7. 性能参考
 
 官方 T03 明确「不进行统一评分和性能比较」→ `meta.bench = not-required`。
-单张 2048×2048 的生成耗时待测（Turbo 版为 8 步 + KV cache）。
+实测单图 **~20.7 s**（2048×2048、8 步、KV cache、单卡 bf16），即约 **0.048 张/s**。
 
 ## 8. 注意事项
 
-- **transformers 版本要求不可满足**：官方要 `>=5.17.0`，PyPI 最高 5.9.0。用 5.3.0（镜像自带）实测，
-  若出现 API 不兼容需记录。
+- **transformers 版本要求不可满足**：官方要 `>=5.17.0`，PyPI 最高 5.9.0。镜像自带 5.3.0 实测可用。
 - **必须 `--no-deps` 隔离安装 diffusers**：否则会连带升级 transformers/torch，破坏 DCU 适配。
-- **2048 vs 1024 口径待确认**（见 §6）。
-- **`sigmas` 参数**：Turbo 版内置日程，只改 `num_inference_steps` 无效。
-- **显存**：32.5 GB 权重 + 2048×2048 的 latent，单卡 64 GB 需实测是否够；
-  不够则需 `enable_model_cpu_offload()` 或降分辨率（后者会偏离官方条件，须记入 `parameter_changes`）。
+  但 `--no-deps` **不校验 `Requires-Dist`**，必须自己按元数据对齐版本（见 §9）。
+- **`sigmas` 参数**：Turbo 版内置日程，8 步由条件清单给定，勿自行改。
+- **显存**：32.5 GB 权重 + 2048×2048 latent，单卡 64 GB 实测够用。
 
-## 9. 阻塞实况（2026-11-03 实测，已停止推进）
+## 9. 阻塞实况 → 已定位并解除（2026-11-03）
 
 | 阶段 | 结果 |
 | --- | --- |
 | 权重下载 | ✅ 31 GB |
-| `QwenImage21Pipeline` 存在性 | ✅ diffusers 0.42.1 与 0.41.0 都内置 |
-| diffusers 0.42.1（最新） | ❌ 要求 **Python ≥ 3.11**，容器是 3.10 |
-| diffusers 0.41.0（支持 3.10） | ❌ 需要 `huggingface_hub.resolve_revision` 与 `RevisionResolutionError` |
+| `QwenImage21Pipeline` | ✅ diffusers 0.41.0 已内置 |
+| diffusers 0.42.1 | ❌ 仅支持 Python ≥ 3.11（容器 3.10），且 PyPI 上不可解析 |
+| diffusers 0.41.0 + hub 0.36.2 | ❌ `ImportError: cannot import name 'resolve_revision'` |
+| **diffusers 0.41.0 + hub 1.33.0** | ✅ 导入通过，`QwenImage21Pipeline OK`，6/6 出图 |
 
-**关键证据**：`resolve_revision` 在实测的 **6 个 hub 版本里都不存在**
-（0.24.7 / 0.26.2 / 0.30.0 / 0.33.0 / 0.36.2 / 1.11.0），属上游"未来版本 API"。
-我写了 `hub_shim.py` 补 `resolve_revision`，仍缺 `RevisionResolutionError`，说明缺的是一整组 API。
+**真实根因**：diffusers 0.41.0 的元数据是 `huggingface-hub>=1.32.0,<2.0`，
+而条目用 `pip install --no-deps` 装的是 **hub 0.36.2**（不会报冲突），于是导入即缺符号。
+之前「hub 无 `resolve_revision`，属上游未来版本 API」的结论是**错的**：
+`resolve_revision` 与 `RevisionResolutionError` 在 hub **1.32.0 / 1.33.0** 里都有（已逐个轮子核对）。
+`hub_shim.py` 已删除。
 
-**因此本条目未产出任何图像。** 可行路径（未执行）：
-- 补全 shim（需逐个试出 diffusers 用到的全部缺失符号）
-- 或换 Python 3.11 基础镜像（需确认有 DCU 版 torch 3.11 wheel）
-- 或用官方仓库自带的推理脚本（若有，可绕开 diffusers 版本要求）
+另修一个低级 bug：`container/submit.slurm` 没有把 `MODEL_PATH` 传进容器，
+`evaluate_official.py` 里 `os.environ["MODEL_PATH"]` 直接 `KeyError`（此前被导入失败掩盖）。

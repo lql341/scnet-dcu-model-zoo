@@ -22,7 +22,10 @@ export PORT=30000
 
 export TASK="tts"
 export LOAD_TIMEOUT=1800
-export WHEELS_HOST="/public/home/scnethr2601a10/wheels/auk"
-# torchcodec 是 cp310 二进制包，单独目录挂载；torchaudio 2.9 的 load() 依赖它
-export WHEELS_BIN_HOST="/public/home/scnethr2601a10/wheels/auk-bin"
+export WHEELS_HOST="/public/home/scnethr2601a10/wheels/auk-fix"
+# 【2026-11-03】原 auk-bin/ 里放的是 cp312 轮子，而镜像是 py3.10，pip 直接拒装 →
+# 120 条全失败在 `ModuleNotFoundError: No module named 'librosa'`。
+# 现改为按 --python-version 310 --platform manylinux2014_x86_64 重新下载的 cp310 轮子，
+# 单一目录（纯 Python + 二进制混放），不再需要 torchcodec（torchaudio.load 已被 soundfile 替掉）。
+export WHEELS_BIN_HOST="/public/home/scnethr2601a10/wheels/auk-fix"
 export AUK_SRC_HOST="/public/home/scnethr2601a10/AuK-src"

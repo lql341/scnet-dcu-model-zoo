@@ -79,7 +79,11 @@ def main():
            '| 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |',
            '| --- | --- | --- | --- | --- | --- | --- | --- |']
     for e in ents:
-        if e['bench'] == 'yes':
+        # 注意顺序：blocked 必须最先判，否则 T03/T04 的 blocked 条目会因 bench=not-required
+        # 被渲染成「✅ 跑通」，等于在总矩阵里谎称跑通。
+        if e.get('status') == 'blocked':
+            st = 'blocked'
+        elif e['bench'] == 'yes':
             st = '✅ 6 档基准'
         elif e.get('official_eval'):
             oe = e['official_eval']

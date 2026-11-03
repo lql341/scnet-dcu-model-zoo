@@ -1,6 +1,9 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> 最后更新：2026-11-03　余额 **4344.03**（起始 4405.96，累计用约 **62 卡时**）
+> 最后更新：2026-11-03（夜）　余额 **4344.02**（起始 4405.96）
+> 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
+> 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
+> 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
 > 权威积累库：<https://github.com/lql341/scnet-dcu-model-zoo>
 > 参赛仓库：<https://developer.sourcefind.cn/codes/luql>（7 个 public）
 >
@@ -11,7 +14,10 @@
 ## 1. 一句话现状
 
 在 **BW1000（海光 DCU）** 上跑通 8 个「模型 × 框架」组合，其中 **3 个有完整 6 档性能基准**、
-**2 个完成官方条件评测（ASR 300/300、ForcedAligner 30/30）**，另有 **4 个 blocked 案例**（附完整证据）。
+**2 个完成官方条件评测（ASR 300/300、ForcedAligner 30/30）**。
+本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因全部重定位并修掉，正在跑官方全量条件：
+- AuK：真正卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec；已出音频，单条 150 s
+- Qwen-Image：真正卡点 = 装给 diffusers 的 hub 版本低于其元数据要求（0.36.2 < 1.32）；已 6/6 出 2048×2048
 **没有任何精度数据能对齐官方基线 —— 因为 T01/T02 的 `baselines/` 从未下发。**
 
 ---
@@ -287,6 +293,19 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 | vLLM | `--gpu-memory-utilization 0.95` | 0.85 报 `No available memory for cache blocks` |
 | 压测前 | `MAX_LEN ≥ 20480` | 17408 会让 16K 档全 400，且客户端把 400 当成功 → **假数据** |
 
+### 6.4 离线 wheel（容器无公网时唯一可靠姿势）
+
+```bash
+# 关键：必须显式指定目标解释器，否则拿到的是本机（py3.12）的 cp312 轮子
+python3 -m pip download --no-deps --dest wheels \
+  --only-binary=:all: --platform manylinux2014_x86_64 \
+  --python-version 310 --implementation cp --abi cp310 \
+  <包名...>
+```
+
+容器内装完**必须打印每个包的版本并断言可导入**，装不全就退出——不要让 5 小时的评测
+跑在一堆隐形缺失上。`--no-deps` 不是“没依赖”，只是“不装依赖”，`Requires-Dist` 没人替你查。
+
 ---
 
 ## 7. 已有条目的关键数据（引用时以此为准）
@@ -313,6 +332,12 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 | --- | --- | --- |
 | Qwen3-ASR-1.7B | **300/300** | AISHELL-1(zh,100) CER **1.21%** / LibriSpeech(en,200) CER **0.65%** WER **2.86%** |
 | Qwen3-ForcedAligner-0.6B | **30/30** | 词级时间戳，预测 572 词 = 参考 572 词；`BOUNDARIES_PENDING` **官方不评分** |
+| Qwen-Image-2.1-Turbo | 🟡 探针 6/6 → 全量 180 条进行中 | 2048×2048、8 步 + KV cache，单图 **~20.7 s**（≈1 h/卡跑完 180 条） |
+| AuK | 🟡 探针已出音频 → 全量 120 条进行中 | 6.08 s @ 24 kHz 单声道，单条 **~150 s**（≈5 h/卡跑完 120 条） |
+
+**Kimi CUDA Graph 回退的稳定性已闭环**（原 P1-4）：同配置 round1 vs round2 六档差异
++2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2%，即 16K/c64 的 −6.3% 是**配置级回退**而非抖动，
+结论稳定可用。
 
 ---
 
@@ -329,8 +354,8 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 | RoboBrain2.5-8B × SGLang | 🟡 `smoke` | ✅ | 同上 |
 | Trident-2B × SGLang | ❌ `blocked` | — | 框架不支持 `Qwen3VLForEmbedding` |
 | Trident-2B × vLLM | ❌ `blocked` | — | 同上 |
-| AuK × transformers | ❌ `blocked` | — | **已到最后一环**：音频解码（torchcodec ABI / librosa 装不进） |
-| Qwen-Image-2.1-Turbo × diffusers | ❌ `blocked` | — | diffusers 需未来版本 hub API（`resolve_revision` 等） |
+| AuK × transformers | 🟡 `official-eval` 进行中 | — | 根因已修正（wheel tag + torchaudio.save）；单条 150 s，全量 ≈5 h |
+| Qwen-Image-2.1-Turbo × diffusers | 🟡 `official-eval` 进行中 | — | 根因已修正（hub 1.33.0）；探针 6/6，单图 20.7 s，全量 ≈1 h |
 
 ---
 
@@ -342,7 +367,7 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 | --- | --- | --- |
 | P0-1 | 群里要 **T01/T02 的 `baselines/<模型>.json`** 与**官方 GPU 性能基线** | 3 个有 6 档基准的条目 §6 全为 `[BLOCKED]`；所有吞吐数字无官方对照 |
 | P0-2 | 群里要 **T02 评测器**（OCRBench / MMMU）与 `data/` 子集 | Recon2Reason、RoboBrain 停在 smoke |
-| P0-3 | 确认 **T03 图片尺寸 2048×2048 还是 1024×1024**（赛事详情说性能测试用 1024，本次材料说固定 2048） | Qwen-Image 产物尺寸，填错白跑 |
+| P0-3 | ~~确认 T03 图片尺寸 2048×2048 还是 1024×1024~~ | ✅ **已自行解决**：条件清单 `params.width/height` 写的就是 2048（以机器可读为准），无需等人 |
 | P0-4 | 确认 **T04 到底要不要 2% 基线门槛**（赛事详情 §五要求比基线；T03/T04 材料说"不进行统一评分"） | ASR/FA 的自算指标能否作为验收依据 |
 | P0-5 | 恢复 **`luql` 在郑州集群的 SSH 密钥** | 镜像归档与数据无法搬到永久账号 |
 | P0-6 | 拿 **Harbor 凭据**（个人中心→访问控制，找"镜像仓库"） | 7 个条目报告里写的是别人（`linshp`）的镜像，不合"镜像提交到镜像库"要求 |
@@ -353,10 +378,12 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 
 | # | 事项 | 预估 | 解法 |
 | --- | --- | --- | --- |
-| P1-1 | **AuK 最后一次尝试** | 0.5 卡时 | 用独立 venv 替代 `pip --target`（避免"已存在包冲突"），装全 librosa 链 |
-| P1-2 | **Qwen-Image** | 2–4 卡时 | 换 Python 3.11 基础镜像（需先确认有 DCU 版 torch 3.11 wheel），或补全 hub shim |
+| P1-1 | **AuK 官方 120 条收尾** | 已花 ~1 卡时，余 5 卡时 | 作业 `1022507` 已带续跑（已有产物跳过）；跑完后回填 `反馈表.csv` / `eval_result.json` / README §5–7 |
+| P1-2 | **Qwen-Image 官方 180 条收尾** | 已花 ~1 卡时，余 1 卡时 | 作业 `1022166`；跑完后抽查 3 张尺寸 + 回填 §5–7 |
 | P1-3 | Recon2Reason / RoboBrain 的 **int8/int4** | 各 3–5 卡时 | 量化件单独计件；**但都要等 P0-1 的基线** |
-| P1-4 | Kimi 的 CUDA Graph 二次确认 | 1.5 卡时 | 复现 16K/c64 回退 6.3%，确认是否稳定 |
+| P1-4 | ~~Kimi CUDA Graph 二次确认~~ | ✅ 已完成 | round1/round2 六档差异 ≤2.6%，−6.3% 是配置级回退，结论稳定 |
+| P1-5 | **把 cp310 轮子规则固化成工具** | 0.5 h | `tools/fetch_wheels.sh`：统一 `--python-version 310 --abi cp310`，防再犯 gotchas #18 |
+| P1-6 | **两轮审自己的结论** | 0.5 h | 本轮教训：两个「blocked」都是工程错，`blocked` 以后必须附「已核对 `requires_dist` / wheel tag」证据 |
 
 ### 🟢 P2 —— 材料已备但需 8 卡 / 大空间
 
@@ -380,15 +407,22 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 
 ```
 读 ~/Downloads/pi-test/zoo/HANDOFF.md 和 docs/gotchas.md，然后按 §9 的 TODO 继续。
-当前余额 4344.03，集群唯一可用 SSH 是 zzeshell-hz1（用户 scnethr2601a10），
+当前余额 4344.02，集群唯一可用 SSH 是 zzeshell-hz1（用户 scnethr2601a10），
 分区只能用 hx1hdnormal。每次改动后跑 lint_entry.sh + gen_index.py + check_quota.sh。
 跑不通的配置要标 blocked 并留证据，不要删。
 ```
 
-### 三条最容易犯的错（我自己犯过的）
+### 四条最容易犯的错（我自己犯过的）
 
 1. **不要把复杂 shell 塞进 `podman run -c "..."`** —— `$` 会被外层展开。把容器内逻辑写成独立
    `container/inner.sh` 并挂载，用 `/inner.sh` 执行。
 2. **不要相信"看起来跑通了"的压测数字** —— 客户端会把 HTTP 400 当成功，产出
    `TTFT=0` / 吞吐 9791 tok/s 的假数据。必须过 `preflight_lib.py` + 有效性校验。
 3. **不要手写 README 里的数字表** —— 从 `bench/summary.md` 程序化回填，否则 lint 会抓你。
+4. **判 `blocked` 前先怀疑自己，不是怀疑国产卡** —— 本轮两个「blocked」全是工程错：
+   离线 wheel 标签下错（cp312 给 py3.10）、`--no-deps` 不校验 `Requires-Dist`（hub 0.36.2
+   装给要求 ≥1.32 的 diffusers）。判据：日志里出现「装不上 / 缺符号 / 版本不存在」时，
+   先 `pip download --python-version 310 --abi cp310` 重下、先读包的 `requires_dist`，
+   再下结论。详见 gotchas #18–#20。
+5. **产物要落盘、作业要能续跑** —— 单条 150 s 的评测跑不完一趟 1 h 作业；
+   `evaluate_official.py` 一律支持「产物已存在则跳过」，否则每次重跑都从零烧卡时。

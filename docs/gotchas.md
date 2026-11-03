@@ -194,3 +194,69 @@ pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
 
 **反面参照**：`Qwen3-ASR-1.7B` 的 `Qwen3ASRForConditionalGeneration` 在 vLLM 0.20 里是支持的，
 说明"非 CausalLM 架构"本身不是障碍，**关键是特定架构有没有被框架注册**。
+
+## 18. 离线 wheel 是按 `cp312` 下的，容器却是 py3.10（最贵的一次误判）
+
+**现象**：AuK 条目 120 条官方条件全部失败，`反馈表.csv` 里全是
+`ModuleNotFoundError: No module named 'librosa'`；同一目录里 6 个 `[warn] fail:` 全是
+`*-cp312-*.whl`。日志上游还写着「librosa 装不进 / 与已存在包冲突」，于是被误判成
+「DCU 上 librosa 不可用」，白白多轮了 7 次作业。
+
+**根因**：在**本机（py3.12）**上 `pip download librosa` 拿到的是 `cp312` 轮子，
+上传到镜像（py3.10）后 pip 直接判定 tag 不兼容而拒装；`--no-deps --target` 又会让
+`pip install` 一律静默不装任何依赖，两者叠加使「装不上」看起来没有原因。
+`librosa-1.0.0-py3-none-any.whl` 本身也失败，因为它要求 `numpy>=2.1` 且依赖 numba 链，
+而那批 numba/scipy/soxr 全是 cp312。
+
+**解法**：下载时显式指定目标解释器，绝不依赖本机默认：
+```bash
+python3 -m pip download --no-deps --dest wheels \
+  --only-binary=:all: --platform manylinux2014_x86_64 \
+  --python-version 310 --implementation cp --abi cp310 \
+  librosa numba llvmlite scipy soundfile soxr msgpack scikit-learn joblib pooch lazy_loader audioread
+```
+并把 `import librosa/scipy/numba/soundfile/soxr` 的版本打印写进 `inner.sh`，装不全就直接退出，
+别让 5 小时的评测跑在一堆隐形缺失上。
+
+**同类陷阱**：`pip install --no-deps` 会**完全不检查 `Requires-Dist`**。Qwen-Image 条目因此把
+`huggingface_hub==0.36.2` 装给了要求 `hub>=1.32.0` 的 diffusers 0.41.0，报
+`ImportError: cannot import name 'resolve_revision'`，被误当成「上游未来版本 API」。
+判断「版本不存在」之前，先读被装包的 `requires_dist`。
+
+## 19. `torchaudio.save()` 同样要走 torchcodec
+
+**现象**：AuK 在 `eng.generate()` 之后写盘时抛
+`RuntimeError: Could not load libtorchcodec. Likely causes:`，日志里只显示 120 条全失败，
+看不出是「生成了但没存下来」。
+
+**根因**：torchaudio 2.9 的 I/O **双向**都走 torchcodec（0.8 起 `load` 与 `save` 均如此），
+DCU 版 torch 加载不了绑定 stock-torch ABI 的 `libtorchcodec*.so`。
+
+**解法**：读用 `soundfile.read`，写用 `soundfile.write`，两边都别碰 `torchaudio`：
+```python
+_sf.write(out, arr.squeeze(), int(sr), subtype="PCM_16")   # arr: float32 numpy, (N,)
+```
+**判据提示**：如果 120 条里每条都耗时数秒而不是几十毫秒，说明推理**已经跑通**，
+失败点在写盘/后处理，别再去调模型。
+
+## 20. 官方条件清单里的 `params` 必须逐条读取，别信 pipeline 默认值
+
+**现象**：Qwen-Image 条目「跑通」了 6 条探针，尺寸也对（2048×2048），但实际是 **40 步**——
+官方条件是 **8 步**（Turbo + KV cache）。若不核对，180 条产物会全部偏离官方条件，
+而且耗时多 5 倍，白烧卡时。
+
+**根因**：`evaluate_official.py` 把 `use_kv_cache=True` 写死，只从环境变量取 `WIDTH/HEIGHT`，
+从未读 `conditions/*.jsonl` 里的 `num_inference_steps` / `guidance_scale` / `schedule`。
+
+**解法**：条件清单是机器可读的**唯一权威**，逐条覆盖：
+```python
+pp = it.get("params") or {}
+img = pipe(prompt=it["prompt"],
+           width=int(pp.get("width") or 2048), height=int(pp.get("height") or 2048),
+           num_inference_steps=int(pp.get("num_inference_steps") or 8),
+           true_cfg_scale=float(pp.get("guidance_scale") or 1.0),
+           use_kv_cache=bool(pp.get("use_kv_cache", True)),
+           generator=g).images[0]
+```
+**顺带解决口径争议**：2048 vs 1024 的争论不用问人——清单里写的就是 2048，
+以清单为准，并把差异记进 README。

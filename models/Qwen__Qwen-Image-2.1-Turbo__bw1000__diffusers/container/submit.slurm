@@ -31,7 +31,7 @@ $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypo
   -v /opt/hyhal:/opt/hyhal:ro -v "$HOST_MODEL_PATH":$MODEL_PATH:ro \
   -v "$WORK":/work -v "$WHEELS_HOST":/wheels:ro \
   -v "$REPO/container/inner.sh":/inner.sh:ro \
-  -e PROBE_ONLY="${PROBE_ONLY:-0}" \
+  -e PROBE_ONLY="${PROBE_ONLY:-0}" -e MODEL_PATH="$MODEL_PATH" \
   "$IMAGE" /inner.sh 2>&1 | grep -viE "subuid|rootless|Network file|level=warning"
 echo "[host] outputs: $(ls "$WORK/repo/outputs" 2>/dev/null | wc -l) 个"
 echo "[host] DONE $(date +%T)"

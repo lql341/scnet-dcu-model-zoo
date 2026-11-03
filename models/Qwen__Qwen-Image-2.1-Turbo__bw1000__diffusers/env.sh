@@ -17,5 +17,5 @@ export PORT=0
 export WIDTH=2048
 export HEIGHT=2048
 export NFE=8                 # Turbo 版内置 8 步日程；只设 num_inference_steps 不会覆盖，需传 sigmas
-export WHEELS_HOST="/public/home/scnethr2601a10/wheels/qi"
+export WHEELS_HOST="/public/home/scnethr2601a10/wheels/qi2"
 export LOAD_TIMEOUT=1800

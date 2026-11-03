@@ -18,12 +18,20 @@ done
 echo "已装 $n_ok 个，失败 $n_fail 个"
 
 export PYTHONPATH=/opt/auk-libs:/auk-src/src:${PYTHONPATH:-}
-echo '--- 装二进制包 torchcodec（torchaudio 2.9 解码依赖）---'
-for w in /wheels-bin/*.whl; do
-  [ -e "$w" ] || continue
-  pip install -q --no-deps --target /opt/auk-libs "$w" 2>/dev/null && echo "  ok: $(basename "$w")" || echo "  [warn] fail: $(basename "$w")"
-done
-python3 -c "import torchcodec; print('torchcodec', torchcodec.__version__)" 2>&1 | tail -3
+echo '--- 依赖可用性校验（cp310 轮子）---'
+python3 - <<'PY'
+import importlib, sys
+ok = True
+for m in ("numpy", "scipy", "numba", "llvmlite", "soundfile", "soxr", "librosa", "joblib", "sklearn"):
+    try:
+        mod = importlib.import_module(m)
+        print(f"  {m:<10} {getattr(mod, '__version__', '?')}")
+    except Exception as e:
+        ok = False
+        print(f"  {m:<10} FAIL {type(e).__name__}: {e}")
+sys.exit(0 if ok else 3)
+PY
+[ $? -eq 3 ] && { echo '[inner] 依赖不全，后续评测无意义，提前退出'; exit 3; }
 
 echo '--- 导入测试 ---'
 python3 -c 'import auk; print("auk import OK")' 2>&1 | tail -5

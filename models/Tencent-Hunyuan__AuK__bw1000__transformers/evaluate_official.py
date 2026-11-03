@@ -69,6 +69,15 @@ def main():
 
     res, t1 = [], time.time()
     for n, it in enumerate(items, 1):
+        out_expect = os.path.join(outdir, it["id"] + ".wav")
+        # 【2026-11-03】单条要 ~150 s（nfe=32、6 s 音频），120 条 ≈ 5 h，一趟作业跑不完。
+        # 已存在的产物直接计为成功，改作业墙钟后可直接续跑，不重算。
+        if os.path.exists(out_expect) and os.path.getsize(out_expect) > 1024:
+            res.append({"id": it["id"], "status": "成功", "path": out_expect,
+                        "sr": 24000, "dur": None, "resumed": True})
+            if n % 5 == 0 or n == len(items):
+                print(f"[auk] {n}/{len(items)}  resume")
+            continue
         try:
             # 官方要求的输入映射：参考音 + ref_text + 目标 text + instructions
             instruction = it.get("instructions") or ""
@@ -90,8 +99,14 @@ def main():
                 seed=int(it.get("seed") or 42),
             )
             out = os.path.join(outdir, it["id"] + ".wav")
-            import torchaudio
-            torchaudio.save(out, wav.unsqueeze(0) if wav.dim() == 1 else wav, sr)
+            # 【2026-11-03】torchaudio.save 走 torchcodec 编码器，DCU 版 torch 加载不了
+            # libtorchcodec（报 RuntimeError: Could not load libtorchcodec），
+            # 与 torchaudio.load 同一个问题。写盘改用 soundfile，全程不碰 torchcodec。
+            import soundfile as _sfw
+            _arr = wav.detach().float().cpu().numpy() if hasattr(wav, "detach") else _np.asarray(wav)
+            if _arr.ndim > 1:
+                _arr = _arr.squeeze()
+            _sfw.write(out, _arr, int(sr), subtype="PCM_16")
             res.append({"id": it["id"], "status": "成功", "path": out,
                         "sr": sr, "dur": round(wav.shape[-1] / sr, 2)})
         except Exception as e:

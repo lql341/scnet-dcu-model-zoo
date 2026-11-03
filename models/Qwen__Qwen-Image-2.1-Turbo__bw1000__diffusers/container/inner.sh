@@ -8,25 +8,24 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 echo '--- 镜像内版本 ---'
 python3 -c 'import torch, transformers; print("torch", torch.__version__, "| transformers", transformers.__version__)'
 
-echo '--- 隔离安装 diffusers 0.41.0 + hub 0.36.2 ---'
+echo '--- 隔离安装 diffusers 0.41.0 + huggingface_hub 1.33.0 ---'
+# 【2026-11-03 修正】diffusers 0.41.0 的元数据要求 huggingface-hub>=1.32.0,<2.0。
+# 之前装的是 hub 0.36.2（且 --no-deps 不会报冲突），于是 diffusers 一导入就缺
+# `resolve_revision` / `RevisionResolutionError`。上游并没有“未来版本 API”——
+# hub 1.32.0 / 1.33.0 同时导出这两个符号（已逐个轮子验证），装上即可，不再需要 shim。
 pip install -q --no-deps --target /opt/qi-libs /wheels/diffusers-0.41.0-py3-none-any.whl 2>&1 | tail -2
-pip install -q --no-deps --target /opt/qi-libs /wheels/huggingface_hub-0.36.2-py3-none-any.whl 2>&1 | tail -2
-
-# diffusers 0.41.0 使用 `from huggingface_hub import resolve_revision`，
-# 而实测 hub 0.24.7/0.26.2/0.30.0/0.33.0/0.36.2/1.11.0 均无该符号（上游“未来版本 API”）。
-# 本项目只用本地权重，revision 无需解析，故以原样返回等价实现。
-cat > /opt/qi-libs/hub_shim.py <<'SHIM'
-import huggingface_hub as _hub
-
-if not hasattr(_hub, "resolve_revision"):
-    def resolve_revision(repo_id=None, revision=None, **kwargs):
-        return revision
-    _hub.resolve_revision = resolve_revision
-SHIM
+pip install -q --no-deps --target /opt/qi-libs /wheels/huggingface_hub-1.33.0-py3-none-any.whl 2>&1 | tail -2
 
 export PYTHONPATH=/opt/qi-libs:${PYTHONPATH:-}
-python3 -c 'import hub_shim, diffusers; print("diffusers", diffusers.__version__)'
-python3 -c 'from diffusers import QwenImage21Pipeline; print("QwenImage21Pipeline OK")' 2>&1 | tail -6
+python3 - <<'PY'
+import huggingface_hub as hub
+print('hub', hub.__version__, '| resolve_revision', hasattr(hub, 'resolve_revision'))
+from huggingface_hub.errors import RevisionResolutionError  # noqa: F401
+import diffusers
+print('diffusers', diffusers.__version__)
+from diffusers import QwenImage21Pipeline
+print('QwenImage21Pipeline OK')
+PY
 
 echo '--- 官方条件评测 ---'
 cd /work/repo

@@ -38,13 +38,21 @@ def main():
     pipe = pipe.to("cuda")
     print(f"[qi] pipeline 加载 {time.time()-t0:.1f}s", flush=True)
 
-    W = int(os.environ.get("WIDTH", 2048)); H = int(os.environ.get("HEIGHT", 2048))
+    W0 = int(os.environ.get("WIDTH", 2048)); H0 = int(os.environ.get("HEIGHT", 2048))
     res, t1 = [], time.time()
     for n, it in enumerate(items, 1):
         try:
             g = torch.Generator("cpu").manual_seed(int(it["seed"]))
-            img = pipe(prompt=it["prompt"], width=W, height=H, use_kv_cache=True,
-                       generator=g).images[0]
+            # 【2026-11-03】直接取条件清单里的 params（官方给的就是 width/height=2048、
+            # num_inference_steps=8、use_kv_cache=true）。之前写死 use_kv_cache=True 且
+            # 未传 num_inference_steps，实际按 pipeline 默认 40 步跑，与官方条件不符。
+            pp = it.get("params") or {}
+            W = int(pp.get("width") or W0); H = int(pp.get("height") or H0)
+            steps = int(pp.get("num_inference_steps") or 8)
+            kv = bool(pp.get("use_kv_cache", True))
+            cfg = float(pp.get("guidance_scale") or 1.0)
+            img = pipe(prompt=it["prompt"], width=W, height=H, num_inference_steps=steps,
+                       true_cfg_scale=cfg, use_kv_cache=kv, generator=g).images[0]
             p = os.path.join(outdir, f"{it['id']}.png")
             img.save(p, format="PNG")
             res.append({"id": it["id"], "status": "成功", "path": p,

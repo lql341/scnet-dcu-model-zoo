@@ -4,7 +4,8 @@
 #SBATCH -N 1
 #SBATCH --gres=dcu:1
 #SBATCH -c 16
-#SBATCH -t 01:00:00
+# 120 条 × ~150 s ≈ 5 h（单卡 nfe=32）；evaluate_official.py 支持产物续跑
+#SBATCH -t 07:00:00
 #SBATCH -J auk-probe
 set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"

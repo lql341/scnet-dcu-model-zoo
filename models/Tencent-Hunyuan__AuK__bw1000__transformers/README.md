@@ -109,27 +109,23 @@ torch 版本、`auk` 导入结果、`infer_cli` 导入结果。
 - **权重 FP32 存储**（6.8 GB），加载时转 BF16。
 - **MLLM 编码器需单独下载** `Qwen/Qwen2.5-Omni-3B`（12 GB，已下载）。
 
-## 9. 阻塞实况（2026-11-03 实测，已停止推进）
+## 9. 阻塞实况 → 已定位并解除（2026-11-03）
 
-经过 7 轮迭代，进展到「模型 + 引擎均可加载，仅剩音频解码依赖」：
+此前 7 轮迭代都卡在「音频解码」，日志写着「librosa 装不进 / 与已存在包冲突」。
+复查 `反馈表.csv` 与构建日志后，真实根因是**两个工程性错误**，不是 DCU 或框架限制：
 
-| 阶段 | 结果 |
-| --- | --- |
-| 镜像选择 | ✅ SGLang 镜像（唯一带 DCU 版 torchaudio 2.9.0） |
-| `import auk` / `infer_cli` | ✅ 成功（torch **2.9.0** 可用，官方 pin 的 `torch<2.8` 不是硬要求） |
-| 依赖安装 | ✅ 40 个纯 Python wheel 中装上 36 个（filelock / librosa / platformdirs / pycparser 因 `--target` 与已存在包冲突失败） |
-| 权重加载 | ✅ `Loaded EMA weights | missing=924 (text_encoder.*=924, other=0)` —— 与官方说明一致（缺 `text_encoder.*` 属正常） |
-| **音频解码** | ❌ 阻塞点 |
+| # | 症状 | 真实根因 | 修法 |
+| --- | --- | --- | --- |
+| ① | 120/120 `ModuleNotFoundError: No module named 'librosa'` | 离线 wheel 在**本机（py3.12）**下载，全是 `cp312` 轮子；镜像是 **py3.10**，pip 判定 tag 不兼容 → 静默拒装 | `pip download --python-version 310 --platform manylinux2014_x86_64 --abi cp310` 重下 53 个轮子 |
+| ② | 单条耗时 4.5 s（说明推理已跑通）但 120 条全失败 | `torchaudio.save()` 与 `load()` 一样走 **torchcodec**，DCU 版 torch 加载不了 `libtorchcodec*.so` | 写盘改 `soundfile.write(out, arr.squeeze(), sr, subtype="PCM_16")` |
 
-音频解码的三次尝试：
+**证据链**：`反馈表.csv` 的 `error` 列（120 行同一条 `librosa` 缺失）；
+装好 cp310 轮子后同一条命令 120 条仍全失败，但每条耗时从 0.04 s 变成 4.5 s（推理在跑），
+错误变成 `Could not load libtorchcodec`；改 `soundfile` 写盘后开始产出 `<id>.wav`
+（6.08 s @ 24 kHz 单声道，符合官方 `expected.duration_min_s`）。
 
-1. `torchaudio.load()` 默认走 **torchcodec** → `RuntimeError: Could not load libtorchcodec`
-   （torchcodec 的 native lib 绑定 stock torch ABI，DCU 版 torch 加载不了）
-2. `torchaudio.load(backend="soundfile")` → 本版 torchaudio 该后端不可用
-3. 直接用 `soundfile.read()` 替换 `torchaudio.load` → ✅ 绕过 torchcodec，但 AuK 内部仍有路径依赖 `librosa`，
-   而 librosa 因 `pip install --target` 与目录内已存在版本冲突装不上
+**单条耗时 ~150 s**（nfe=32，单卡 bf16），120 条 ≈ 5 h/卡，故 `container/submit.slurm`
+墙钟设 7 h，`evaluate_official.py` 支持按产物续跑。
 
-**因此本条目未产出任何音频。** 下一步可行路径（未执行）：
-- 用 `--upgrade --force-reinstall` 逐个装 librosa / filelock / platformdirs / pycparser
-- 或用独立 venv（`python -m venv /opt/auk-venv`）替代 `--target`，彻底避免冲突
-- 或改 AuK 源码把 librosa 依赖替换为 soundfile 直读（需确认 librosa 在哪些路径被用）
+这两条已写进 `docs/gotchas.md` #18 / #19：**「装不上」先查轮子 tag 与 `requires_dist`，
+不要先怀疑国产卡。**
