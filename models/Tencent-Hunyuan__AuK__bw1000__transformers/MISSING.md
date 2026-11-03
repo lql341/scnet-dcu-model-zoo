@@ -28,7 +28,7 @@
 - ✅ AuK 源码（30 MB，本机 clone 后上传——集群直连 GitHub 不通）
 - ✅ 依赖：cp310 轮子 53 个（含 librosa 0.10.2 / numba 0.61.2 / scipy 1.15.3 / soxr / soundfile）
 - ✅ 引擎加载 46.8 s；单卡 bf16；`missing=924 (text_encoder.*)` 与官方说明一致
-- 🟡 官方 120 条：单条约 **150 s**（nfe=32、6 s 音频），全量 ≈ 5 h/卡，作业跑在 `hx1hdnormal`
+- ✅ 官方 120 条：**120/120 成功**，531 s（单条 4.4 s，nfe=32）；产物 36 MB 不入库，见 `official-eval/`
 
 ## 体积提示
 

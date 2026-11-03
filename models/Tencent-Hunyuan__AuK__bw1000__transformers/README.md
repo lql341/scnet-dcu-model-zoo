@@ -72,13 +72,23 @@ sbatch container/submit.slurm    # 内含导入测试 + 单条推理探针
 
 ## 5. Smoke 测试
 
-⚠️ **待填**。探针脚本 `probe_one.py` 会打印：条件首条的关键字段、参考音路径与存在性、
-torch 版本、`auk` 导入结果、`infer_cli` 导入结果。
+`probe_one.py` / `PROBE_ONLY=N` 打印：条件首条关键字段、参考音路径与存在性、torch 版本、
+`auk` 与 `infer_cli` 导入结果。
+
+**2026-11-03 实测（= 官方 120 条全量中的前若干条）**：
+
+| 检查项 | 结果 |
+| --- | --- |
+| 引擎加载 | ✅ 46.8 s（`Loaded EMA weights | missing=924 (text_encoder.*=924, other=0)`，与官方说明一致） |
+| 参考音 | ✅ 120 条引用的 21 个 prompt wav 全部存在，sha256 已校验 |
+| 依赖 | ✅ librosa 0.10.2 / numba 0.61.2 / llvmlite 0.44 / scipy 1.15.3 / soundfile / soxr 全部可导入（**cp310** 轮子） |
+| 音频 I/O | ✅ 读 `soundfile.read`，写 `soundfile.write` —— **完全不碰 torchaudio**（见 §9） |
+| 单条输出 | ✅ 24 kHz / 单声道 / PCM_16，时长与 `params.gen_seconds` 一致 |
 
 ## 6. 精度测评（官方条件）
 
-⚠️ **待填**。官方条件：`formal/conditions/auk.jsonl`，共 **120 条**
-（中英文各 20 组参考音 × 3 seed；实测 21 个唯一参考音被 120 条复用，**零缺失**）。
+官方条件：`official/t03-t04/conditions/auk.jsonl`，共 **120 条**（中英各 20 组参考音 × 3 seed；
+实测 21 个唯一参考音被 120 条复用，**零缺失**）。
 
 每条的输入字段（实测）：
 
@@ -89,14 +99,35 @@ torch 版本、`auk` 导入结果、`infer_cli` 导入结果。
  "text":"...","language":"zh","instructions":"...","ref_text":"..."}
 ```
 
-输出：24 kHz 单声道语音。**官方不进行统一评分和性能比较**。
+**全部生成参数逐条取自条件清单**（`gen_seconds` / `nfe` / `cfg_strength` / `sway_sampling_coef` / `seed`），
+不写死任何默认值。
+
+### 结果：**120 / 120 成功，0 失败**
+
+| 指标 | 实测 |
+| --- | --- |
+| 引擎加载 | 46.8 s |
+| 评测总耗时 | **531.2 s**（单条 **4.4 s**） |
+| 输出现格 | 24 kHz / 单声道 / 16 bit |
+| 时长 | 3.08 / **5.86**（中位）/ 12.46 s，合计 749.5 s 音频 |
+| 时长合规 | 120 条全部 ≥ `expected.duration_min_s`（3.03–12.41 s） |
+| 产物体积 | 36 MB（不入库；`official-eval/samples/` 存中英各 1 条，`stats.json` 存逐条时长） |
+
+产物与反馈表：`official-eval/{反馈表.csv, eval_result.json, stats.json, 环境说明.txt}`。
+
+**官方不进行统一评分和性能比较**，因此本条目**不计算**任何相似度/自然度指标 —— 不编造分数。
 
 ## 7. 性能参考
 
-官方 T04 明确不评分 → `meta.bench = not-required`。
+官方 T03/T04 明确不评分 → `meta.bench = not-required`。可对照的实测吞吐：
 
-官方给出的参考点（A800-80GB、bf16）：峰值显存约 24.8–25.0 GiB；
-加 `--cpu_offload`（官方注明**仅 CUDA**）约 16.8–17.0 GiB。在 DCU 上 `--cpu_offload` 是否可用待验证。
+| 场景 | 数值 |
+| --- | --- |
+| 单卡 bf16，nfe=32，6 s 音频 | **4.4 s/条**（≈0.23 条/s ≈ 1.35 s 音频/s） |
+| 120 条全量 | 8.9 min（不含 47 s 加载与 5 min 镜像 load） |
+
+官方给出的 A800-80GB 参考点：峰值显存约 24.8–25.0 GiB；加 `--cpu_offload` 约 16.8–17.0 GiB
+（官方注明**仅 CUDA**）。DCU 上本次未开 offload，64 GB 单卡直接跑通。
 
 ## 8. 注意事项
 
@@ -124,8 +155,13 @@ torch 版本、`auk` 导入结果、`infer_cli` 导入结果。
 错误变成 `Could not load libtorchcodec`；改 `soundfile` 写盘后开始产出 `<id>.wav`
 （6.08 s @ 24 kHz 单声道，符合官方 `expected.duration_min_s`）。
 
-**单条耗时 ~150 s**（nfe=32，单卡 bf16），120 条 ≈ 5 h/卡，故 `container/submit.slurm`
-墙钟设 7 h，`evaluate_official.py` 支持按产物续跑。
+**耗时以全量实测为准：120 条 531 s，单条 4.4 s**（nfe=32、单卡 bf16）。
+
+> 一处需要如实记录的观察：同为 soundfile 写盘的上一趟作业（1022209）里，前 6 条间隔约
+> 150 s/条，据此曾把墙钟设成 7 h；随后同一配置全量跑出 4.4 s/条。**两个数字都来自实测**，
+> 差异原因未查明（嫌疑是当时节点 I/O 抖动或首轮 kernel 编译），此处以全量结果为准，
+> 不猜原因。教训：`submit.slurm` 保留宽墙钟 + `evaluate_official.py` 支持按产物续跑，
+> 这样估算错了也不会白烧卡时。
 
 这两条已写进 `docs/gotchas.md` #18 / #19：**「装不上」先查轮子 tag 与 `requires_dist`，
 不要先怀疑国产卡。**

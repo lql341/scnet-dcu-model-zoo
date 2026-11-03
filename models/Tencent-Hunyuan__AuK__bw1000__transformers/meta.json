@@ -1,28 +1,49 @@
 {
-  "model_id": "Tencent-Hunyuan/AuK",
-  "org": "Tencent-Hunyuan",
-  "model": "AuK",
-  "card": "BW1000",
-  "cards_used": 1,
-  "tp": 1,
-  "framework": "transformers",
-  "framework_version": "AuK (源码) + torch 2.10 (镜像自带)",
-  "precision": "bf16",
-  "status": "blocked",
-  "bench": "not-required",
-  "bench_note": "依赖链阻塞：模型与引擎可加载，但音频解码依赖（torchcodec ABI 与 DCU torch 不兼容、librosa 装不进隔离目录）未能打通",
-  "cold_start_s": [
-    0,
-    0
-  ],
-  "throughput": {
-    "4k_c1": null,
-    "4k_c8": null,
-    "4k_c64": null,
-    "16k_c1": null,
-    "16k_c8": null,
-    "16k_c64": null
-  },
-  "optimized": false,
-  "verified_on": "2026-11-02"
+    "model_id": "Tencent-Hunyuan/AuK",
+    "org": "Tencent-Hunyuan",
+    "model": "AuK",
+    "card": "BW1000",
+    "cards_used": 1,
+    "tp": 1,
+    "framework": "transformers",
+    "framework_version": "AuK（源码）+ torch 2.9.0+das（镜像自带）",
+    "precision": "bf16",
+    "status": "official-eval",
+    "bench": "not-required",
+    "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；已按官方 120 条条件完成评测（参考音克隆）",
+    "cold_start_s": [
+        47,
+        47
+    ],
+    "throughput": {
+        "4k_c1": null,
+        "4k_c8": null,
+        "4k_c64": null,
+        "16k_c1": null,
+        "16k_c8": null,
+        "16k_c64": null
+    },
+    "optimized": false,
+    "verified_on": "2026-11-03",
+    "official_eval": {
+        "conditions": "official/t03-t04/conditions/auk.jsonl",
+        "total": 120,
+        "ok": 120,
+        "fail": 0,
+        "elapsed_s": 531.2,
+        "per_item_s": 4.4,
+        "output": {
+            "kind": "audio",
+            "sample_rate": 24000,
+            "channels": 1,
+            "bits": 16,
+            "dur_s": {
+                "min": 3.08,
+                "median": 5.86,
+                "max": 12.46,
+                "sum": 749.5
+            }
+        },
+        "note": "官方不要求评分，故不计任何相似度指标；产物 36 MB 不入库，仅存 2 条样例与统计"
+    }
 }
