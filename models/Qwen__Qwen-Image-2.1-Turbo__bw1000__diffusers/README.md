@@ -61,20 +61,22 @@ sbatch container/submit.slurm                             # 全量 180 条
 
 ## 5. Smoke 测试
 
-`PROBE_ONLY=6`（前 6 条真实条件，非自造 prompt）：**6/6 成功，0 失败**，产物 2048×2048 PNG。
+`PROBE_ONLY=N` 只跑前 N 条真实条件（不是自造 prompt）。
 
-| 指标 | 实测 |
+| 检查项 | 结果 |
 | --- | --- |
-| 单图耗时 | **~20.7 s**（124 s / 6 张，含 8 步去噪 + VAE 解码 + PNG 落盘） |
-| 尺寸 | 2048×2048（与 `conditions/qwen_image.jsonl` 的 `params` 一致） |
-| 显存 | 单卡 64 GB 足够，无需 offload |
+| `diffusers` + `hub` 导入 | ✅ `QwenImage21Pipeline OK`（diffusers 0.41.0 + hub 1.33.0） |
+| torch / DCU | ✅ torch 2.9.0+das，`cuda.is_available()=True` |
+| 探针 6 条 | ✅ 6/6 成功，2048×2048，124 s（单张 20.7 s） |
+| 显存 | 单卡 64 GB 足够，未开 offload |
+| flash_attn | ⚠️ 镜像内 flash_attn 导入失败 → 自动回落 native PyTorch attention（不影响出图） |
 
 ## 6. 精度测评（官方条件）
 
-官方条件：`conditions/qwen_image.jsonl`，60 输入 × 3 seed（42/2026/1234）= **180 条**，
+官方条件：`official/t03-t04/conditions/qwen_image.jsonl`，60 prompt × 3 seed（42/2026/1234）= **180 条**，
 输出固定 2048×2048，产物 `<id>.png`。**官方不进行统一评分和性能比较**，故不计算 CLIP score / FID。
 
-所有生成参数**直接取自条件清单**（2026-11-03 修正）：
+生成参数**逐条取自条件清单**（2026-11-03 修正，见 `docs/gotchas.md` #20）：
 
 ```json
 {"width": 2048, "height": 2048, "num_inference_steps": 8,
@@ -82,23 +84,36 @@ sbatch container/submit.slurm                             # 全量 180 条
 ```
 
 此前 `evaluate_official.py` 写死 `use_kv_cache=True` 却不传 `num_inference_steps`，
-实际按 pipeline 默认 **40 步**跑，与官方条件不符（8 步）。现已逐条读取，见 `docs/gotchas.md` #20。
+实际按 pipeline 默认 **40 步**跑，与官方条件不符。
 
-180 条 × ~20.7 s ≈ **1 h/卡**。
+### 结果：**180 / 180 成功，0 失败**
+
+| 指标 | 实测 |
+| --- | --- |
+| 评测总耗时 | **3558.0 s**（59.3 min） |
+| 单张耗时 | **19.8 s**（8 步 + KV cache + VAE 解码 + PNG 落盘） |
+| 产物尺寸 | 180 张全部 **2048×2048** RGB |
+| 产物体积 | 1147.5 MB（单张中位 6.2 MB）—— 不入库 |
+| 入库物 | `official-eval/{反馈表.csv, eval_result.json, stats.json, 环境说明.txt}` + 1 张 512px 缩略图 |
 
 ### 关于 2048 vs 1024 的口径
 
 | 来源 | 原文 | 适用 |
 | --- | --- | --- |
 | 赛事详情 §三 T03 | 「采用 **1024×1024** 作为文生图**性能测试**标准」 | 性能测试 |
-| 本次 T03 材料（含条件清单 `params`） | 「输出尺寸固定为 **2048×2048**」 | 质量测试的固定条件 |
+| 本次 T03 材料 + 条件清单 `params` | 「输出尺寸固定为 **2048×2048**」 | 质量测试的固定条件 |
 
-**本条目按材料 + 条件清单执行 2048×2048**（机器可读的是 2048，以它为准）。
+**以机器可读的条件清单为准，按 2048×2048 执行**（180 条产物尺寸均由 `stats.json` 逐张核对）。
 
 ## 7. 性能参考
 
-官方 T03 明确「不进行统一评分和性能比较」→ `meta.bench = not-required`。
-实测单图 **~20.7 s**（2048×2048、8 步、KV cache、单卡 bf16），即约 **0.048 张/s**。
+官方 T03 明确不评分 → `meta.bench = not-required`。可对照的实测吞吐：
+
+| 场景 | 数值 |
+| --- | --- |
+| 单张 2048×2048（8 步、KV cache、单卡 bf16） | **19.8 s** ⇒ **0.0505 张/s** |
+| 180 条全量 | 59.3 min / 卡（不含镜像 load 与 pipeline 加载） |
+| 冷启动（pipeline from_pretrained + 首张） | 60–90 s |
 
 ## 8. 注意事项
 
@@ -117,6 +132,7 @@ sbatch container/submit.slurm                             # 全量 180 条
 | diffusers 0.42.1 | ❌ 仅支持 Python ≥ 3.11（容器 3.10），且 PyPI 上不可解析 |
 | diffusers 0.41.0 + hub 0.36.2 | ❌ `ImportError: cannot import name 'resolve_revision'` |
 | **diffusers 0.41.0 + hub 1.33.0** | ✅ 导入通过，`QwenImage21Pipeline OK`，6/6 出图 |
+| 官方 180 条全量 | ✅ **180/180 成功**，3558 s，单张 19.8 s，全部 2048×2048 |
 
 **真实根因**：diffusers 0.41.0 的元数据是 `huggingface-hub>=1.32.0,<2.0`，
 而条目用 `pip install --no-deps` 装的是 **hub 0.36.2**（不会报冲突），于是导入即缺符号。

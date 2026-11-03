@@ -1,28 +1,45 @@
 {
-  "model_id": "Qwen/Qwen-Image-2.1-Turbo",
-  "org": "Qwen",
-  "model": "Qwen-Image-2.1-Turbo",
-  "card": "BW1000",
-  "cards_used": 1,
-  "tp": 1,
-  "framework": "diffusers",
-  "framework_version": "diffusers 0.42.1",
-  "precision": "bf16",
-  "status": "blocked",
-  "bench": "not-required",
-  "bench_note": "依赖链阻塞：diffusers 0.41.0 需要 huggingface_hub.resolve_revision / RevisionResolutionError，这两个符号在任何已发布 hub 版本（0.24~1.11）中都不存在；diffusers 0.42.1 要求 Python≥3.11",
-  "cold_start_s": [
-    0,
-    0
-  ],
-  "throughput": {
-    "4k_c1": null,
-    "4k_c8": null,
-    "4k_c64": null,
-    "16k_c1": null,
-    "16k_c8": null,
-    "16k_c64": null
-  },
-  "optimized": false,
-  "verified_on": "2026-11-02"
+    "model_id": "Qwen/Qwen-Image-2.1-Turbo",
+    "org": "Qwen",
+    "model": "Qwen-Image-2.1-Turbo",
+    "card": "BW1000",
+    "cards_used": 1,
+    "tp": 1,
+    "framework": "diffusers",
+    "framework_version": "diffusers 0.41.0",
+    "precision": "bf16",
+    "status": "official-eval",
+    "bench": "not-required",
+    "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；已按官方 180 条条件完成（2048×2048、8 步、KV cache）",
+    "cold_start_s": [
+        60,
+        90
+    ],
+    "throughput": {
+        "4k_c1": null,
+        "4k_c8": null,
+        "4k_c64": null,
+        "16k_c1": null,
+        "16k_c8": null,
+        "16k_c64": null
+    },
+    "optimized": false,
+    "verified_on": "2026-11-03",
+    "official_eval": {
+        "conditions": "official/t03-t04/conditions/qwen_image.jsonl",
+        "total": 180,
+        "ok": 180,
+        "fail": 0,
+        "elapsed_s": 3558.0,
+        "per_item_s": 19.8,
+        "output": {
+            "kind": "image",
+            "width": 2048,
+            "height": 2048,
+            "count": 180,
+            "bytes_median": 6219906,
+            "bytes_total": 1147500000
+        },
+        "note": "官方不要求评分，故不算 CLIP/FID/ImageReward；1.1 GB 产物不入库，仅存统计与 512px 缩略图"
+    }
 }

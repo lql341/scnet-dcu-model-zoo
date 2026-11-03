@@ -1,0 +1,28 @@
+里程碑：Qwen-Image-2.1-Turbo 全量完成（官方 180 条，2048×2048）
+
+模型及权重版本：Qwen/Qwen-Image-2.1-Turbo（ModelScope 快照，BF16，32.5 GB）
+框架及版本：diffusers 0.41.0（隔离安装于 /opt/qi-libs，PYTHONPATH 前置）
+依赖关键版本：huggingface_hub 1.33.0（diffusers 0.41.0 的元数据要求 >=1.32.0,<2.0；
+  此前装 0.36.2 导致 `cannot import name 'resolve_revision'`，被误判为「上游未来版本 API」）
+  注：diffusers 0.42.1 要求 Python >= 3.11，容器为 3.10，因此固定 0.41.0
+torch 版本：2.9.0+das（HIP 6.3.26093）　transformers：5.3.0（镜像自带；官方要 >=5.17.0，实测可用）
+镜像：image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+设备信息：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡（未开 offload，64 GB 够用）
+
+执行范围：official/t03-t04/conditions/qwen_image.jsonl，共 180 条（60 prompt × seed 42/2026/1234）
+生成参数：**逐条取自条件清单 params**
+  width=2048、height=2048、num_inference_steps=8、guidance_scale=1.0（true_cfg_scale）、
+  use_kv_cache=true、schedule=checkpoint、dtype=bf16、generator=CPU manual_seed(seed)
+输入说明：仅使用条件清单的 prompt；未使用任何参考答案/参考图
+
+产物：outputs/<id>.png，180 个，全部 2048×2048 RGB，合计 1147.5 MB（单张中位 6.2 MB）
+结果：**180 成功 / 0 失败**，评测 3558.0 s（单张 **19.8 s**）
+
+自算指标：官方明示「不进行统一评分和性能比较」，故不算 CLIP score / FID / ImageReward，不编造分数。
+产物 1.1 GB 不入库（单条目体积上限 2 MB），仅存反馈表、逐文件统计与缩略图：
+  反馈表.csv、eval_result.json、stats.json（含每张图的字节数与尺寸）、samples/（512px 缩略图，非官方产物）
+
+工程要点（详见 docs/gotchas.md #18/#20）：
+  1) `pip install --no-deps` 不校验 Requires-Dist：装包前必须自己对齐版本
+  2) 生成参数必须逐条读条件清单；此前写死 use_kv_cache 且不传 num_inference_steps，
+     实际按 pipeline 默认 40 步跑（应为 8 步）
