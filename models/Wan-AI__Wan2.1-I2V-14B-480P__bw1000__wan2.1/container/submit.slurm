@@ -4,7 +4,7 @@
 #   PROBE_ONLY=1 sbatch container/submit.slurm   # 只跑第 0 片的前 1 条（探针）
 #SBATCH -p hx1hdnormal
 #SBATCH -N 1
-#SBATCH --gres=dcu:8
+#SBATCH --gres=dcu:4          # 本集群 sbatch 命令行 --gres 覆盖无效，只能在文件头改
 #SBATCH -c 32
 #SBATCH -t 2-00:00:00
 #SBATCH -J wan-i2v
@@ -30,11 +30,18 @@ $PD image exists "$IMAGE" 2>/dev/null || $PD pull --tls-verify=false --cert-dir=
 $PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/load.log; exit 1; }
 
 mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
-NCARD=${SLURM_GPUS_ON_NODE:-8}
-echo "[host] 卡数=$NCARD  run $(date +%T)"
+# 卡数：本集群不设 HIP_VISIBLE_DEVICES（实测 dcu:4 的作业里该变量为空/0），
+# 用 scontrol 查 AllocTRES 里的 gres/dcu 最可靠；退回 CUDA_VISIBLE_DEVICES 个数
+NCARD=$(scontrol show job -o "$SLURM_JOB_ID" 2>/dev/null | tr ' ' '\n' | grep -m1 -oE 'gres/dcu=[0-9]+' | cut -d= -f2)
+[ -z "${NCARD:-}" ] && NCARD=$(echo "${CUDA_VISIBLE_DEVICES:-0}" | awk -F, '{print NF}')
+[ "${NCARD:-0}" -lt 1 ] && NCARD=1
+# 不覆盖可见性：容器只挂了 cgroup 允许的设备，HIP 自己枚举即可
+# （实测 SLURM_JOB_GPUS=0,3,4,7 而 CUDA_VISIBLE_DEVICES=0,1,2,3，硬写 0,1,2,3 会指到不存在的设备）
+VIS=""
+echo "[host] 卡数=$NCARD (CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset} SLURM_JOB_GPUS=${SLURM_JOB_GPUS:-unset})  run $(date +%T)"
 $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypoint=/bin/bash \
   --device /dev/kfd --device /dev/mkfd --device /dev/dri \
-  -e HIP_VISIBLE_DEVICES="${HIP_VISIBLE_DEVICES:-}" \
+  -e HIP_VISIBLE_DEVICES="$VIS" -e CUDA_VISIBLE_DEVICES="$VIS" \
   -v /opt/hyhal:/opt/hyhal:ro \
   -v "$HOST_MODEL_PATH":$MODEL_PATH:ro -v "$WORK":/work -v "$ASSETS":/assets:ro \
   -v "$WAN_SRC_HOST":/wan-src:ro -v "$WHEELS_HOST":/wheels:ro -v "$WHEELS_QI_HOST":/wheels-qi:ro \

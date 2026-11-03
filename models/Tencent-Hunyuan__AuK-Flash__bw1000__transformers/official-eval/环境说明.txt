@@ -1,0 +1,21 @@
+里程碑：AuK-Flash（4 步蒸馏版）官方 120 条全量完成
+
+模型及权重版本：Tencent-Hunyuan/AuK-Flash（ModelScope 快照）
+  - auk_flash.safetensors 6.12 GB + vae.safetensors 0.64 GB + config.yaml
+  - 上游代码通过 config.yaml 的 model.name == "AuK-Flash" 自动识别蒸馏版，
+    并把采样锁定为 4 步 + CFG 关闭（released_four_step）
+文本编码器：Qwen/Qwen2.5-Omni-3B（12 GB，本地挂载）
+框架：AuK 官方源码（源码快照同 AuK 条目）+ PyTorch eager
+torch：2.9.0+das（HIP 6.3.26093）   transformers：5.3.0（镜像自带）
+镜像：image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+设备：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡
+
+执行范围：official/t03-t04/conditions/auk_flash.jsonl，120 条（zh 60 + en 60）
+输入：assets.reference_audio + ref_text + 目标 text + instructions；未使用参考答案
+生成参数（全部取自清单）：nfe=4、cfg_strength=0.0、schedule=released_four_step、gen_seconds 3.08–12.46 s、seed ∈ {42,2026,1234}
+产物：outputs/<id>.wav，24 kHz 单声道 PCM_16
+结果：120 成功 / 0 失败；评测 121.2 s（单条 1.0 s），引擎加载 47 s
+时长：3.08 / 5.86（中位）/ 12.46 s，合计 749.5 s；36 MB 产物不入库（样例 1 条 + stats.json）
+
+自算指标：官方明示不评分，故不计算任何相似度指标。
+备注：本文件由实测产物统计与 slurm 日志生成，未编造版本与数据。

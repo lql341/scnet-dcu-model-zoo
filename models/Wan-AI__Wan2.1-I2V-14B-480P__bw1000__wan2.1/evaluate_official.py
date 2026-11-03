@@ -74,7 +74,8 @@ def main():
         nproc = int(os.environ.get("FSDP_NPROC", "8"))
         # 单卡 64 GB 装不下 14B + UMT5-XXL（实测 --offload_model 与 --t5_cpu 仍 OOM）：
         # 改用官方推荐的多卡 FSDP（--dit_fsdp --t5_fsdp，不需要 xfuser，非序列并行）
-        launcher = ["torchrun", f"--nproc_per_node={nproc}", "--master_port", str(29500 + (os.getpid() % 500))]
+        launcher = ["torchrun", f"--nproc_per_node={nproc}", "--master_port", str(29500 + (os.getpid() % 500)),
+                    "--redirects", "1"]
         cmd = launcher + [
             "generate.py",
             "--task", task,
@@ -100,9 +101,23 @@ def main():
             cmd += ["--dit_fsdp", "--t5_fsdp"]
         t1 = time.time()
         try:
-            r = subprocess.run(cmd, cwd=src, capture_output=True, text=True, timeout=6 * 3600)
+            errfile = f"/tmp/wan_elastic_err_{os.getpid()}.json"
+            env = dict(os.environ, TORCHELASTIC_ERROR_FILE=errfile)
+            r = subprocess.run(cmd, cwd=src, capture_output=True, text=True, timeout=6 * 3600, env=env)
+            if r.returncode != 0 and os.path.exists(errfile):
+                try:
+                    print("[wan] ---- TORCHELASTIC_ERROR_FILE ----", flush=True)
+                    for ln in open(errfile, encoding="utf-8", errors="replace").read().splitlines()[-25:]:
+                        print("   !", ln[:300], flush=True)
+                except Exception:
+                    pass
             if r.returncode != 0 or not (os.path.exists(out) and os.path.getsize(out) > TOL_BYTES):
-                raise RuntimeError((r.stderr or r.stdout).strip().splitlines()[-1][:200] if (r.stderr or r.stdout) else f"rc={r.returncode}")
+                # torchrun 的报错是多行，只取最后一行会拿到分隔线；保留末 15 行到分片日志
+                tail = ((r.stderr or "") + (r.stdout or "")).strip().splitlines()[-15:]
+                print("[wan] ---- 子进程末 15 行 ----", flush=True)
+                for ln in tail:
+                    print("   |", ln, flush=True)
+                raise RuntimeError((tail[-1][:200] if tail else f"rc={r.returncode}"))
             rows.append({"id": it["id"], "status": "成功", "path": out,
                          "bytes": os.path.getsize(out), "sec": round(time.time() - t1, 1)})
             print(f"[wan] {n}/{len(mine)} OK {it['id']}  {time.time()-t1:.0f}s  {(os.path.getsize(out)/1e6):.1f}MB", flush=True)

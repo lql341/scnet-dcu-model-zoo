@@ -1,0 +1,54 @@
+{
+  "model_id": "Tencent-Hunyuan/AuK-Flash",
+  "org": "Tencent-Hunyuan",
+  "model": "AuK-Flash",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "transformers",
+  "framework_version": "AuK（源码）+ torch 2.9.0+das（镜像自带）",
+  "precision": "bf16",
+  "status": "official-eval",
+  "bench": "not-required",
+  "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；AuK-Flash 为 4 步蒸馏版，条件清单 nfe=4 / cfg=0",
+  "cold_start_s": [
+    47,
+    47
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-04",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/auk_flash.jsonl",
+    "total": 120,
+    "ok": 120,
+    "fail": 0,
+    "elapsed_s": 121.2,
+    "per_item_s": 1.0,
+    "params": {
+      "nfe": 4,
+      "cfg_strength": 0.0,
+      "schedule": "released_four_step"
+    },
+    "output": {
+      "kind": "audio",
+      "sample_rate": 24000,
+      "channels": 1,
+      "bits": 16,
+      "dur_s": {
+        "min": 3.08,
+        "median": 5.86,
+        "max": 12.46,
+        "sum": 749.5
+      }
+    },
+    "note": "官方不要求评分，故不计相似度指标；产物 36 MB 不入库，仅存 1 条样例与逐条统计"
+  }
+}
