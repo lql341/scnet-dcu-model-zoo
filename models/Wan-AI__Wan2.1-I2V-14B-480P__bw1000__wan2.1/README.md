@@ -59,19 +59,36 @@ PROBE_ONLY=1 sbatch container/submit.slurm                     # 只跑 1 条，
 
 ## 5. Smoke 测试
 
-⚠️ 待 `PROBE_ONLY=1` 跑完后填入真实返回（起服务时长、单条耗时、产物帧数/fps/大小）。
+`PROBE_ONLY=N` 只跑前 N 条真实条件。2026-11-04 实测（4 卡 FSDP，PROBE_ONLY=2）：
 
-## 6. 精度测评
+| 检查项 | 结果 |
+| --- | --- |
+| 依赖隔离安装 | ✅ `easydict/ftfy/imageio/imageio-ffmpeg/regex` + diffusers 0.41.0 + hub 1.33.0 |
+| `wan` 导入 | ✅ `wan import OK`；`flash_attn` **镜像自带**（此前以为缺失，已改正） |
+| 4 卡 FSDP | ✅ `torchrun --nproc_per_node=4 --dit_fsdp --t5_fsdp`，加载 6 min + 40 步 × **20.15 s/it** |
+| 端到端 | ✅ **2/2 成功**，单条 **1145–1173 s**，产物 5.0–6.2 MB |
+| 产物规格 | ✅ 81 帧 / 16 fps / 832×480（`stats.json` 校验 `spec_violation_count=0`，时长 5.06 s = 81/16） |
+
+## 6. 精度测评（官方条件）
 
 官方条件：`conditions/wan_i2v.jsonl`，**60 条**（20 张首帧 × seed 42/2026/1234）。
-EMA 无、固定条件全部取自清单 `params`（832×480 / 81 帧 / 40 步 / unipc / shift 3.0 / guidance 5.0）。
+参数逐条取自清单：832×480、81 帧、16 fps、40 步、unipc、shift 3.0、guidance 5.0、bf16，
+`negative_prompt` 用清单原值（为此给官方 CLI 打了个补丁，见 §3.3）。
 
-官方明示「不进行统一评分和性能比较」→ 本条目**不计算 VBench 等任何分数**，只交原始产物 + 规格统计
-（帧数、fps、时长、体积）。`verify.py` 在没有官方评测器时主动 `[BLOCKED]` 退出。
+官方明示「不进行统一评分和性能比较」→ 本条目**不计算 VBench 等任何分数**，只交原始产物 + 规格统计。
+
+⚠️ 全量 60 条正在跑（作业 `1029458`，4 卡 FSDP 串行，预计 ~19 h）。跑完后本节回填
+`ok/total`、总耗时、产物体积分布；在那之前不写任何汇总数字。
 
 ## 7. 性能参考
 
-⚠️ 待测。将记录：单条视频耗时（8 卡分片下的墙钟）、总耗时、峰值显存、产物体积中位数。
+官方 T03 明确不评分 → `meta.bench = not-required`。
+
+| 场景 | 实测 |
+| --- | --- |
+| 单条（4 卡 FSDP，40 步，81 帧 480p） | **~19.4 min**（20.15 s/it × 40 + VAE 解码与落盘） |
+| 权重加载 | ~6 min（82 GB，7 个 DiT 分片 + UMT5-XXL） |
+| 峰值显存 | 4 卡各约 20–25 GB（FSDP 分片后单卡压力大幅下降）；单卡 64 GB 会 OOM |
 
 ## 8. 注意事项
 
@@ -82,3 +99,14 @@ EMA 无、固定条件全部取自清单 `params`（832×480 / 81 帧 / 40 步 /
   若报 `T5Tokenizer` 相关错误，退路是把 `fa310` 那套 transformers 4.57.6 隔离装上（已验证可用）。
 - **权重 82 GB**：磁盘/配额敏感，跑完如需腾空间可删（ModelScope 可重下），但**镜像与 wheel 必须归档**。
 - 分片策略依赖 `index % N` 稳定：**不要中途改 N**，否则续跑会错位（产物按 id 命名，故实际不会错，只是分片不均）。
+
+## 9. 本轮踩坑（附排查顺序，供下次复用）
+
+| # | 现象 | 根因 | 修法 |
+| --- | --- | --- | --- |
+| 1 | 申请的 4 卡作业只拿到 1 卡 | 本集群 **sbatch 命令行 `--gres` 覆盖无效**，只认文件头 `#SBATCH` | 改 `container/submit.slurm` 的文件头 |
+| 2 | 数卡数得 8（实际 4） | 容器里 `/dev/dri` 永远显示宿主全部 render 节点 | 用 `scontrol show job -o` 读 `AllocTRES` 的 `gres/dcu=` |
+| 3 | `RuntimeError: No HIP GPUs are available` | 传了 `-e HIP_VISIBLE_DEVICES=""`（空串被当成"零张卡"） | 空值不要传 |
+| 4 | FSDP 只有 rank0 能跑 | 显式设了可见性，其余 rank 越界 | FSDP 启动前 `env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES` |
+| 5 | 作业 exit 0 但产物消失 | `generate.py --save_file` 按 cwd（源码目录）解析，写成相对路径就落在容器里 | 传绝对路径 |
+| 6 | 失败日志只看到 `====` 分隔线 | torchrun 的 NCCL teardown 日志淹没真正的错误 | stderr/stdout 分别完整落盘，再按关键字捞根因 |
