@@ -1,0 +1,28 @@
+{
+  "model_id": "MiniMaxAI/MiniMax-Music3",
+  "org": "MiniMax-AI",
+  "model": "MiniMax-Music3",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "sglang",
+  "framework_version": "0.5.12（镜像内 Hygon 构建）+ BW 适配 harness",
+  "precision": "bf16",
+  "status": "smoke",
+  "bench": "not-required",
+  "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件生成 32 kHz 立体声、≤750 声学帧",
+  "cold_start_s": [
+    0,
+    0
+  ],
+  "throughput": {
+    "4k_c1": null,
+    "4k_c8": null,
+    "4k_c64": null,
+    "16k_c1": null,
+    "16k_c8": null,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-04"
+}

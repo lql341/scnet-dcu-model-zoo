@@ -1,0 +1,29 @@
+# image.lock —— 镜像锁定
+
+本条目**不需要构建镜像**：Harbor 上有 BW 专用的 MiniMax-Music3 + Hygon SGLang 镜像，直接复用。
+
+| 项 | 值 |
+| --- | --- |
+| registry | `image.ac.com:5000`（Harbor，内网） |
+| repository | `dcu/acizv7iztz/base/minimax-music3-bw-sglang` |
+| tag | `20261031-rc1` |
+| digest | `sha256:20f071aada1400f6da1e887089760d7f7972a4654cfbb6b82827025aa64c4118` |
+| 压缩大小 | 12.27 GiB（41 层） |
+| 认证 | **匿名可 pull**，需 `--tls-verify=false --cert-dir=/tmp/emptycerts` |
+| 内置 | Ubuntu 22.04 / Python 3.10.12 / torch 2.10.0+das / SGLang 0.5.12 / transformers 5.6.0 / vllm 0.21.0 |
+
+## 拉取
+
+```bash
+export XDG_RUNTIME_DIR=/tmp/xdg-$$ && mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XDG_RUNTIME_DIR
+JID=${SLURM_JOB_ID:-$$}
+PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
+$PD pull --tls-verify=false --cert-dir=/tmp/emptycerts image.ac.com:5000/dcu/acizv7iztz/base/minimax-music3-bw-sglang:20261031-rc1
+```
+
+## 注意
+
+- 镜像 `/tmp/music3-hygon/` 里是**镜像作者的个人适配工作区**（serve.py + music3_hygon runtime +
+  patch + evaluate.py）。我们已把它归档为 `zoo-images/assets/music3-hygon-harness.tar.gz`
+  （sha256 `d5e119a5…`），因为 `/tmp` 随容器消失，而它是这个镜像唯一能跑通 Music3 的桥。
+- 镜像若被上游删除，本条目即不可复现 → 归档镜像 tar 是后续待办（见 `docs/image-archive.md`）。

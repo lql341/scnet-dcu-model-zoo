@@ -1,0 +1,4 @@
+# 本条目不需要装任何 Python 包：全部依赖（torch 2.10 / SGLang 0.5.12 / transformers 5.6 /
+# vllm 0.21 + SGLang-Omni 的 RVQ / flow-matching / DAV 组件）都在镜像里，
+# 镜像地址见 image.lock；BW 适配（兼容 patch、token-major KV、num_stages=1 等）由 harness 负责。
+# 刻意不装：sglang-omni（上游包与镜像内的 Hygon 构建冲突）、torchaudio（sinc 重采样直接拷函数）。
