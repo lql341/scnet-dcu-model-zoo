@@ -12,15 +12,19 @@ set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"
 [ -f "$REPO/env.sh" ] || { echo "[host] 请在条目根目录提交"; exit 1; }
 source "$REPO/env.sh"
-WORK="${WORK:-/public/home/scnethr2601a10/work/zoo-music3}"
+# 【坑】WORK 不能等于提交目录（REPO），否则 `cp -rf REPO/. WORK/repo/` 会递归拷自己，
+# 导致容器里 /work/repo 缺文件（实测踩过：python3: can't open file '/work/repo/evaluate_official.py'）
+WORK="${WORK:-/public/home/scnethr2601a10/work/m3run}"
+[ "$WORK" = "$REPO" ] && { echo "[host] WORK 不能等于 REPO，请另指定 WORK"; exit 5; }
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
 mkdir -p "$XDG_RUNTIME_DIR" "$WORK"; chmod 700 "$XDG_RUNTIME_DIR"
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
 echo "[host] node=$(hostname) tmp_free=${FREE}G"
-# 12.27 GB 镜像解包需 ~35-45 GB
-[ "$FREE" -lt 55 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
+# 压缩 12.27 GB，但**镜像里含作者遗留的 14 GB core dump**（位于 /tmp/music3-hygon），
+# 实测解包需 >56 GB，56 G 的节点直接 no space left on device → 门槛设 80 G
+[ "$FREE" -lt 80 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 
 $PD image exists "$IMAGE" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull.log 2>&1
 $PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/pull.log; exit 1; }
