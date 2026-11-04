@@ -178,6 +178,16 @@ python3 -m vllm.entrypoints.openai.api_server \
 
 后续拿到官方测法后补。
 
+### 7.1 量化对照实验：fp8 在这套 DCU 构建上不可用（2026-11-04）
+
+| 精度 | 结果 |
+| --- | --- |
+| bf16（基线，60 条子集） | ✅ AISHELL-1 前 20 条 CER **0.40%**、LibriSpeech 前 40 条 CER **0.10%** / WER **0.53%**，耗时 30 s |
+| fp8（`--quantization fp8`） | ❌ engine core 初始化失败，无内核支持（日志只有 `Failed core proc(s): {}`） |
+
+要量化只能自建镜像（量化权重 + DCU 可编译的量化 kernel），详见 `docs/gotchas.md` #22。
+**注意**：子集数字不能与全量 300 条的 1.21% / 0.65% 直接比较（数据不同）。
+
 ## 8. 注意事项
 
 - **base64 不能内联进 `curl -d`**：103 KB 音频编码后约 138 KB，会触发 `Argument list too long`。`smoke.sh` 改为先写 `/tmp/asr_req.json` 再 `--data @file`。

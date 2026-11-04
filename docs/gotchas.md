@@ -292,3 +292,21 @@ WARNING [chunked_prefill_paged_decode.py:400] Cannot use ROCm custom paged atten
 2. **podman 不继承 Slurm 的 `HIP_VISIBLE_DEVICES`**：多卡 vLLM 报
    `local_world_size (2) must be less than or equal to the number of visible devices (1)`。
    必须显式 `-e HIP_VISIBLE_DEVICES="$HIP_VISIBLE_DEVICES"`（**既不要 unset，也不要指望自动继承**）。
+
+## 22. 量化在 DCU 上是「有路但没铺」：vLLM 在线 fp8 直接起不来
+
+**现象**：`vllm serve ... --quantization fp8` 在本镜像（DCU 版 vLLM 0.20）上
+**engine core 初始化即失败**，容器日志只剩
+`RuntimeError: Engine core initialization failed. Failed core proc(s): {}`，
+子进程真正的报错没有落盘。同一命令去掉 `--quantization fp8` 后 160 s 内正常起服务。
+
+**影响**：本仓库 13 个条目至今**没有任何量化覆盖**（全 bf16）。这不是"没试"，是这条路上没有现成内核。
+
+**要量化需要**（按成本排序）：
+1. 权重侧量化（GPTQ/AWQ/INT8）—— 需要有对应模型的量化权重发布，或用 `llm-compressor` 自行量化；
+2. vLLM 侧的量化 kernel 必须在 DCU 上可编译（参考 gotchas #21：paged-attention 内核同样缺失）；
+3. 退路：用 CPU/其它框架做量化推理对照，但那已不是"国产卡上跑通"的证据。
+
+**做量化实验时的对照基线**（同子集、同脚本，2026-11-04 实测）：
+AISHELL-1 前 20 条 CER **0.40%**、LibriSpeech 前 40 条 CER **0.10%** / WER **0.53%**（bf16，60 条耗时 30 s）。
+先有这条基线，量化后的劣化才有可比性 —— **不要拿全量 300 条的数字去跟子集比**。
