@@ -18,7 +18,8 @@ mkdir -p "$XDG_RUNTIME_DIR" /tmp/emptycerts; chmod 700 "$XDG_RUNTIME_DIR"
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostname) tmp_free=${FREE}G"
-[ "$FREE" -lt 20 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
+# 12.27 GB 镜像解包需要 ~35-45 GB（实测 36 G 的节点报 no space left on device）
+[ "$FREE" -lt 60 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/pull.log 2>&1 || { tail -3 /tmp/pull.log; exit 1; }
 echo "[host] image ready $(date +%T)"
 
