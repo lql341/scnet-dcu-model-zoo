@@ -1,0 +1,21 @@
+# image.lock —— 镜像锁定
+
+本条目不需要构建镜像，复用 Harbor 上的 SGLang 镜像（与 Wan2.1 条目同一个）。
+
+| 项 | 值 |
+| --- | --- |
+| registry | `image.ac.com:5000`（Harbor，内网） |
+| repository | `dcu/linshp/base/mimo-sglang-bw10000` |
+| tag | `1.1.1` |
+| digest | `sha256:db981c466e743e470d78a06bc2fb004f181924041fdcb074a1aadf4f10090e93` |
+| 压缩大小 | 7.8 GiB |
+| 认证 | 匿名可 pull，需 `--tls-verify=false --cert-dir=/tmp/emptycerts` |
+| 归档 | `zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz`（sha256 `f16125ba…`） |
+
+## 为什么用它
+
+- 唯一自带 DCU 版 torch 2.9 + torchvision 的镜像；本项目不自建镜像。
+- 官方 hyvideo 依赖 `transformers 4.57.1 / diffusers 0.32.2 / huggingface_hub 0.34`，
+  全部隔离装到 `/opt/omni-libs`（不覆盖镜像内 5.3.0），见 `requirements-extra.txt`。
+- 官方要求 `flash_attn`：镜像自带的版本**可用但有 API 差异**（`unpad_input` 返回 4 项而非 5 项），
+  需要 `patches/0001-flash-attn-unpad-compat.patch`，详见 README §3.3。

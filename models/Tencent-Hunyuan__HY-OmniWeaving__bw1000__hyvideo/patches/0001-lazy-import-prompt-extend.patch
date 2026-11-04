@@ -1,0 +1,20 @@
+--- a/generate.py
++++ b/generate.py
+@@ -16,7 +16,7 @@
+ 
+ import wan
+ from wan.configs import MAX_AREA_CONFIGS, SIZE_CONFIGS, SUPPORTED_SIZES, WAN_CONFIGS
+-from wan.utils.prompt_extend import DashScopePromptExpander, QwenPromptExpander
++# [patch] prompt 扩写是可选项，官方默认关闭；改成惰性导入，避免强制安装 dashscope
+ from wan.utils.utils import cache_image, cache_video, str2bool
+ 
+ 
+@@ -305,6 +305,8 @@
+         )
+ 
+     if args.use_prompt_extend:
++        # [patch] 只在真正启用扩写时才导入（dashscope 不在镜像里，评测也不需要）
++        from wan.utils.prompt_extend import DashScopePromptExpander, QwenPromptExpander
+         if args.prompt_extend_method == "dashscope":
+             prompt_expander = DashScopePromptExpander(
+                 model_name=args.prompt_extend_model,
