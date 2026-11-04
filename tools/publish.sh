@@ -40,7 +40,14 @@ fi
 
 [ "$MODE" = "--no-push" ] && { echo "[publish] 已跳过推送"; exit 0; }
 
-git push -q origin HEAD || echo "[publish] ⚠ GitHub 推送失败（检查网络 / gh auth）"
+# GitHub：优先 SSH，失败则退回 gh 的 HTTPS 凭据（实测 SSH key 有时不可用：
+#   git@github.com: Permission denied (publickey)，而 `gh auth status` 仍正常）
+if ! git push -q origin HEAD 2>/dev/null; then
+  echo "[publish] SSH 推送失败，改用 gh 凭据走 HTTPS"
+  git -c credential.helper='!gh auth git-credential' push -q \
+    https://github.com/lql341/scnet-dcu-model-zoo.git HEAD:main \
+    || echo "[publish] ⚠ GitHub 推送失败（检查网络 / gh auth）"
+fi
 
 # GitLab 远端：优先用 https + token，避免把 token 写进 .git/config
 TOKEN_FILE="$HOME/.sourcefind-token"
