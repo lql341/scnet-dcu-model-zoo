@@ -1,6 +1,6 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> 最后更新：2026-11-03（深夜）　余额 **4324.87**（起始 4405.96，今日用约 **81 卡时**）
+> 最后更新：2026-11-04（夜）　余额 **≈4300**　今日新增：AuK-Flash 120/120、Music3 60/60、Wan2.1 全量在跑
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -353,12 +353,24 @@ python3 -m pip download --no-deps --dest wheels \
 | --- | --- | --- |
 | Qwen3-ASR-1.7B | **300/300** | AISHELL-1(zh,100) CER **1.21%** / LibriSpeech(en,200) CER **0.65%** WER **2.86%** |
 | Qwen3-ForcedAligner-0.6B | **30/30** | 词级时间戳，预测 572 词 = 参考 572 词；`BOUNDARIES_PENDING` **官方不评分** |
+| AuK-Flash | ✅ **120/120** | nfe=4 蒸馏版，单条 **1.0 s**（AuK 4.4 s，快 4.4×），121 s 全量 |
+| MiniMax-Music3 | ✅ **60/60** | 32 kHz 立体声，单条 203 s（RTF 6.8），12179 s 全量；**单卡**（上游称需 2 卡） |
+| Wan2.1-I2V-14B-480P | 🟡 60 条在跑 | 4 卡 FSDP，单条 ~18.5 min，已完成 ~52/60 |
 | Qwen-Image-2.1-Turbo | ✅ **180/180** | 2048×2048、8 步 + KV cache，单图 **19.8 s**，全量 3558 s（59 min/卡） |
 | AuK | ✅ **120/120** | 24 kHz 单声道，单条 **4.4 s**，全量 531 s；时长 3.08–12.46 s 全部 ≥ 官方 `duration_min_s` |
 
 **Kimi CUDA Graph 回退的稳定性已闭环**（原 P1-4）：同配置 round1 vs round2 六档差异
 +2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2%，即 16K/c64 的 −6.3% 是**配置级回退**而非抖动，
 结论稳定可用。
+
+### 7.0 今天的两个「不可行」也是有价值的结论
+
+| 实验 | 结论 | 证据 |
+| --- | --- | --- |
+| Qwen-Image 合批（同 prompt 3 seed） | ❌ **显存不可行**：batch=2 即 OOM（已分配 46.56 GB / 剩 3.84 / 需 6.75） | `models/Qwen__*diffusers/sweep/results-batching-2026-11-04.md` |
+| ASR fp8 量化 | ❌ `--quantization fp8` engine core 初始化即失败（无 DCU kernel） | `docs/gotchas.md` #22；bf16 子集基线 CER 0.40%/0.10% |
+
+**意义**：这两条把「不是没试」变成「试过、有证据、知道边界在哪」，避免下个会话再烧一遍卡时。
 
 ### 7.1 vLLM 16K 档：配置层面无解（2026-11-03，三轮扫描）
 
@@ -407,8 +419,10 @@ python3 -m pip download --no-deps --dest wheels \
 | Trident-2B × vLLM | ❌ `blocked` | — | 同上 |
 | AuK × transformers | ✅ `official-eval` 120/120 | ✅ | 根因已修正（wheel tag + torchaudio.save）；531 s 全量 |
 | Qwen-Image-2.1-Turbo × diffusers | ✅ `official-eval` 180/180 | ✅ | 根因已修正（hub 1.33.0）；3558 s 全量，19.8 s/张 |
-| Wan2.1-I2V-14B-480P × 官方代码 | 🟡 `smoke`（条目就绪、跑不通） | — | 单卡 OOM → 8 卡 FSDP；两个补丁已入库（惰性 dashscope、CLI 补 `--negative_prompt`） |
-| HY-OmniWeaving × 官方代码 | ⬜ 未开始 | — | 权重已下，等 Wan 跑通后再评估（同源 Hunyuan 视频栈） |
+| Wan2.1-I2V-14B-480P × 官方代码 | 🟡 `official-eval` 进行中 | — | 4 卡 FSDP 跑通（单条 19.4 min），全量 60 条在跑 |
+| AuK-Flash × transformers | ✅ `official-eval` 120/120 | — | 4 步蒸馏版，单条 1.0 s |
+| MiniMax-Music3 × sglang | ✅ `official-eval` 60/60 | — | 32 kHz 立体声；镜像 + harness 都已归档 |
+| HY-OmniWeaving × 官方代码 | 🟡 探针中 | — | 需补 llm/byt5/Glyph-SDXL-v2/siglip 四份依赖（正在下）；byT5 缺失已定位 |
 
 ---
 
@@ -438,9 +452,10 @@ python3 -m pip download --no-deps --dest wheels \
 | P1-3 | Recon2Reason / RoboBrain 的 **int8/int4** | 各 3–5 卡时 | 量化件单独计件；**但都要等 P0-1 的基线** |
 | P1-4 | ~~Kimi CUDA Graph 二次确认~~ | ✅ 已完成 | round1/round2 六档差异 ≤2.6%，−6.3% 是配置级回退，结论稳定 |
 | P1-5 | **把 cp310 轮子规则固化成工具** | 0.5 h | `tools/fetch_wheels.sh`：统一 `--python-version 310 --abi cp310`，防再犯 gotchas #18 |
-| P1-7 | **Wan2.1 8 卡 FSDP 跑通** | 4–6 卡时 | 作业 `1026191`；`--dit_fsdp --t5_fsdp`，先 PROBE_ONLY=1 |
-| P1-8 | **HY-OmniWeaving 适配** | 4–8 卡时 | 官方代码 + 独立依赖环境（transformers 4.57.1 / diffusers 0.32.2）；风险高，排在 Wan 之后 |
+| P1-7 | **Wan2.1 全量 60 条收尾** | 在跑 | 作业 `1029458`（4 卡 FSDP）；跑完回填 README/meta 并推送 |
+| P1-8 | **HY-OmniWeaving 适配** | 4–8 卡时 | 依赖补齐中（Qwen2.5-VL-7B / byt5-small / Glyph-SDXL-v2 / FLUX-Redux siglip）；byT5 缺失已定位 |
 | P1-9 | **vLLM v0 引擎对比** | 0.5 卡时 | `VLLM_USE_V1=0` 是否绕开 Triton paged decode（gotchas #21 的下一步） |
+| P1-10 | **Music3 镜像复现验证** | 0.5 卡时 | 从归档 tar 还原 + 跑 2 条，证明归档可用（当前只校验了 sha256） |
 | P1-6 | **两轮审自己的结论** | 0.5 h | 本轮教训：两个「blocked」都是工程错，`blocked` 以后必须附「已核对 `requires_dist` / wheel tag」证据 |
 
 ### 🟢 P2 —— 材料已备但需 8 卡 / 大空间
