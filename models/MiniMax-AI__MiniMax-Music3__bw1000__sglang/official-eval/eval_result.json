@@ -1,0 +1,21 @@
+{
+ "total": 60,
+ "ok": 60,
+ "fail": 0,
+ "elapsed_s": 12179.1,
+ "spec": {
+  "sample_rate": [
+   32000
+  ],
+  "channels": [
+   2
+  ]
+ },
+ "dur_s": {
+  "min": 17.65,
+  "max": 30.02,
+  "sum": 1778.2
+ },
+ "bytes_total_MB": 227.6,
+ "note": "官方不进行统一评分和性能比较；本文件不含评分"
+}

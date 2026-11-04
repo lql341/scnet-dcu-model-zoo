@@ -1,0 +1,21 @@
+里程碑：MiniMax-Music3 官方 60 条全量完成（单卡 BW）
+
+模型及权重版本：MiniMaxAI/MiniMax-Music3（ModelScope 快照 57.4 GB）
+  - Global LLM 8B + Local LLM 0.6B + Flow-Matching 2.4B + Flow-VAE（32 kHz 立体声）
+框架及版本：镜像内 Hygon SGLang 0.5.12 + BW 适配 harness（serve.py + music3_hygon runtime）
+torch：2.10.0+das（HIP 6.3.26113）　transformers：5.6.0　vllm：0.21.0+das
+镜像：image.ac.com:5000/dcu/acizv7iztz/base/minimax-music3-bw-sglang:20261031-rc1
+  digest sha256:20f071aada1400f6da1e887089760d7f7972a4654cfbb6b82827025aa64c4118
+设备：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡 TP=1（上游称需 2 张 CUDA 卡）
+
+执行范围：official/t03-t04/conditions/music3.jsonl，60 条（中英各 10 段歌词 × seed 42/2026/1234）
+输入：input（带 [Verse]/[Chorus] 等标签的歌词）+ instructions（音乐描述）；未使用任何参考答案
+生成参数：全部取自清单 —— max_new_tokens=750、dit_steps=30、dit_cfg_scale=1.7、
+  ar_guidance_scale=1.5、top_k=50、stream=false；backbone/RVQ bf16、声学 fp32
+产物：outputs/<id>.wav，32 kHz / 立体声 / 16 bit
+结果：60 成功 / 0 失败；评测 12179.1 s（单条平均 203 s，RTF ≈ 6.8）
+时长：17.65–30.02 s，合计 1778.2 s 音频；227.6 MB 产物不入库
+  （official-eval/samples/ 存 1 条前 5 秒片段，非官方产物）
+
+自算指标：官方明示不评分，故不计算 FAD/CLAP 等任何指标。
+备注：本文件由实测产物统计（eval_result.json）与 slurm 日志生成，未编造版本与数据。

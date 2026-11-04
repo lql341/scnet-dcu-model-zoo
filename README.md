@@ -52,7 +52,7 @@ python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [Recon2Reason-Reasoning-4B](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
 | [RoboBrain2.5-8B-NV](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
-| [MiniMax-Music3](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（官方不要求性能对比） | — | — |
+| [MiniMax-Music3](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 官方 60/60 条完成 | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | blocked | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | blocked | — | — |
 | [Qwen-Image-2.1-Turbo](models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/) | BW1000 ×1 | diffusers | bf16 | ✅ 官方 180/180 条完成 | — | — |

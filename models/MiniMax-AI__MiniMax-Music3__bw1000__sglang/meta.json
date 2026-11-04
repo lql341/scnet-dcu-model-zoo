@@ -8,12 +8,12 @@
   "framework": "sglang",
   "framework_version": "0.5.12（镜像内 Hygon 构建）+ BW 适配 harness",
   "precision": "bf16",
-  "status": "smoke",
+  "status": "official-eval",
   "bench": "not-required",
   "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件生成 32 kHz 立体声、≤750 声学帧",
   "cold_start_s": [
-    0,
-    0
+    600,
+    700
   ],
   "throughput": {
     "4k_c1": null,
@@ -24,5 +24,33 @@
     "16k_c64": null
   },
   "optimized": false,
-  "verified_on": "2026-11-04"
+  "verified_on": "2026-11-04",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/music3.jsonl",
+    "total": 60,
+    "ok": 60,
+    "fail": 0,
+    "elapsed_s": 12179.1,
+    "per_item_s": 203,
+    "params": {
+      "max_new_tokens": 750,
+      "dit_steps": 30,
+      "dit_cfg_scale": 1.7,
+      "ar_guidance_scale": 1.5,
+      "top_k": 50,
+      "stream": false
+    },
+    "output": {
+      "kind": "audio",
+      "sample_rate": 32000,
+      "channels": 2,
+      "bits": 16,
+      "dur_s": {
+        "min": 17.65,
+        "max": 30.02,
+        "sum": 1778.2
+      }
+    },
+    "note": "官方不要求评分；227.6 MB 产物不入库，仅存统计与 5 秒样例片段"
+  }
 }
