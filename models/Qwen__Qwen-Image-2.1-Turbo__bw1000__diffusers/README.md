@@ -115,6 +115,13 @@ sbatch container/submit.slurm                             # 全量 180 条
 | 180 条全量 | 59.3 min / 卡（不含镜像 load 与 pipeline 加载） |
 | 冷启动（pipeline from_pretrained + 首张） | 60–90 s |
 
+### 7.1 合批优化：显存不允许（2026-11-04 实测）
+
+想利用"同 prompt 的三个 seed 文本编码相同"来合批，实测 **batch=2 就 OOM**：
+已分配 46.56 GB、仅剩 3.84 GB、还需 6.75 GB。`use_kv_cache=True` + 2048×2048 下，
+**单张已接近 64 GB 上限**，没有合批余量。详见 [`sweep/results-batching-2026-11-04.md`](sweep/results-batching-2026-11-04.md)。
+结论：该条目的 19.8 s/张 已接近本硬件+框架的效率上限，提速只能靠换卡或换框架。
+
 ## 8. 注意事项
 
 - **transformers 版本要求不可满足**：官方要 `>=5.17.0`，PyPI 最高 5.9.0。镜像自带 5.3.0 实测可用。
