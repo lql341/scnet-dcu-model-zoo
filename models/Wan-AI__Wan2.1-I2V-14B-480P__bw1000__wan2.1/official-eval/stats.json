@@ -1,0 +1,10 @@
+{
+ "files": 60,
+ "bytes_total_MB": 375.7,
+ "dur_s": {
+  "min": 5.06,
+  "max": 5.06
+ },
+ "spec_violation_count": 0,
+ "spec_violations": []
+}

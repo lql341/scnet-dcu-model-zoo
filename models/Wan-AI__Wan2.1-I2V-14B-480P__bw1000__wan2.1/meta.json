@@ -3,17 +3,17 @@
   "org": "Wan-AI",
   "model": "Wan2.1-I2V-14B-480P",
   "card": "BW1000",
-  "cards_used": 8,
+  "cards_used": 4,
   "tp": 1,
   "framework": "wan2.1",
   "framework_version": "官方代码 9737cba（2026-11 clone）+ torch 2.9.0+das",
   "precision": "bf16",
-  "status": "smoke",
+  "status": "official-eval",
   "bench": "not-required",
   "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件产出 832×480/81 帧/16 fps 视频",
   "cold_start_s": [
-    0,
-    0
+    360,
+    420
   ],
   "throughput": {
     "4k_c1": null,
@@ -24,5 +24,34 @@
     "16k_c64": null
   },
   "optimized": false,
-  "verified_on": "2026-11-03"
+  "verified_on": "2026-11-04",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/wan_i2v.jsonl",
+    "total": 60,
+    "ok": 60,
+    "fail": 0,
+    "elapsed_s": 64175.2,
+    "per_item_s": 1116,
+    "params": {
+      "width": 832,
+      "height": 480,
+      "num_frames": 81,
+      "fps": 16,
+      "num_inference_steps": 40,
+      "guidance_scale": 5.0,
+      "sample_shift": 3.0,
+      "sample_solver": "unipc"
+    },
+    "output": {
+      "kind": "video",
+      "width": 832,
+      "height": 480,
+      "frames": 81,
+      "fps": 16,
+      "dur_s": 5.06,
+      "bytes_total_MB": 375.7,
+      "spec_violation_count": 0
+    },
+    "note": "官方不要求评分；375.7 MB 产物不入库，仅存反馈表/统计/环境说明"
+  }
 }

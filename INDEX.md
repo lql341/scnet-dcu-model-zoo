@@ -24,7 +24,7 @@
 | Qwen3-ForcedAligner-0.6B | BW1000 ×1 | transformers | bf16 | official-eval | 0–0 s | 官方 T04 明确不进行统一评分和性能比较；且 BOUNDARIES_PENDING —— 无人工词边界，仅收集预测不计算准确率 | [→](models/Qwen__Qwen3-ForcedAligner-0.6B__bw1000__transformers/) |
 | AuK-Flash | BW1000 ×1 | transformers | bf16 | official-eval | 47–47 s | 官方 T03 明确「不进行统一评分和性能比较」；AuK-Flash 为 4 步蒸馏版，条件清单 nfe=4 / cfg=0 | [→](models/Tencent-Hunyuan__AuK-Flash__bw1000__transformers/) |
 | AuK | BW1000 ×1 | transformers | bf16 | official-eval | 47–47 s | 官方 T03 明确「不进行统一评分和性能比较」；已按官方 120 条条件完成评测（参考音克隆） | [→](models/Tencent-Hunyuan__AuK__bw1000__transformers/) |
-| Wan2.1-I2V-14B-480P | BW1000 ×8 | wan2.1 | bf16 | smoke | 0–0 s | 官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件产出 832×480/81 帧/16 fps 视频 | [→](models/Wan-AI__Wan2.1-I2V-14B-480P__bw1000__wan2.1/) |
+| Wan2.1-I2V-14B-480P | BW1000 ×4 | wan2.1 | bf16 | official-eval | 360–420 s | 官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件产出 832×480/81 帧/16 fps 视频 | [→](models/Wan-AI__Wan2.1-I2V-14B-480P__bw1000__wan2.1/) |
 
 ## 失败记录（blocked）
 

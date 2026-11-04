@@ -1,0 +1,22 @@
+里程碑：Wan2.1-I2V-14B-480P 官方 60 条全量完成（4 卡 FSDP）
+
+模型及权重版本：Wan-AI/Wan2.1-I2V-14B-480P（ModelScope 快照 82.3 GB）
+  - 7 个 DiT 分片（~68 GB）+ UMT5-XXL 文本编码器（11.4 GB）+ Wan2.1 VAE
+框架及版本：官方 Wan2.1 源码 9737cba + PyTorch eager（**不改模型代码**，仅两个补丁，见下）
+torch：2.9.0+das（HIP 6.3.26093）　transformers：5.3.0（镜像自带）
+镜像：image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+设备：BW × 4（单卡 64 GiB，gfx936:sramecc+:xnack-），torchrun --nproc_per_node=4 --dit_fsdp --t5_fsdp
+
+执行范围：official/t03-t04/conditions/wan_i2v.jsonl，60 条（20 张首帧 × seed 42/2026/1234）
+输入：assets.image（首帧）+ prompt + negative_prompt；未使用任何参考答案
+生成参数（逐条取自清单）：832×480、81 帧、16 fps、40 步、unipc、shift 3.0、guidance 5.0、bf16
+补丁（入库在 patches/）：
+  0001 惰性导入 prompt_extend（评测不用扩写，免装 dashscope）
+  0002 CLI 补 --negative_prompt（官方条件清单给了该字段，上游 CLI 未暴露，但 WanI2V.generate 支持 n_prompt）
+产物：outputs/<id>.mp4
+结果：**60/60 成功，0 失败**；总耗时 64175 s（17.8 h），单条约 18.6 min
+规格：60 条全部 832×480 / 81 帧 / 16 fps（5.06 s），stats.json 校验 spec_violation_count=0
+体积：375.7 MB（不入库，超单条目 2 MB 上限）
+
+自算指标：官方明示不评分，故不计算 VBench 等任何指标。
+备注：本文件由实测产物统计（stats.json）与 slurm 日志生成，未编造版本与数据。

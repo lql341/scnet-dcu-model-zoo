@@ -1,0 +1,19 @@
+{
+ "total": 60,
+ "ok": 60,
+ "fail": 0,
+ "elapsed_s": 64175.2,
+ "spec": {
+  "width": 832,
+  "height": 480,
+  "frames": 81,
+  "fps": 16
+ },
+ "dur_s": {
+  "min": 5.06,
+  "max": 5.06
+ },
+ "bytes_total_MB": 375.7,
+ "spec_violation_count": 0,
+ "note": "官方不进行统一评分和性能比较；本文件不含评分"
+}

@@ -1,0 +1,45 @@
+--- a/hyvideo/utils/flash_attn_no_pad.py
++++ b/hyvideo/utils/flash_attn_no_pad.py
+@@ -17,6 +17,16 @@
+ from einops import rearrange
+ 
+ 
++def _unpad_compat(x, mask):
++    """兼容 flash_attn 的两个 API：老版 unpad_input 返回 4 项，新版返回 5 项。
++    DCU 镜像里的 flash_attn 是 4 项版本，而上游代码按 5 项解包 → ValueError。"""
++    r = unpad_input(x, mask)
++    if len(r) == 5:
++        return r
++    x_unpad, indices, cu_seqlens, max_s = r
++    return x_unpad, indices, cu_seqlens, max_s, None
++
++
+ def flash_attn_no_pad(
+     qkv, key_padding_mask, causal=False, dropout_p=0.0, softmax_scale=None, deterministic=False
+ ):
+@@ -26,7 +36,7 @@
+     seqlen = qkv.shape[1]
+     nheads = qkv.shape[-2]
+     x = rearrange(qkv, "b s three h d -> b s (three h d)")
+-    x_unpad, indices, cu_seqlens, max_s, used_seqlens_in_batch = unpad_input(
++    x_unpad, indices, cu_seqlens, max_s, used_seqlens_in_batch = _unpad_compat(
+         x, key_padding_mask
+     )
+ 
+@@ -62,13 +72,13 @@
+     batch_size, seqlen, _, nheads, head_dim = qkv.shape
+     query, key, value = qkv.unbind(dim=2)
+     
+-    query_unpad, indices, cu_seqlens_q, max_seqlen_q, _ = unpad_input(
++    query_unpad, indices, cu_seqlens_q, max_seqlen_q, _ = _unpad_compat(
+         rearrange(query, "b s h d -> b s (h d)"), key_padding_mask
+     )
+-    key_unpad, _, cu_seqlens_k, _, _ = unpad_input(
++    key_unpad, _, cu_seqlens_k, _, _ = _unpad_compat(
+         rearrange(key, "b s h d -> b s (h d)"), key_padding_mask
+     )
+-    value_unpad, _, _, _, _ = unpad_input(
++    value_unpad, _, _, _, _ = _unpad_compat(
+         rearrange(value, "b s h d -> b s (h d)"), key_padding_mask
+     )
+     
