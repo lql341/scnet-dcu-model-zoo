@@ -3,6 +3,7 @@
 # 假设：graph 默认按 max-running-requests 捕获过多 batch size，长上下文时挤占 KV cache
 # 手段：--cuda-graph-max-bs 限制捕获上界 / 提高 mem-fraction-static / chunked-prefill
 # 只测 16K/c64 与 16K/c8，1 轮；TP=4（权重 91.5 G，必须 4 卡）
+# 注意：Kimi 需要 --trust-remote-code（首版漏了，5 个变体全部启动失败）
 # 注意：本集群 sbatch 命令行 --gres 覆盖无效，卡数只能改文件头
 #SBATCH -p hx1hdnormal
 #SBATCH -N 1
@@ -37,7 +38,7 @@ run_variant() {
   echo ""; echo "########## $TAG  $*"
   pkill -9 -f "sglang.launch_server" 2>/dev/null; sleep 10
   python3 -m sglang.launch_server --model-path "$M" --served-model-name "$NAME" \
-    --host 127.0.0.1 --port $PORT --tp 4 --attention-backend triton \
+    --host 127.0.0.1 --port $PORT --tp 4 --attention-backend triton --trust-remote-code \
     --mem-fraction-static 0.85 --max-running-requests 64 --context-length 20480 "$@" > "$W/srv-$TAG.log" 2>&1 &
   local OK=0
   for t in $(seq 1 240); do

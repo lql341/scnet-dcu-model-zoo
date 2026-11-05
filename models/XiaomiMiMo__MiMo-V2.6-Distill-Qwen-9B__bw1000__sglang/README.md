@@ -402,6 +402,13 @@ bash bench.sh
 
 vLLM 件使用 `--enforce-eager`（关闭 CUDA Graph）且沿用默认 `max_num_seqs`，尚未做同类参数扫描，因此不代表其上限。两件各自作为自己的性能基准。
 
+
+### 7.1 16K 档调参结论（2026-11-05，2 轮验证）
+
+`--chunked-prefill-size 4096` + CUDA Graph：16K/c64 均值 **315.2**（base 296.0，+6.5%），
+16K/c8 223（base 218）。两轮都优于基线，但单轮波动 ±7%，所以只记为"小幅稳定增益"。
+完整数据与机理见 [`sweeps/results-16k-tuning-2026-11-05.md`](../../../sweeps/results-16k-tuning-2026-11-05.md)。
+
 ## 8. 注意事项
 
 > 主动说明的问题不扣分，评审复跑时才发现会打回。
