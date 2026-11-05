@@ -282,8 +282,10 @@ WARNING [chunked_prefill_paged_decode.py:400] Cannot use ROCm custom paged atten
 | `VLLM_ATTENTION_BACKEND=FLASH_ATTN` | 无变化 |
 | `--kv-cache-dtype fp8` | **更差**（TPOT 119→127 ms） |
 | `--tensor-parallel-size 2` | 启动失败（见下条坑） |
+| **`VLLM_USE_V1=0`（退回 v0 引擎）** | **完全无效**：16K/c1 8.19 vs 8.19、16K/c8 44.86 vs 44.85（2026-11-05 实测） |
 
-**结论**：这是**内核缺失**，不是配置问题。要补只能自建镜像（重编 aiter / 换 v0 引擎 / 改用 SGLang）。
+**结论**：这是**内核缺失**，不是配置问题、也不是 v1 引擎调度的问题（v0 实测同等）。
+要补只能自建镜像（重编 aiter），或者干脆改用 SGLang。
 
 **两条附带的新坑**：
 

@@ -5,7 +5,7 @@
 # 注意：本集群 sbatch 命令行的 --gres 覆盖无效，卡数只能改文件头
 #SBATCH -p hx1hdnormal
 #SBATCH -N 1
-#SBATCH --gres=dcu:4          # 本集群 sbatch 命令行 --gres 覆盖无效，只能改文件头
+#SBATCH --gres=dcu:1          # 多卡 SP 在这套环境上 build_mesh 失败（设备可见性），先用单卡跑完
 #SBATCH -c 16
 #SBATCH -t 2-00:00:00
 #SBATCH -J omniweaving

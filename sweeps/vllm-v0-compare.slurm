@@ -24,7 +24,10 @@ FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostn
 [ "$FREE" -lt 45 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 $PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/dev/null 2>&1
 $PD image exists "$IMG" || { echo "[host] image unavailable"; exit 1; }
-[ -s "$CLITAR" ] && $PD load -i "$CLITAR" >/dev/null 2>&1
+# 本机未压缩 tar 已清理（25 GB 冗余），缺 tar 时直接 pull
+if [ -s "$CLITAR" ]; then $PD load -i "$CLITAR" >/dev/null 2>&1; fi
+$PD image exists "$CLIIMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$CLIIMG" >/dev/null 2>&1
+$PD image exists "$CLIIMG" || { echo "[host] CLI image unavailable"; exit 1; }
 cat > "$WORK/tiers.sh" <<'EOS'
 set -uo pipefail
 TAG=$1; PORT=$2; W=/work; MODEL=/models/MiMo; NAME=mimo-v2.6-9b
