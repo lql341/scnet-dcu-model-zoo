@@ -16,9 +16,14 @@ echo "已装 $n，失败 $f"
 
 echo '--- 复制源码并打补丁（源码只读挂载）---'
 rm -rf /opt/omni-src && cp -r /omni-src /opt/omni-src
+# 只应用与本条目源码匹配的补丁：先 dry-run，不匹配就显式报错并跳过（避免拷错补丁目录时误判）
 for p in /work/repo/patches/*.patch; do
   [ -e "$p" ] || continue
-  echo "  apply $(basename "$p")"; patch -p1 -d /opt/omni-src < "$p" || exit 5
+  if patch -p1 --dry-run -d /opt/omni-src < "$p" >/dev/null 2>&1; then
+    echo "  apply $(basename "$p")"; patch -p1 -d /opt/omni-src < "$p" >/dev/null || exit 5
+  else
+    echo "  [skip] $(basename "$p") 与本源码不匹配（dry-run 失败）"
+  fi
 done
 export PYTHONPATH=/opt/omni-libs:/opt/omni-src:${PYTHONPATH:-}
 export OMNI_SRC=/opt/omni-src
