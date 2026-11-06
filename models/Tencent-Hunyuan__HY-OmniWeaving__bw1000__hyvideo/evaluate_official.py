@@ -52,7 +52,10 @@ def main():
                "--model_path", model,
                "--task", "t2v",
                "--resolution", "480p",
-               "--aspect_ratio", "16:9",
+               # 【关键】官方条件是 832×480；该 pipeline 按"比例"从桶列表里挑尺寸，
+               # 传 16:9（0.5625）会落到 848×480 桶。传 "832:480" 才能精确命中 (832,480) 桶。
+               # 实测踩过：用 16:9 跑完 60 条，产物全是 848×480（宽 +2%）。
+               "--aspect_ratio", f"{int(p.get('width', 832))}:{int(p.get('height', 480))}",
                "--video_length", str(int(p.get("num_frames", 81))),
                "--num_inference_steps", str(int(p.get("num_inference_steps", 50))),
                "--total_steps", str(int(p.get("num_inference_steps", 50))),

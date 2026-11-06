@@ -49,6 +49,7 @@
 | `patches/0001-flash-attn-unpad-compat.patch` | 镜像 flash_attn 的 `unpad_input` 返回 4 项，上游按 5 项解包 → `ValueError`。补丁加 `_unpad_compat()` 兼容两种签名（**不改注意力数学**） |
 | `--offloading true`（默认） | 32 G DiT + 16 G MLLM 单卡装不下，走 CPU offload 逐组搬运 |
 | `think=False` | 官方条件 `params.think=false`，不启用 MLLM thinking 模式 |
+| **`--aspect_ratio 832:480`（不能用 16:9）** | pipeline 按比例从 121 个尺寸桶里挑，`16:9` 会落到 **848×480**；`832:480` 才能精确命中官方要求的 832×480。**首轮 60 条因此全是 848×480，已作废重跑** |
 
 ### 3.4 升级步骤
 
