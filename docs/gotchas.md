@@ -302,7 +302,11 @@ WARNING [chunked_prefill_paged_decode.py:400] Cannot use ROCm custom paged atten
 `RuntimeError: Engine core initialization failed. Failed core proc(s): {}`，
 子进程真正的报错没有落盘。同一命令去掉 `--quantization fp8` 后 160 s 内正常起服务。
 
-**影响**：本仓库 13 个条目至今**没有任何量化覆盖**（全 bf16）。这不是"没试"，是这条路上没有现成内核。
+**后续（2026-11-06）**：`--quantization fp8` 确实不行，但 **AWQ（weight-only INT4）可以跑**：
+`awq_marlin` 会退到 `TritonW4A16LinearKernel`，服务能起、生成正常。代价是慢——4K/c64 只有 185 tok/s
+（bf16 的 MiMo-9B 是 998），TPOT 是 4–6 倍。详见 `sweeps/results-awq-2026-11-06.md`。
+
+**影响**：本仓库除 AWQ 探针外**没有量化条目**（全 bf16）。这不是"没试"，是 fp8 这条路没有现成内核。
 
 **要量化需要**（按成本排序）：
 1. 权重侧量化（GPTQ/AWQ/INT8）—— 需要有对应模型的量化权重发布，或用 `llm-compressor` 自行量化；
