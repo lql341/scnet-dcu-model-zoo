@@ -1,0 +1,8 @@
+{
+ "files": 30,
+ "kind": "words",
+ "total": 30,
+ "ok": 30,
+ "spec_violation_count": 0,
+ "note": "词级起止时间 JSON；官方 BOUNDARIES_PENDING 不评分"
+}

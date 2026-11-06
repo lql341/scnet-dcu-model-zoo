@@ -251,10 +251,14 @@ zoo/
 
 ```bash
 cd ~/Downloads/pi-test/zoo
-./tools/lint_entry.sh        # 规范校验（含 meta↔summary 逐字比对）
-python3 tools/gen_index.py   # 重生成 INDEX.md 与 README 总矩阵
-./tools/check_quota.sh       # 体积守门（单条目 ≤2 MB / 全库 ≤25 MB）
+./tools/lint_entry.sh            # 规范校验（含 meta↔summary 逐字比对）
+python3 tools/gen_index.py       # 重生成 INDEX.md 与 README 总矩阵
+./tools/check_quota.sh           # 体积守门（单条目 ≤2 MB / 全库 ≤25 MB）
+python3 tools/check_products.py  # 产物规格守门（stats.json 必须与条件清单 expected 一致）
 ```
+
+> `check_products.py` 是 2026-11-05 那次事故的产物：OmniWeaving 跑完 60 条后只验"文件存在且 >200 KB"，
+> 实际全是 848×480（要 832×480），26 卡时白烧。现在"规格"是入库的硬门槛。
 
 > **lint 已两次抓到我的错**：手打 §7.2 表格数字与 `bench/summary.md` 不一致；
 > `meta.throughput` 取错列（把 `total_throughput` 当成 `output_throughput`，差 5 倍）。

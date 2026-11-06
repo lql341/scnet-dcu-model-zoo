@@ -43,9 +43,10 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 - 推送到自有命名空间（手动）：[docs/manual-push.md](docs/manual-push.md)
 
 ```bash
-./tools/lint_entry.sh      # 按 docs/entry-spec.md 校验所有条目
-python3 tools/gen_index.py # 从 meta.json 重生成 INDEX.md 与下方总矩阵
-./tools/check_quota.sh     # 体积守门：单条目 ≤2 MB，全库 ≤25 MB
+./tools/lint_entry.sh        # 按 docs/entry-spec.md 校验所有条目
+python3 tools/gen_index.py   # 从 meta.json 重生成 INDEX.md 与下方总矩阵
+./tools/check_quota.sh       # 体积守门：单条目 ≤2 MB，全库 ≤25 MB
+python3 tools/check_products.py  # 产物规格守门：official_eval 的 stats 必须与条件清单一致
 ```
 
 ## 跑通矩阵

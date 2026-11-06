@@ -1,0 +1,13 @@
+{
+ "files": 60,
+ "bytes_total_MB": 227.6,
+ "dur_s": {
+  "min": 17.65,
+  "max": 30.02,
+  "sum": 1778.2
+ },
+ "sample_rate": 32000,
+ "channels": 2,
+ "spec_violation_count": 0,
+ "note": "由 eval_result.json 的实测统计生成（32 kHz / 2ch 全量抽检通过）"
+}

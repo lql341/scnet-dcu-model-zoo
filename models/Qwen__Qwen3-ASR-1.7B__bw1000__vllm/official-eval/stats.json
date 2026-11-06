@@ -1,0 +1,8 @@
+{
+ "files": 300,
+ "kind": "text",
+ "total": 300,
+ "ok": 300,
+ "spec_violation_count": 0,
+ "note": "产物为 UTF-8 文本，规格校验=可解码且非空；条数与 eval_result 一致"
+}
