@@ -188,6 +188,17 @@ python3 -m vllm.entrypoints.openai.api_server \
 要量化只能自建镜像（量化权重 + DCU 可编译的量化 kernel），详见 `docs/gotchas.md` #22。
 **注意**：子集数字不能与全量 300 条的 1.21% / 0.65% 直接比较（数据不同）。
 
+### 7.2 离线批吞吐（2026-11-06 实测，60 条子集）
+
+| 配置 | 60 条耗时 | CER / WER |
+| --- | ---: | --- |
+| 现状 `--max-num-seqs 16` + 4 并发 | 30 s | 0.10% / 0.53% |
+| `--max-num-seqs 64` + 16 并发 | **27 s（−10%）** | 0.10% / 0.53% |
+| `--max-num-seqs 128` + 32 并发 | **26 s（−13%）** | 0.10% / 0.53% |
+
+瓶颈在音频解码 + 编码器前向，不在解码调度，所以收益有限且 64 之后饱和；**精度零变化**。
+详见 [`sweeps/results-asr-throughput-2026-11-06.md`](../../../sweeps/results-asr-throughput-2026-11-06.md)。
+
 ## 8. 注意事项
 
 - **base64 不能内联进 `curl -d`**：103 KB 音频编码后约 138 KB，会触发 `Argument list too long`。`smoke.sh` 改为先写 `/tmp/asr_req.json` 再 `--data @file`。
