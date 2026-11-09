@@ -542,6 +542,16 @@ python3 -m pip download --no-deps --dest wheels \
 **问平台时要问的三句**：① `scnethr2601a10` 是否仍是有效赛事账号；② 它是否仍被允许提交到 `hx1hdnormal`；
 ③ 若已停用，`luql` 账号能否获得该分区权限（同时解决 §9 的 P0-5「luql 郑州 SSH 被拒」）。
 
+### 2026-11-09 归档动作（详见 `docs/ARCHIVE-SUMMARY.md`）
+
+| 内容 | 去哪 | 状态 |
+| --- | --- | --- |
+| 代码/经验/条件清单/日志 | GitHub + GitLab（本仓库） | ✅ 已同步 |
+| 990 条官方条件产物（628 MB） | 本机 `pi-test/archive/` + **luql 郑州 `/public/home/luql/zoo-archive-2026-11/`** | ✅ 已上传 |
+| 依赖包/源码/harness（177 MB） | 同上 | ✅ 已上传 |
+| 3 个镜像归档（30.3 GB） | 同上，按 500 MB 分块（`images/*.partNNN`） | 🟡 上传中（约 1.7 MB/s，需 ~4.5 h） |
+| 权重、Qwen-Image 1.1 GB 产物、未压缩镜像 tar | 不归档（可重下/可重跑） | — |
+
 **恢复后的第一件事**（产物续跑，只补剩下 7 条，约 3.5 h）：
 ```bash
 ssh zzeshell-hz1 'cd ~/work/zoo-omni && sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm'
