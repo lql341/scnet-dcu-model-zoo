@@ -10,10 +10,26 @@
 | 层 | 位置 | 内容 | 状态 |
 | --- | --- | --- | --- |
 | ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 15 个条目、docs/gotchas（23 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
-| ② 产物与归档（二进制） | 本机 `~/Downloads/pi-test/archive/2026-11-products/` + **luql 郑州目录 `/public/home/luql/zoo-archive-2026-11/`** | 990 条官方条件的真实产物、3 个镜像 tar.gz、wheel 集、源码包 | 🟡 产物已双向备份；镜像分块上传中 |
+| ② 产物与归档（二进制） | **luql 郑州目录 `/public/home/luql/archive/zoo-dcu-2026-11/`（唯一权威副本）** | 990 条官方条件的真实产物、3 个镜像 tar.gz、wheel 集、源码包 | 🟡 上传中；**完成后删除本机中转副本，不再保留两份** |
 | ③ 原集群（即将失效） | `scnethr2601a10:~/work`、`~/zoo-images`、`~/models` | 同上 + 权重（可重下） | ⚠️ 账号被回收，随时可能清空 |
 
 ---
+
+## 1.5 目录约定（重要）
+
+**二进制归档只放一处**：`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（与 luql 既有的
+`archive/` 归档放一起）。本机 `~/Downloads/pi-test/archive/` 只是**上传中转**，校验通过后即删除。
+
+```text
+/public/home/luql/archive/zoo-dcu-2026-11/
+├── zoo-products-2026-11.tar.gz      628 MB  990 条官方条件产物 + 统计 + MANIFEST
+├── zoo-assets-2026-11.tar.gz        177 MB  轮子/源码/harness
+├── omniweaving-products.tar.gz       17 MB  OmniWeaving 产物（单抽）
+└── images/                          30.3 GB 3 个镜像，500 MB 分块（*.pNNN），拼回后校验 sha256
+```
+
+> 早期误传到 `/public/home/luql/zoo-archive-2026-11/`（顶层目录）的 3 个包 + 14 个镜像分块，
+> 因 OpenAPI 无删除/移动接口，需在平台网页端手动删除，避免留成第二份。
 
 ## 2. 产物清单（已上传 luql 郑州目录）
 
