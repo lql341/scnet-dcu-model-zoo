@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BW1000（海光 DCU）大模型适配 —— 结项报告</title>
+<style>
+:root {
+  --bg:#0e1116; --panel:#161b22; --panel2:#1c2430; --line:#2b3441;
+  --fg:#e6edf3; --dim:#9aa7b8; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+  --info:#58a6ff; --accent:#7ee787;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; }
+.wrap { max-width:1180px; margin:0 auto; padding:48px 28px 90px; }
+h1 { font-size:34px; line-height:1.25; margin:0 0 10px; letter-spacing:-.02em; }
+h2 { font-size:22px; margin:52px 0 16px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+h3 { font-size:17px; margin:28px 0 12px; color:var(--accent); }
+p, li { color:#c9d4e0; }
+.sub { color:var(--dim); font-size:14px; }
+.mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; }
+.small { font-size:12px; }
+.hero { background:linear-gradient(150deg,#182030,#11161d); border:1px solid var(--line);
+  border-radius:16px; padding:26px 28px; margin:22px 0 8px; }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:14px; margin:26px 0 8px; }
+.kpi { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+.kpi .v { font-size:28px; font-weight:700; letter-spacing:-.02em; }
+.kpi .k { color:var(--dim); font-size:12.5px; margin-top:2px; }
+.kpi.ok .v { color:var(--ok); } .kpi.warn .v { color:var(--warn); } .kpi.info .v { color:var(--info); }
+table { width:100%; border-collapse:collapse; margin:14px 0 8px; font-size:13.5px; }
+th, td { padding:9px 11px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+th { color:var(--dim); font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em;
+  background:var(--panel2); }
+tr:hover td { background:#1a212b; }
+td.num { text-align:right; font-variant-numeric:tabular-nums;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; }
+td.strong { color:var(--accent); font-weight:700; }
+td.ok { color:var(--ok); } td.warn { color:var(--warn); } td.bad { color:var(--bad); }
+.badge { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; white-space:nowrap; }
+.badge.ok { background:rgba(63,185,80,.15); color:var(--ok); border:1px solid rgba(63,185,80,.35); }
+.badge.warn { background:rgba(210,153,34,.15); color:var(--warn); border:1px solid rgba(210,153,34,.35); }
+.badge.info { background:rgba(88,166,255,.13); color:var(--info); border:1px solid rgba(88,166,255,.3); }
+.badge.bad { background:rgba(248,81,73,.13); color:var(--bad); border:1px solid rgba(248,81,73,.32); }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin:14px 0; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:820px) { .grid2 { grid-template-columns:1fr; } }
+ul { padding-left:20px; } li { margin:7px 0; }
+.gnum { color:var(--info); font-family:ui-monospace,monospace; margin-right:4px; }
+code { background:#0b0f14; border:1px solid var(--line); border-radius:5px; padding:1px 5px;
+  font-family:ui-monospace,Menlo,monospace; font-size:12.5px; }
+pre { background:#0b0f14; border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+  overflow-x:auto; font-size:12.5px; line-height:1.6; }
+pre code { background:none; border:none; padding:0; }
+.note { border-left:3px solid var(--warn); background:rgba(210,153,34,.07); padding:12px 16px;
+  border-radius:0 8px 8px 0; margin:14px 0; }
+.good { border-left:3px solid var(--ok); background:rgba(63,185,80,.07); padding:12px 16px;
+  border-radius:0 8px 8px 0; margin:14px 0; }
+footer { margin-top:60px; padding-top:22px; border-top:1px solid var(--line); color:var(--dim); font-size:13px; }
+a { color:var(--info); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>BW1000（海光 DCU）大模型适配 —— 结项报告</h1>
+<p class="sub">2026-11-09 · 15 个条目 · 923 条官方条件真实产物 · 3 个镜像归档（31 GB）· 24 条踩坑 · 5 条硬约束</p>
+
+<div class="hero">
+<p style="margin:0 0 10px"><b>一句话</b>：在一张 64 GB 的海光 BW1000 上，把 T03/T04 官方 8 个模型中的 6 个跑到官方条件全绿
+（另 1 个 53/60、1 个未做），并沉淀出可复现的镜像归档、24 条踩坑与 5 条换谁都绕不过的硬约束。</p>
+<p style="margin:0"><b>为什么现在结项</b>：<code>scnethr2601a10</code> 于 2026-11-07 被移出分区
+<code>AllowAccounts</code>；<code>luql</code> 有 SSH 但无卡权限。两个账号都无法再提交作业。
+所有数据、镜像、经验已在结项前完成三层保全。</p>
+</div>
+
+<div class="kpis">
+  <div class="kpi ok"><div class="v">7</div><div class="k">官方评测全绿</div></div>
+  <div class="kpi warn"><div class="v">1</div><div class="k">部分完成（53/60）</div></div>
+  <div class="kpi info"><div class="v">3</div><div class="k">完整 6 档基准</div></div>
+  <div class="kpi"><div class="v">923</div><div class="k">真实产物（官方清单 935）</div></div>
+  <div class="kpi"><div class="v">31 GB</div><div class="k">镜像+产物归档</div></div>
+  <div class="kpi"><div class="v">24</div><div class="k">踩坑条目</div></div>
+</div>
+
+<h2>1. 条目总览</h2>
+<p class="sub">按状态排序。官方样本列为已完成条数；单条耗时单位秒。</p>
+<table>
+<thead><tr><th>模型</th><th>框架</th><th>精度</th><th>卡</th><th>状态</th>
+<th>官方样本</th><th>单条 s</th><th>4K/c64 tok/s</th><th>16K/c8 tok/s</th></tr></thead>
+<tbody>
+<tr><td class='mono'>Qwen3-ASR-1.7B</td><td>vllm</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>300/300</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Qwen-Image-2.1-Turbo</td><td>diffusers</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>180/180</td><td class='num'>19.8</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>AuK</td><td>transformers</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>120/120</td><td class='num'>4.4</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>AuK-Flash</td><td>transformers</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>120/120</td><td class='num'>1.0</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>MiniMax-Music3</td><td>sglang</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>60/60</td><td class='num'>203.0</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Wan2.1-I2V-14B-480P</td><td>wan2.1</td><td>bf16</td><td class='num'>4</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>60/60</td><td class='num'>1116.0</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Qwen3-ForcedAligner-0.6B</td><td>transformers</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>官方评测完成</span></td><td class='num'>30/30</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>HY-OmniWeaving</td><td>hyvideo</td><td>bf16</td><td class='num'>1</td><td><span class='badge warn'>部分完成</span></td><td class='num'>53/60</td><td class='num'>1560.0</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Kimi-Linear-48B-A3B-Instruct</td><td>sglang</td><td>bf16</td><td class='num'>4</td><td><span class='badge ok'>6 档基准</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>839.00</td><td class='num'>119.21</td></tr><tr><td class='mono'>MiMo-V2.6-Distill-Qwen-9B</td><td>sglang</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>6 档基准</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>998.05</td><td class='num'>308.72</td></tr><tr><td class='mono'>MiMo-V2.6-Distill-Qwen-9B</td><td>vllm</td><td>bf16</td><td class='num'>1</td><td><span class='badge ok'>6 档基准</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>489.52</td><td class='num'>44.83</td></tr><tr><td class='mono'>Recon2Reason-Reasoning-4B</td><td>sglang</td><td>bf16</td><td class='num'>1</td><td><span class='badge info'>仅 smoke</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>RoboBrain2.5-8B-NV</td><td>sglang</td><td>bf16</td><td class='num'>1</td><td><span class='badge info'>仅 smoke</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Trident-Qwen3VL-2B</td><td>sglang</td><td>bf16</td><td class='num'>1</td><td><span class='badge bad'>受阻</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr><tr><td class='mono'>Trident-Qwen3VL-2B</td><td>vllm</td><td>bf16</td><td class='num'>1</td><td><span class='badge bad'>受阻</span></td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td><td class='num'>—</td></tr>
+</tbody>
+</table>
+<p class="sub">状态分布：official-eval 7 · partial 1 · bench 3 · smoke 2 · blocked 2</p>
+
+<h2>2. 核心数据：同模型跨框架硬对比</h2>
+<p>MiMo-9B，同一张 64 GB BW1000，同一套压测客户端与有效性校验（<code>preflight_lib.py</code> 挡掉「HTTP 400 当成功」的假数据）。</p>
+<table>
+<thead><tr><th>档位</th><th>SGLang 0.5.10</th><th>vLLM 0.20</th><th>vLLM 相对</th></tr></thead>
+<tbody><tr><td class='mono'>4K / c1</td><td class='num strong'>44.31</td><td class='num'>20.73</td><td class='num bad'>-53%</td></tr><tr><td class='mono'>4K / c8</td><td class='num strong'>360.23</td><td class='num'>160.63</td><td class='num bad'>-55%</td></tr><tr><td class='mono'>4K / c64</td><td class='num strong'>998.05</td><td class='num'>489.52</td><td class='num bad'>-51%</td></tr><tr><td class='mono'>16K / c1</td><td class='num strong'>41.47</td><td class='num'>8.19</td><td class='num bad'>-80%</td></tr><tr><td class='mono'>16K / c8</td><td class='num strong'>308.72</td><td class='num'>44.83</td><td class='num bad'>-85%</td></tr><tr><td class='mono'>16K / c64</td><td class='num strong'>299.81</td><td class='num'>100.82</td><td class='num bad'>-66%</td></tr></tbody>
+</table>
+<div class="note">
+<b>结论</b>：这张卡上 SGLang 全面优于 vLLM，长上下文差距拉到 <b>5–7 倍</b>，且<b>不是参数问题</b> ——
+启动日志显示 <code>Cannot use ROCm custom paged attention kernel, falling back to Triton</code>，
+即 DCU 上没有 paged-attention 内核，只有 Triton 兜底实现（见 §5 硬约束 1）。
+</div>
+
+<h2>3. 性能与优化（都是实测）</h2>
+<div class="grid2">
+<div class="card">
+<h3>Kimi-Linear-48B × SGLang（TP=4）6 档</h3>
+<table><thead><tr><th>档位</th><th>output tok/s</th></tr></thead>
+<tbody><tr><td class='mono'>4K / c1</td><td class='num strong'>104.67</td></tr><tr><td class='mono'>4K / c8</td><td class='num strong'>353.53</td></tr><tr><td class='mono'>4K / c64</td><td class='num strong'>839.00</td></tr><tr><td class='mono'>16K / c1</td><td class='num strong'>50.80</td></tr><tr><td class='mono'>16K / c8</td><td class='num strong'>119.21</td></tr><tr><td class='mono'>16K / c64</td><td class='num strong'>234.17</td></tr></tbody></table>
+</div>
+<div class="card">
+<h3>优化手段与收益</h3>
+<table>
+<thead><tr><th>手段</th><th>收益</th></tr></thead>
+<tbody>
+<tr><td>SGLang <code>max-running-requests 8→64</code> + 开 CUDA Graph</td><td class="ok">+73% ~ +466%</td></tr>
+<tr><td>vLLM 去 <code>--enforce-eager</code> + <code>max-num-seqs 128</code></td><td class="ok">+3% ~ +32%</td></tr>
+<tr><td>Kimi 开 CUDA Graph</td><td class="ok">+37.9% ~ +620.8%</td></tr>
+<tr><td>16K 档 <code>--chunked-prefill-size 4096</code></td><td class="ok">+5% ~ +8%</td></tr>
+<tr><td>AuK → AuK-Flash（4 步蒸馏权重）</td><td class="ok">4.4×</td></tr>
+<tr><td>ASR <code>--max-num-seqs 64</code> + 16 并发</td><td class="ok">−10% 耗时</td></tr>
+<tr><td>AWQ（weight-only INT4）</td><td class="bad">慢 5×（显存收益真实）</td></tr>
+</tbody></table>
+</div>
+</div>
+
+<h2>4. 五条硬约束（换框架、换参数都过不去）</h2>
+<table>
+<thead><tr><th>#</th><th>约束</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td><b>vLLM 在 DCU 上没有 paged-attention 内核</b>，只有 Triton 兜底</td>
+<td>五个旋钮全试过全部无效：chunked 切片 / AITER / backend 覆盖 / fp8 KV / TP=2 / <b>v0 引擎</b>。16K TPOT 119 ms（SGLang 24 ms）</td></tr>
+<tr><td class="num">2</td><td><b>fp8 在线量化无内核</b></td><td><code>--quantization fp8</code> → engine core 初始化即失败</td></tr>
+<tr><td class="num">3</td><td><b>14B 级视频模型单卡装不下</b></td><td>Wan2.1 单卡 OOM（offload + t5_cpu 仍打满 63.98 GB）→ 必须 4 卡 FSDP</td></tr>
+<tr><td class="num">4</td><td><b>2048² 文生图没有合批余量</b></td><td>Qwen-Image batch=2 即 OOM（已分配 46.56 GB / 剩 3.84 / 需 6.75）</td></tr>
+<tr><td class="num">5</td><td><b>HY-World 重建需 ROCm 版 gsplat</b></td><td><code>worldrecon/rasterization.py</code> 硬 import gsplat；官方要 py3.11 + FA2/FA3</td></tr>
+</tbody>
+</table>
+
+<h2>5. 技术路线（可复用的方法论）</h2>
+<div class="card">
+<h3>5.1 三层环境隔离</h3>
+<p>镜像（不动）→ <code>/opt/*-libs</code>（<code>--no-deps</code> + <b>cp310</b> 轮子）→ <code>PYTHONPATH</code> 前置。
+永不 <code>pip install</code> 到系统目录，永不升级镜像里的 torch。<br>
+<i>为什么强调 cp310：按宿主机 py3.12 下载的轮子装进 py3.10 镜像，pip 会静默拒装，表现为
+<code>ModuleNotFoundError</code>，曾把两个条目误判成 blocked。</i></p>
+
+<h3>5.2 参数只从条件清单读</h3>
+<p>官方 <code>conditions/*.jsonl</code> 是唯一权威。曾因写死 <code>use_kv_cache</code> 却不传
+<code>num_inference_steps</code>，实际按 pipeline 默认 40 步跑（官方要 8 步），180 条产物差点全废。</p>
+
+<h3>5.3 验规格，不验「作业成功」</h3>
+<p>音频看 24 kHz/单声道、图像看 2048²、视频看 81 帧/16 fps，<code>spec_violation_count</code> 必须为 0。<br>
+<i>OmniWeaving 首轮 60 条「全部成功」，实际是 848×480（官方要 832×480）——
+因为 <code>--aspect_ratio 16:9</code> 落到了最近的尺寸桶。这是靠逐条读 mp4 header 才发现的，
+只看「文件存在且 &gt;200 KB」会一路绿到底。</i> 现在有 <code>tools/check_products.py</code> 守门。</p>
+
+<h3>5.4 续跑优先</h3>
+<p>单条 1–26 min 的任务一律「产物存在则跳过」。<b>收益是实测的</b>：账号被回收时 OmniWeaving
+跑了 22 小时被砍，53/60 产物完好，只需补 3.5 小时。</p>
+
+<h3>5.5 阴性结论同样入库</h3>
+<p>不可行的路径要写清「试了什么、错在哪、什么条件才能过」，避免下个会话重复烧卡时。
+§4 的五条硬约束和 §3 的「不必再做的清单」都是这么来的。</p>
+
+<h3>5.6 归档先于结论</h3>
+<p>镜像/轮子在用完之后立刻归档 + sha256 + <b>功能性还原验证</b>（不是只算哈希：真的 load 起来跑一条）。
+三个镜像现在是唯一能复现这套环境的资产。</p>
+</div>
+
+<h2>6. 可复现性资产</h2>
+<table>
+<thead><tr><th>资产</th><th>位置</th><th>校验</th></tr></thead>
+<tbody>
+<tr><td>SGLang 镜像 7.9 GB</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/images/</td><td>sha256 <code>f16125ba…</code> + load/smoke</td></tr>
+<tr><td>vLLM 镜像 8.7 GB</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/images/</td><td>sha256 <code>986f95a3…</code> + load/smoke</td></tr>
+<tr><td>Music3 镜像 13.7 GB</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/images/</td><td>sha256 <code>b61b05bd…</code> + 还原跑通 1 条</td></tr>
+<tr><td>923 条官方条件产物</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/products/</td><td>与各条目 meta.json 的 ok 数一致</td></tr>
+<tr><td>调优原始数据 34 个 jsonl</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/products/optimizations/</td><td>§3 所有结论的证据</td></tr>
+<tr><td>cp310 轮子 4 套 + 源码 3 份</td><td class="mono">/public/home/luql/archive/zoo-dcu-2026-11/assets/ · sources/</td><td>包内 sha256 清单</td></tr>
+<tr><td>代码/文档/条件清单/日志</td><td>GitHub <code>lql341/scnet-dcu-model-zoo</code><br>GitLab <code>luql/scnet-dcu-model-zoo</code></td><td>双远端同 commit</td></tr>
+</tbody>
+</table>
+
+<h2>7. 踩坑清单（24 条，按隐蔽度排序）</h2>
+<div class="card"><ul><li><span class='gnum'>#1</span> `/dev/mkfd` 必须传（最难定位）</li><li><span class='gnum'>#2</span> CUDA Graph 的假陷阱</li><li><span class='gnum'>#3</span> `/etc/subuid` 为空导致 rootless podman 无法解包</li><li><span class='gnum'>#4</span> 容器存储不能放 NFS</li><li><span class='gnum'>#5</span> 私有 registry 的自签证书 + 只读 client key</li><li><span class='gnum'>#6</span> rootless podman 缺 runtime 目录</li><li><span class='gnum'>#7</span> 不要用宿主 DTK 覆盖容器内 `/opt/dtk`</li><li><span class='gnum'>#8</span> `libmsgpackc.so.2` 藏在 lightop 里</li><li><span class='gnum'>#9</span> Notebook 镜像的 ENTRYPOINT 会吞掉命令</li><li><span class='gnum'>#10</span> `/tokenize` 在大词表模型上会 500</li><li><span class='gnum'>#11</span> `--context-length` 必须留余量（会产出假数据）</li><li><span class='gnum'>#12</span> sbatch 下 `$0` 不是脚本路径</li><li><span class='gnum'>#13</span> 节点根盘水位极不稳定</li><li><span class='gnum'>#14</span> 多卡容器：`HIP error: invalid device ordinal`</li><li><span class='gnum'>#15</span> SGLang 默认选到的 `aiter` attention backend 残缺</li><li><span class='gnum'>#16</span> 容器保活后，容器状态不再能反映服务健康</li><li><span class='gnum'>#17</span> `Qwen3VLForEmbedding` 两个框架都不支持</li><li><span class='gnum'>#18</span> 离线 wheel 是按 `cp312` 下的，容器却是 py3.10（最贵的一次误判）</li><li><span class='gnum'>#19</span> `torchaudio.save()` 同样要走 torchcodec</li><li><span class='gnum'>#20</span> 官方条件清单里的 `params` 必须逐条读取，别信 pipeline 默认值</li><li><span class='gnum'>#21</span> vLLM 在 DCU 上的 16K decode 慢 5–7 倍，且**任何参数都改不动**</li><li><span class='gnum'>#22</span> 量化在 DCU 上是「有路但没铺」：vLLM 在线 fp8 直接起不来</li><li><span class='gnum'>#23</span> 视频 pipeline 的&quot;分辨率桶&quot;会静默改尺寸（832×480 → 848×480）</li><li><span class='gnum'>#24</span> 临时账号不是存储：分区的 `AllowAccounts` 会被移除</li></ul></div>
+<p class="sub">前三条最贵：① <code>/dev/mkfd</code> 必须传（否则 <code>torch.cuda.is_available()</code> 为 False 却 <code>device_count()</code> 为 1）；
+② CUDA Graph 的假陷阱；③ <code>/etc/subuid</code> 为空导致 rootless podman 解包失败。</p>
+
+<h2>8. 调优实验记录</h2>
+<div class="card"><ul><li><span class='mono small'>sweeps/results-16k-tuning-2026-11-05.md</span><br><b>16K 档调参：一个跨模型一致成立的结论</b><br>结论：<code>--chunked-prefill-size 4096</code> + 保持 CUDA Graph 开启，是这套 DCU（BW1000）上 16K 档的最优组合，两个模型都受益。</li><li><span class='mono small'>sweeps/results-asr-throughput-2026-11-06.md</span><br><b>ASR 离线批吞吐优化（2026-11-06）</b><br>正式评测（300 条）沿用 A 的保守配置即可（结果已在库）；若要做大规模批量转写，用 B 的配置</li><li><span class='mono small'>sweeps/results-awq-2026-11-06.md</span><br><b>量化可行性：AWQ 能跑，但在这张卡上不划算</b><br>吞吐只有 1/5 左右。显存收益却是实打实的（6.1 GB 权重 + 51 GB KV cache）。</li><li><span class='mono small'>models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/sweep/results-batching-2026-11-04.md</span><br><b>Qwen-Image 合批优化：不可行（显存是硬上限）</b><br>一句话结论：同 prompt 三个 seed 合批在 64 GB 单卡上不可行 —— batch=2 即 OOM，单张已经贴着显存上限。</li><li><span class='mono small'>models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/sweep/results-2026-11-03.md</span><br><b>vLLM 长上下文专项扫描（2026-11-03）：结论是「配置改不动」</b><br>一句话结论：16K 档比 SGLang 慢 5–7 倍是 DCU 缺 paged-attention 内核，六条参数路径（含 v0 引擎）全部无效，只能自建镜像。</li></ul></div>
+
+<h2>9. 成本核算</h2>
+<table>
+<thead><tr><th>项目</th><th>卡时</th></tr></thead>
+<tbody>
+<tr><td>基线与调参</td><td class="num">~62</td></tr>
+<tr><td>Qwen-Image / AuK / ASR / FA 官方评测</td><td class="num">~12</td></tr>
+<tr><td>vLLM 16K 三轮扫描（含失败轮次）</td><td class="num">~3</td></tr>
+<tr><td>Wan2.1（含 OOM 与 FSDP 调试 + 全量）</td><td class="num">~75</td></tr>
+<tr><td>Music3（探针 + 60 条 + 镜像归档/还原）</td><td class="num">~8</td></tr>
+<tr><td>OmniWeaving（探针 + 53 条）</td><td class="num">~30</td></tr>
+<tr><td>其它（合批/量化/AWQ 探针、镜像归档）</td><td class="num">~10</td></tr>
+<tr><td><b>合计</b></td><td class="num strong">~200 卡时 ≈ 105 元</td></tr>
+</tbody>
+</table>
+<p>换来 15 个可复现条目 + 3 个镜像归档 + 24 条踩坑 + 923 条真实产物 —— <b>约 0.11 元/样本</b>。</p>
+
+<h2>10. 结项状态与重启方式</h2>
+<div class="note">
+<b>为什么停</b>：<code>scnethr2601a10</code> 2026-11-07 14:12 被移出 <code>hx1hdnormal</code> 的
+<code>AllowAccounts</code>（该列表共 10552 条，含同批的 <code>scnethr2601a05</code>/<code>a07</code>/<code>scnethr202601</code>，
+唯独没有我们）；<code>luql</code> 有 SSH 但无卡权限。
+</div>
+<h3>机时恢复后（3 步）</h3>
+<pre><code># 0) 三分钟判定"真的能提交了"
+scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
+  | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"      # 有输出才算通过
+
+# 1) 恢复数据（不用重下权重）
+cd /public/home/luql/archive/zoo-dcu-2026-11/images && sha256sum -c ...               # 见 VERIFY.md
+tar xzf /public/home/luql/archive/zoo-dcu-2026-11/assets/wheels-auk-cp310.tar.gz -C ~/wheels
+git clone https://github.com/lql341/scnet-dcu-model-zoo.git ~/zoo
+
+# 2) 补完唯一未完成的条目（OmniWeaving 剩 7 条，约 3.5 h）
+rsync -az /public/home/luql/archive/zoo-dcu-2026-11/products/omniweaving/ <host>:<...>/repo/official-eval/
+sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm   # 自动跳过已有 53 条</code></pre>
+
+<h3>恢复后值得做的（按性价比）</h3>
+<table>
+<thead><tr><th>#</th><th>事项</th><th>成本</th><th>为什么</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td>把 3 个镜像推到自有 Harbor 命名空间</td><td>0.5 卡时</td><td>唯一能真正摆脱「上游删仓 + 临时账号回收」两个风险（需 Harbor 凭据）</td></tr>
+<tr><td class="num">2</td><td>量化条目（AWQ 已验证可跑）</td><td>4–8 卡时</td><td>全库唯一空白；慢 5× 但显存收益真实</td></tr>
+<tr><td class="num">3</td><td>WorldMirror（编 ROCm 版 gsplat）</td><td>8+ 卡时</td><td>T03 第 5 个模型，可能失败</td></tr>
+<tr><td class="num">4</td><td>T01/T02 精度</td><td>需官方 baselines</td><td>材料从未下发，无法自证</td></tr>
+</tbody>
+</table>
+
+<h3>明确不必再做的（已有结论，别再烧卡时）</h3>
+<ul>
+<li>vLLM 16K 调参：chunked 切片 / AITER / backend 覆盖 / fp8 KV / TP=2 / <b>v0 引擎</b> —— 全部无效</li>
+<li>Qwen-Image 合批：2048² 显存无余量，batch=2 即 OOM</li>
+<li>Kimi 16K/c64「回退 6.3%」：是 ±7% 噪声，不是配置问题（关 graph 反而掉 31%）</li>
+<li>fp8 在线量化：DCU 无 kernel</li>
+</ul>
+
+<footer>
+数据来源：仓库内 <code>models/*/meta.json</code>、<code>bench/round2.jsonl</code>、
+<code>docs/gotchas.md</code>、<code>sweeps/results-*.md</code>，由 <code>tools/gen_report.py</code> 生成。
+报告中每一个数字都能在上述文件中追到原始记录。<br>
+代码：GitHub <code>lql341/scnet-dcu-model-zoo</code> · GitLab <code>luql/scnet-dcu-model-zoo</code>　|　
+二进制归档：<code>/public/home/luql/archive/zoo-dcu-2026-11/</code>（31 GB）
+</footer>
+</div>
+</body>
+</html>

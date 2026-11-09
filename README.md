@@ -6,6 +6,7 @@
 **所有数字都来自实测**，不是从模型卡抄的；跑不通的配置会写明失败原因而不是删掉。
 
 > 📄 **先读这个**：[docs/REPORT.md](docs/REPORT.md) —— BW1000 模型适配能力报告
+> 📊 **可视化报告**：[docs/report.html](docs/report.html) —— 单文件 HTML，汇总全部结果、数据与技术路线（`tools/gen_report.py` 生成）
 > 📦 **数据在哪**：[docs/ARCHIVE-SUMMARY.md](docs/ARCHIVE-SUMMARY.md) —— 三层保全与还原步骤（集群账号已被回收）
 > （15 个条目 / 923 条真实产物，官方清单共 935 条 / 3 个镜像归档 / 24 条踩坑 / 5 条硬约束 / 成本核算）。
 >
@@ -48,6 +49,7 @@ models/<org>__<model>__<card>__<framework>[/__<precision>]/
 python3 tools/gen_index.py   # 从 meta.json 重生成 INDEX.md 与下方总矩阵
 ./tools/check_quota.sh       # 体积守门：单条目 ≤2 MB，全库 ≤25 MB
 python3 tools/check_products.py  # 产物规格守门：official_eval 的 stats 必须与条件清单一致
+python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/bench/gotchas 程序化汇总）
 ```
 
 ## 跑通矩阵
