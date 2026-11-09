@@ -542,15 +542,23 @@ python3 -m pip download --no-deps --dest wheels \
 **问平台时要问的三句**：① `scnethr2601a10` 是否仍是有效赛事账号；② 它是否仍被允许提交到 `hx1hdnormal`；
 ③ 若已停用，`luql` 账号能否获得该分区权限（同时解决 §9 的 P0-5「luql 郑州 SSH 被拒」）。
 
-### 2026-11-09 归档动作（详见 `docs/ARCHIVE-SUMMARY.md`）
+### 2026-11-09 归档完成（详见 `docs/ARCHIVE-SUMMARY.md`）
 
-| 内容 | 去哪 | 状态 |
+`luql` 郑州 SSH 已恢复 → 改为**服务端直拷**，一次性搬完，本机中转副本已删除。
+
+**唯一二进制归档：`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（31 GB）**
+
+| 内容 | 数量 | 校验 |
 | --- | --- | --- |
-| 代码/经验/条件清单/日志 | GitHub + GitLab（本仓库） | ✅ 已同步 |
-| 990 条官方条件产物（628 MB） | 本机 `pi-test/archive/` + **luql 郑州 `/public/home/luql/zoo-archive-2026-11/`** | ✅ 已上传 |
-| 依赖包/源码/harness（177 MB） | 同上 | ✅ 已上传 |
-| 3 个镜像归档（30.3 GB） | 同上，按 500 MB 分块（`images/*.partNNN`） | 🟡 上传中（约 1.7 MB/s，需 ~4.5 h） |
-| 权重、Qwen-Image 1.1 GB 产物、未压缩镜像 tar | 不归档（可重下/可重跑） | — |
+| `images/` 3 个镜像 tar.gz | 30 GB | sha256 与仓库登记值**逐条一致** |
+| `products/` 各模型产物 | asr 626 · auk-flash 120 · fa 93 · music3 60 · omniweaving 107 · wan21 60 | 与 `meta.json` 的 ok 数对应 |
+| `products/optimizations/` 调优原始 jsonl | **34 个**（mimo-16k 8+8、kimi-16k 10、awq 3、asr-tput 1、vllm-v0 4） | 优化结论的原始证据 |
+| `assets/` 轮子/源码包/harness | 7 个 166 MB | 包内 sha256 清单 |
+| `sources/` AuK/Wan2.1/OmniWeaving | 3 份 | — |
+| `VERIFY.md` | 校验记录与还原命令 | — |
+
+已清理：顶层孤儿目录 `zoo-archive-2026-11`、OpenAPI 分块残留（`*.efilePart`）、本机 30 GB 中转副本。
+`scnethr2601a10` 的 `~` 权限已收回 `700`。
 
 **恢复后的第一件事**（产物续跑，只补剩下 7 条，约 3.5 h）：
 ```bash
