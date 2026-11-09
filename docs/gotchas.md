@@ -331,3 +331,31 @@ AISHELL-1 前 20 条 CER **0.40%**、LibriSpeech 前 40 条 CER **0.10%** / WER 
 
 **教训**：**产物规格必须逐条测量，不能只看"跑完了"**。这一条是在跑完 60 条（26 卡时）后
 用 `imageio` 读 header 才发现的 —— 如果只检查"文件存在且 >200 KB"，会一路绿到底。
+
+## 24. 临时账号不是存储：分区的 `AllowAccounts` 会被移除
+
+**现象**：2026-11-07 14:12，跑了 22 小时的作业被 `CANCELLED`；之后所有 `sbatch` 报
+`Invalid account or account/partition combination specified`，连 5 分钟的最小作业也一样。
+SSH 能登录、`/public` 能读写、GitHub/GitLab 正常，唯独不能提交。
+
+**定位方法（五分钟内可完成）**：
+```bash
+# 1) 是不是集群没资源？
+squeue -a -h | wc -l                      # 0 → 不是排队问题
+# 2) 是不是我们不在分区白名单？
+scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
+  | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"    # 无输出 → 就是它
+# 3) 同批次其他账号在不在？（本例 scnethr2601a05 / a07 / scnethr202601 都在，只有 a10 没有）
+```
+
+**结论**：`hx1hdnormal` 的 `AllowAccounts` 有 10552 条，我们被移除了。
+这不是故障、不是脚本问题、不是 QOS 写法问题（`--qos=partition_hx1hdnormal` 只会得到
+`Invalid qos specification`，因为我们 assoc 上挂的是 `user_<账号>`）。
+
+**教训（最贵的一条）**：
+1. **临时账号下的任何数据都会随账号一起消失**。所以镜像归档要么推自己的 Harbor 命名空间，
+   要么第一时间搬到自己的账号目录 —— 本项目的 30 GB 镜像差点就这么没了。
+2. **跨账号搬数据要先测通**：`/public/home/<别人>` 通常是 `700`，同机也搬不动；
+   要么临时 `chmod o+rx` 走 `rsync`，要么用 OpenAPI 上传（>1 GB 会 `write operation timed out`，必须分块）。
+3. **长作业要能在任意时刻中断而不丢结果**：本项目所有评测脚本都做了"产物存在则跳过"，
+   所以 22 小时的作业被砍后，53/60 的产物仍可直接续跑，只损失 3.5 小时。
