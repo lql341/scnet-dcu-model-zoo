@@ -29,6 +29,12 @@
 | `angelslim==0.2.1` | PyPI 已到 0.5.0，要求 transformers>=5.2；本条目用 4.57.1 | 不装（推理不需要） |
 | `flash_attn` | 镜像自带版本 `unpad_input` 返回 4 项 | 运行时兼容补丁 `patches/0001-*` |
 
+## ⏸ 未完成部分（非材料问题）
+
+- 官方 60 条中 **7 条**因集群账号权限被回收而中断（2026-11-07），产物已归档 53 条到
+  `luql:/public/home/luql/archive/zoo-dcu-2026-11/products/omniweaving/`
+- 续跑命令：`sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm`
+
 ## 体积提示
 
 60 条 × ~6 MB ≈ 350 MB，**不入库**；入库 `反馈表.csv`、`eval_result.json`、`stats.json`、环境说明。

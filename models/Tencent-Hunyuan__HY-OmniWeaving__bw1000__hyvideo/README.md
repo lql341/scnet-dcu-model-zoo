@@ -80,7 +80,15 @@ PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
 参数逐条取自清单：832×480 / 81 帧 / 16 fps / 50 步 / guidance 6.0 / flow_shift 7.0 / bf16。
 官方明示不评分 → 只交原始产物 + 规格统计。
 
-⚠️ 待跑。
+### 结果：**53 / 60**（2026-11-07 14:12 账号被回收时中断，剩 7 条）
+
+| 指标 | 实测 |
+| --- | --- |
+| 已完成 | **53 条**，832×480 / 81 帧 / 16 fps（首条即经 `check_products.py` 同口径校验） |
+| 单条耗时 | ~26 min（单卡，offloading 开启） |
+| 中断原因 | `scnethr2601a10` 被移出 `hx1hdnormal` 的 `AllowAccounts`，作业 `CANCELLED`（见 `HANDOFF.md` §11） |
+| 续跑 | `evaluate_official.py` 会跳过已存在产物，剩下 7 条约 3.5 h |
+| 首轮教训 | 第 1 轮 60 条全部 848×480（`--aspect_ratio 16:9` 落到最近的尺寸桶）→ 作废重跑，见 §3.3 与 gotchas #23 |
 
 ## 7. 性能参考
 

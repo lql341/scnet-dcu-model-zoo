@@ -10,12 +10,36 @@
 | 层 | 位置 | 内容 | 状态 |
 | --- | --- | --- | --- |
 | ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 15 个条目、docs/gotchas（23 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
-| ② 产物与归档（二进制） | **luql 郑州目录 `/public/home/luql/archive/zoo-dcu-2026-11/`（唯一权威副本）** | 990 条官方条件的真实产物、3 个镜像 tar.gz、wheel 集、源码包 | 🟡 上传中；**完成后删除本机中转副本，不再保留两份** |
+| ② 产物与归档（二进制） | **`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（唯一副本，31 GB）** | 产物 + 3 个镜像 + wheel 集 + 源码 | ✅ 已完成（服务端直拷 + sha256 校验） |
 | ③ 原集群（即将失效） | `scnethr2601a10:~/work`、`~/zoo-images`、`~/models` | 同上 + 权重（可重下） | ⚠️ 账号被回收，随时可能清空 |
 
 ---
 
-## 1.5 目录约定（重要）
+## 1.5 最终目录（2026-11-09 实际状态）
+
+`luql` 的郑州 SSH 恢复后，改为**服务端直拷**（比「拉到本机再上传」快一个数量级，也不在本机留副本）：
+
+```text
+/public/home/luql/archive/zoo-dcu-2026-11/        31 GB
+├── images/            3 个镜像 tar.gz（sha256 与仓库登记值逐一核对通过）
+├── products/          按模型命名的全部产物
+│   ├── asr/ 626 files · auk-flash/ 120 · fa/ 93 · music3/ 60 · omniweaving/ 107 · wan21/ 60
+├── assets/            4 套 cp310 轮子 + 源码包 + Music3 harness（166 MB）
+├── sources/           AuK / Wan2.1 / OmniWeaving 源码
+└── VERIFY.md          校验记录（镜像 sha256、各目录条数与体积、还原说明）
+```
+
+**做法**：`scnethr2601a10` 侧 `chmod o+rx` 开放读取 → `luql` 侧 `rsync -a` 直拷 → **立即 chmod 700 收回**。
+
+```bash
+# 服务端直拷（当时用的命令，可复用）
+scnethr$ chmod o+rx ~; chmod -R o+rX ~/zoo-images ~/work/<产物目录>
+luql$    rsync -a /public/home/scnethr2601a10/zoo-images/*.tar.gz ~/archive/zoo-dcu-2026-11/images/
+luql$    rsync -a /public/home/scnethr2601a10/work/omnirun/repo/official-eval/ .../products/omniweaving/
+scnethr$ chmod 700 ~
+```
+
+## 1.6 历史做法（已废弃）
 
 **二进制归档只放一处**：`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（与 luql 既有的
 `archive/` 归档放一起）。本机 `~/Downloads/pi-test/archive/` 只是**上传中转**，校验通过后即删除。
