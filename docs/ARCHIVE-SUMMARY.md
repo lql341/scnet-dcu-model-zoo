@@ -24,12 +24,16 @@
 ├── images/            3 个镜像 tar.gz（sha256 与仓库登记值逐一核对通过）
 ├── products/          按模型命名的全部产物
 │   ├── asr/ 626 files · auk-flash/ 120 · fa/ 93 · music3/ 60 · omniweaving/ 107 · wan21/ 60
+│   └── optimizations/ 调优实验原始 jsonl（34 个）
+│       mimo-16k-tuning(8) · mimo-16k-confirm(8) · kimi-16k-tuning(10)
+│       awq-qwen3-8b(3) · asr-throughput(1) · vllm-v0-compare(4)
 ├── assets/            4 套 cp310 轮子 + 源码包 + Music3 harness（166 MB）
 ├── sources/           AuK / Wan2.1 / OmniWeaving 源码
 └── VERIFY.md          校验记录（镜像 sha256、各目录条数与体积、还原说明）
 ```
 
 **做法**：`scnethr2601a10` 侧 `chmod o+rx` 开放读取 → `luql` 侧 `rsync -a` 直拷 → **立即 chmod 700 收回**。
+（注意：chmod 会被后续操作覆盖，拷贝窗口内不要并行做别的 chmod；本次踩过一次，重开即可。）
 
 ```bash
 # 服务端直拷（当时用的命令，可复用）

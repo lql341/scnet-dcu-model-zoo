@@ -305,10 +305,13 @@ python verify.py --selfcheck     # → selfcheck OK
 
 评测配置（**待官方下发后按 `baselines/<模型>.json` 原样填入**）：
 
-| 数据集 | 子集题数 | max_tokens | 解码 | 思考开关 | 判分方式 |
-| --- | --- | --- | --- | --- | --- |
-| GSM8K | 【待填】 | 【待填】 | greedy（temperature=0） | 【待填】 | 取 `\boxed{}` 或末尾数字，与答案数值相等 |
-| MMLU | 【待填】 | 【待填】 | greedy（temperature=0） | 【待填】 | 取首个 A–D 选项字母 |
+| 数据集 | 子集题数 | max_tokens | 解码 | 思考开关 | 判分方式 | 状态 |
+| --- | --- | --- | --- | --- | --- | --- |
+| GSM8K | — | — | greedy（temperature=0） | — | 取 `\boxed{}` 或末尾数字，与答案数值相等 | **[BLOCKED]** 官方未下发 `baselines/Kimi-Linear-48B-A3B-Instruct.json` |
+| MMLU | — | — | greedy（temperature=0） | — | 取首个 A–D 选项字母 | **[BLOCKED]** 同上 |
+
+> 这里刻意留空而不是填估算值：**子集、max_tokens、思考开关都由官方 `baselines/<模型>.json` 写死**，
+> 自行猜测出来的分数与官方不可比，按本仓库红线（`docs/entry-spec.md` §6）不得入库。
 
 结果（`verify_result.json` 原文）：
 
