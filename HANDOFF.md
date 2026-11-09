@@ -1,5 +1,10 @@
 # HANDOFF —— 会话交接与 living TODO
 
+> ✅ **项目已结项（2026-11-09）**。`luql` 有 SSH 但**没有被授权 GPU 卡**，因此无法再提交任何作业。
+> 所有数据、镜像、经验均已归档完毕：代码在 GitHub+GitLab 双远端，二进制在
+> `luql:/public/home/luql/archive/zoo-dcu-2026-11/`（31 GB，sha256 全核对）。
+> 收尾报告见 `docs/REPORT.md`（含 §9 结项说明），归档细节见 `docs/ARCHIVE-SUMMARY.md`。
+>
 > ⚠️ **2026-11-07 14:12 CST 起，`hx1hdnormal` 提交被拒**（`Invalid account or account/partition combination`），
 > 正在跑的 OmniWeaving 作业被 CANCELLED（22 h，**53/60 产物已在盘上**）。集群范围内 `squeue -a` 为 0 条作业、
 > OpenAPI 的 `queues` 也返回空 → 判断为账号/分区权限变更（正是 §9 的 P0-7）。详见 §11「事故记录」。
@@ -433,6 +438,21 @@ python3 -m pip download --no-deps --dest wheels \
 | HY-OmniWeaving × 官方代码 | 🟡 探针中 | — | 需补 llm/byt5/Glyph-SDXL-v2/siglip 四份依赖（正在下）；byT5 缺失已定位 |
 
 ---
+
+## 8.5 结项状态（2026-11-09）
+
+| 项 | 数值 |
+| --- | --- |
+| 条目总数 | **15**（7 个 official-eval 全绿 / 1 个 partial 53-60 / 3 个 bench / 3 个 smoke / 2 个 blocked） |
+| 官方条件真实产物 | **990 条**（不含 OmniWeaving 未完成的 7 条） |
+| 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
+| 踩坑 | 24 条（`docs/gotchas.md`） |
+| 硬约束 | 5 条（`docs/REPORT.md` §4） |
+| Git 提交 | 64+（GitHub 与 GitLab 完全同步） |
+
+**不能再做的**：提交作业（两个账号都没卡权限）；T01/T02 精度（官方 baselines 从未下发）。
+**随时可做的**：拿到任何有 `hx1hdnormal` 权限的账号后，按 `docs/repro.md` 用归档镜像重跑，
+OmniWeaving 只需 `sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm` 补 7 条（3.5 h）。
 
 ## 9. TODO（活文档）
 

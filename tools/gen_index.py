@@ -87,7 +87,11 @@ def main():
             st = '✅ 6 档基准'
         elif e.get('official_eval'):
             oe = e['official_eval']
-            st = f"✅ 官方 {oe['ok']}/{oe['total']} 条完成"
+            if oe.get('ok') == oe.get('total'):
+                st = f"✅ 官方 {oe['ok']}/{oe['total']} 条完成"
+            else:
+                # partial：不能让没跑完的条目在总矩阵里显示成"完成"
+                st = f"🟡 官方 {oe['ok']}/{oe['total']}（中断，可续跑）"
         elif e['bench'] == 'not-required':
             st = '✅ 跑通（官方不要求性能对比）'
         elif e['status'] == 'smoke':
