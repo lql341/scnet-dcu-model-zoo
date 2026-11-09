@@ -2,7 +2,7 @@
 
 > 版本：**2026-11-09（终版）**　作者：本仓库的会话记录（每一条数字都能在 `models/*/` 里追到原始日志）
 >
-> **结项状态**：15 个条目、8 个出官方结果、990 条真实样本、3 个镜像归档（31 GB 落在 `luql` 账户）、
+> **结项状态**：15 个条目、7 个官方评测全绿 + 1 个 partial、923 条真实产物（官方清单 935 条）、3 个镜像归档（31 GB 落在 `luql` 账户）、
 > 24 条踩坑、5 条硬约束。集群侧临时账号 `scnethr2601a10` 已于 2026-11-07 被回收（见 §9），
 > 但**所有数据、镜像、经验都已不在那个账号上**。
 > 目的：**能力沉淀**优先于赛题提交。这份报告回答三个问题：
@@ -15,11 +15,11 @@
 | 维度 | 结果 |
 | --- | --- |
 | 条目数 | **15 个**（模型 × 卡型 × 框架 × 精度），全部带启动脚本、环境自检、原始日志 |
-| 跑通并出官方条件结果 | **8 个**（T03/T04 官方 8 个模型里 6 个完成 + AuK-Flash 变体） |
+| 跑通并出官方条件结果 | **8 个**（T03/T04 官方 8 个模型里 6 个全绿 + AuK-Flash 变体；OmniWeaving 部分完成） |
 | 有完整 6 档性能基准 | **3 个**（MiMo×SGLang、MiMo×vLLM、Kimi×SGLang） |
-| 官方条件总样本 | **990 条**（180+120+120+300+30+60+60+120，全部真实产物，零编造） |
+| 官方条件产出 | **923 条真实产物**（官方 9 份清单共 935 条；缺 hy_world 5 条未做 + omniweaving 7 条未完成） |
 | 镜像归档 | **3 个**（30 GB，含社区版 Music3），全部 sha256 + 还原验证 |
-| 依赖归档 | 4 套 cp310 轮子 + 2 份源码（`zoo-images/assets/`） |
+| 依赖归档 | 4 套 cp310 轮子 + 3 份源码（`/public/home/luql/archive/zoo-dcu-2026-11/assets/` 与 `sources/`） |
 | 踩坑清单 | **24 条**（`docs/gotchas.md`，按隐蔽度排序） |
 | 已知硬约束（换框架也过不去） | **5 条**（见 §4） |
 | 二进制归档 | **31 GB / `luql:/public/home/luql/archive/zoo-dcu-2026-11/`**（镜像 + 产物 + 轮子 + 调优原始数据） |
@@ -39,7 +39,8 @@
 | **Wan2.1-I2V-14B** | 图生视频 | 60 | **60/60** | 1116 s | 4 | 832×480 / 81 帧 / 16 fps |
 | HY-OmniWeaving | 文生视频 | 60 | **53/60**（账号回收中断） | ~1560 s | 1 | 832×480 / 81 帧 / 16 fps |
 
-**意义**：T03/T04 两题的 8 个模型里，6 个已出真实产物、2 个（Wan、OmniWeaving）分别完成与在跑。
+**意义**：T03/T04 两题的 8 个模型里，**6 个全绿**（Qwen-Image、AuK、ASR、ForcedAligner、Music3、Wan2.1），
+OmniWeaving 53/60 部分完成，HY-World-2.0 未做（需 ROCm 版 gsplat）。另有 AuK-Flash 作为蒸馏变体额外全绿。
 **全部零编造**：所有时长/规格都由脚本从产物里读出来（`stats.json`），不是抄模型卡。
 
 ---
@@ -68,12 +69,13 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | --- | --- | --- | --- |
 | MiMo × SGLang | `max-running-requests 8→64` + 开 CUDA Graph | **+73% ~ +466%** | 无 |
 | MiMo × vLLM | 去 `--enforce-eager` + `max-num-seqs 128` | +3% ~ +32% | 无 |
-| Kimi × SGLang | 开 CUDA Graph | +37.9% ~ +620.8% | 16K/c64 **−6.3%** |
+| Kimi × SGLang | 开 CUDA Graph | +37.9% ~ +620.8% | 无（原记 16K/c64 −6.3%，2026-11-05 复测为**噪声**） |
 | AuK → AuK-Flash | 换 4 步蒸馏权重 | **4.4×** | 无（同代码同环境） |
+| MiMo + Kimi（16K 档） | `--chunked-prefill-size 4096` + 保持 CUDA Graph | **+5~8%** | 无 |
 
 ---
 
-### 2.0 量化与批处理（2026-11-06）
+### 2.1 量化与批处理（2026-11-06）
 
 | 实验 | 结论 |
 | --- | --- |
@@ -81,7 +83,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | **AWQ（weight-only INT4）** | ✅ **能跑**（`awq_marlin` → `TritonW4A16LinearKernel`），但 4K/c64 只有 185 tok/s（bf16 同规模约 998），TPOT 4–6 倍；显存收益真实（6.1 GB 权重 + 51 GB KV） |
 | ASR 批吞吐 | `--max-num-seqs 64` + 16 并发：60 条 30 s → **27 s（−10%）**，CER/WER 零变化 |
 
-### 2.1 跨模型一致的调参结论（2026-11-05）
+### 2.2 跨模型一致的调参结论（2026-11-05）
 
 `--chunked-prefill-size 4096` + 保持 CUDA Graph，是这套 DCU 上 16K 档的最优组合，**两个模型同时受益**：
 
@@ -100,11 +102,12 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 
 | 资产 | 位置 | 校验 |
 | --- | --- | --- |
-| SGLang 镜像 7.9 GB | `zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz` | sha256 `f16125ba…` + load/smoke 验证 |
-| vLLM 镜像 8.7 GB | `zoo-images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | sha256 `986f95a3…` + load/smoke 验证 |
-| Music3 镜像 13.7 GB | `zoo-images/minimax-music3-bw-sglang_20261031-rc1.tar.gz` | sha256 `b61b05bd…` + 还原跑通 1 条 |
-| cp310 轮子 4 套 | `zoo-images/assets/*.tar.gz` | 53 + 3 + 8 个轮子，逐包 sha256 |
-| 上游源码 2 份 | `assets/{AuK-src,Wan2.1-src,OmniWeaving-src}.tar.gz` | sha256 |
+| SGLang 镜像 7.9 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz` | sha256 `f16125ba…` + load/smoke 验证 |
+| vLLM 镜像 8.7 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | sha256 `986f95a3…` + load/smoke 验证 |
+| Music3 镜像 13.7 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/minimax-music3-bw-sglang_20261031-rc1.tar.gz` | sha256 `b61b05bd…` + 还原跑通 1 条 |
+| cp310 轮子 4 套 | `/public/home/luql/archive/zoo-dcu-2026-11/assets/*.tar.gz` | 53 + 3 + 8 个轮子，逐包 sha256 |
+| 上游源码 3 份 | `/public/home/luql/archive/zoo-dcu-2026-11/sources/{AuK,Wan2.1,OmniWeaving}-src/` | — |
+| 调优原始数据 34 个 jsonl | `/public/home/luql/archive/zoo-dcu-2026-11/products/optimizations/` | 各结论的原始证据 |
 | 复现手册 | `docs/repro.md` | 端到端可执行 |
 
 **为什么归档轮子**：镜像里没有 librosa/diffusers/byT5，而「按宿主机 py3.12 下载的 cp312 轮子装进 py3.10 镜像」
@@ -152,7 +155,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | **合计** | **~200 卡时** |
 
 账户余额从 4405.96 降到约 4300，**约 105 元卡时**（本集群 1 卡时≈1 元），
-换来 15 个可复现条目 + 3 个镜像归档 + 24 条踩坑 + 990 条官方样本——**单价约 0.1 元/样本**。
+换来 15 个可复现条目 + 3 个镜像归档 + 24 条踩坑 + 923 条真实产物（官方清单共 935 条）——**单价约 0.1 元/样本**。
 
 ---
 
@@ -177,7 +180,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | 官方条件产物统计 | `models/*/official-eval/{反馈表.csv,eval_result.json,stats.json}` |
 | 踩坑细节 | `docs/gotchas.md`（22 条） |
 | 换机器怎么重建 | `docs/repro.md` |
-| 镜像/轮子在哪、怎么校验 | `docs/image-archive.md` + 集群 `zoo-images/MANIFEST.md` |
+| 镜像/轮子在哪、怎么校验 | `docs/ARCHIVE-SUMMARY.md` + `/public/home/luql/archive/zoo-dcu-2026-11/VERIFY.md` |
 | 调优过程原件（48 个 slurm） | `sweeps/2026-10-11-probes/` |
 | 会话交接与 TODO | `HANDOFF.md` |
 | **二进制归档（镜像/产物/轮子/调优数据）** | `luql:/public/home/luql/archive/zoo-dcu-2026-11/`（见 `docs/ARCHIVE-SUMMARY.md`，内含 `VERIFY.md`） |

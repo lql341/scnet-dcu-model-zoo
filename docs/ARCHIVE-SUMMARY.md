@@ -50,7 +50,7 @@ scnethr$ chmod 700 ~
 
 ```text
 /public/home/luql/archive/zoo-dcu-2026-11/
-├── zoo-products-2026-11.tar.gz      628 MB  990 条官方条件产物 + 统计 + MANIFEST
+├── zoo-products-2026-11.tar.gz      628 MB  923 条官方条件产物 + 统计 + MANIFEST
 ├── zoo-assets-2026-11.tar.gz        177 MB  轮子/源码/harness
 ├── omniweaving-products.tar.gz       17 MB  OmniWeaving 产物（单抽）
 └── images/                          30.3 GB 3 个镜像，500 MB 分块（*.pNNN），拼回后校验 sha256

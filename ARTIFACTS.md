@@ -30,8 +30,8 @@
 ## 迁移现状
 
 - ✅ **有效产物已随本仓库进入 Git**（`models/*/logs/`、`models/*/bench/`）
-- ✅ **镜像已归档**：`zoo-images/` 下 2 个 tar.gz + `MANIFEST.md` + sha256（见 `docs/image-archive.md`）
-- ✅ **依赖 wheel / 源码已归档**：`zoo-images/assets/`（cp310 轮子集 + AuK-src）
+- ✅ **镜像已归档（3 个文件，30 GB）**：`/public/home/luql/archive/zoo-dcu-2026-11/images/`（见 `docs/ARCHIVE-SUMMARY.md`）
+- ✅ **依赖 wheel / 源码已归档**：`/public/home/luql/archive/zoo-dcu-2026-11/assets/` + `/public/home/luql/archive/zoo-dcu-2026-11/sources/`
 - ⬜ 权重（194 GB）**不归档**：ModelScope 24 MB/s 可重下，备份无意义
 - ⬜ 若要整体归档到永久账号：需先恢复永久账号在该集群的 SSH 密钥
   （实测 `luql@zzeshell.scnet.cn` 报 `Permission denied (publickey)`）
@@ -48,7 +48,7 @@
 | 踩坑/配方/环境实测 | `docs/gotchas.md`、`docs/environment.md`、本文件 | 每次会话结束前 |
 | 启动脚本与 slurm 模板 | `models/*/container/`、`tools/` | 同上 |
 | 基准/评测原始日志 | `models/*/logs/`、`models/*/bench/` | 同上 |
-| **镜像 tar.gz + wheel 集** | 集群 `~/zoo-images/`（+ 待推自有 Harbor 命名空间） | 新镜像用一次就归档 |
+| **镜像 tar.gz + wheel 集** | `/public/home/luql/archive/zoo-dcu-2026-11/`（luql 账户，唯一副本；仍待推自有 Harbor 命名空间） | 新镜像用一次就归档 |
 | 比赛反馈表/截图 | 各条目的 `official-eval/`、`platform/` | 有余力再补 |
 
 **不要为了刷分重复消耗卡时**；卡时优先买“新知识”（新模型/新框架/新踩坑）和“可复现性”（归档/还原验证）。

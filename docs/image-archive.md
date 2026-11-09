@@ -10,7 +10,8 @@
 ## 归档位置
 
 ```
-/public/home/scnethr2601a10/zoo-images/
+/public/home/luql/archive/zoo-dcu-2026-11/images/  ← 项目结项后的唯一位置（原 scnethr 账号已被回收）
+（历史位置：/public/home/scnethr2601a10/zoo-images/）
 ├── mimo-sglang-bw10000_1.1.1.tar.gz             7.9 GB  sha256 f16125ba…
 ├── vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz         8.7 GB  sha256 986f95a3…
 ├── MANIFEST.md                                  digest + sha256 + 还原命令

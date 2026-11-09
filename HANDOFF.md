@@ -9,7 +9,7 @@
 > 正在跑的 OmniWeaving 作业被 CANCELLED（22 h，**53/60 产物已在盘上**）。集群范围内 `squeue -a` 为 0 条作业、
 > OpenAPI 的 `queues` 也返回空 → 判断为账号/分区权限变更（正是 §9 的 P0-7）。详见 §11「事故记录」。
 >
-> 最后更新：2026-11-07　余额 **4275.25**　状态：14 个条目完成（含 Music3 60/60、Wan 60/60）；OmniWeaving 按修正后的尺寸重跑中
+> 最后更新：2026-11-09（结项）　余额 **4275.25**　状态：**15 个条目**——7 个官方评测全绿、1 个 partial（OmniWeaving 53/60）、3 个 bench、2 个 smoke、2 个 blocked
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -27,8 +27,8 @@
 
 ## 1. 一句话现状
 
-在 **BW1000（海光 DCU）** 上跑通 8 个「模型 × 框架」组合，其中 **3 个有完整 6 档性能基准**、
-**2 个完成官方条件评测（ASR 300/300、ForcedAligner 30/30）**。
+在 **BW1000（海光 DCU）** 上跑通 **15 个条目**（模型 × 框架 × 精度），其中
+**7 个完成官方条件评测且全绿**（923 条真实产物）、**1 个部分完成（53/60）**、**3 个有完整 6 档基准**。
 本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因重定位并修掉，**两个都已跑完官方全量条件**：
 - AuK：卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec → **120/120**，4.4 s/条
 - Qwen-Image：卡点 = hub 版本低于 diffusers 元数据要求（0.36.2 < 1.32）→ **180/180**，19.8 s/张
@@ -239,7 +239,7 @@ zoo/
 ├── ARTIFACTS.md               SCNet 侧产物位置与重建成本
 ├── docs/
 │   ├── entry-spec.md          ★ 条目规范（强制）
-│   ├── gotchas.md             ★ 17 条踩坑（按隐蔽度排序）
+│   ├── gotchas.md             ★ 24 条踩坑（按隐蔽度排序）
 │   ├── environment.md         硬件/软件/镜像能力实测
 │   ├── manual-push.md         手动推镜像到 SCNet 镜像库
 │   ├── image-archive.md       镜像归档与还原
@@ -248,7 +248,7 @@ zoo/
 │   ├── platform-checklist.md  platform/ 截图清单
 │   ├── landscape.md           93 个公开仓库竞争盘点
 │   └── SELF-CHECK-2026-11-02.md  T03/T04 材料到位后的自查
-├── models/<org>__<model>__<card>__<framework>/    11 个条目
+├── models/<org>__<model>__<card>__<framework>/    15 个条目
 ├── official/t03-t04/          ★ 官方条件清单 + file-manifest + provenance
 ├── sweeps/                    参数扫描脚本（非正式条目）
 └── tools/                     lint_entry.sh / gen_index.py / check_quota.sh
@@ -323,7 +323,7 @@ export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 | --- | --- | --- |
 | SGLang 全部条目 | `--attention-backend triton` | **默认会选残包的 aiter backend，首个 decode 请求即崩** |
 | SGLang | `--max-running-requests 64` | 设 8 会让 64 并发里 56 个排队 |
-| SGLang / vLLM | **CUDA Graph 保持开启** | 但 Kimi 16K/c64 档会回退 6.3%，需按档实测 |
+| SGLang / vLLM | **CUDA Graph 保持开启** | 关掉在 Kimi 16K/c8 上会掉 31%；16K 档另加 `--chunked-prefill-size 4096`（+5~8%） |
 | vLLM | `--gpu-memory-utilization 0.95` | 0.85 报 `No available memory for cache blocks` |
 | 压测前 | `MAX_LEN ≥ 20480` | 17408 会让 16K 档全 400，且客户端把 400 当成功 → **假数据** |
 
@@ -358,7 +358,7 @@ python3 -m pip download --no-deps --dest wheels \
 | --- | --- | --- | --- |
 | MiMo × SGLang | +73.1% ~ +466.4% | `mrr 8→64` + 开 CUDA Graph | 无 |
 | MiMo × vLLM | +3.1% ~ +31.9% | 去 `--enforce-eager` + `max-num-seqs 128` | 无 |
-| Kimi × SGLang | +37.9% ~ +620.8% | 开 CUDA Graph | **16K/c64 −6.3%** |
+| Kimi × SGLang | +37.9% ~ +620.8% | 开 CUDA Graph | 无（原记的 16K/c64 −6.3% 已复测为噪声） |
 
 **官方条件评测**：
 
@@ -373,8 +373,8 @@ python3 -m pip download --no-deps --dest wheels \
 | AuK | ✅ **120/120** | 24 kHz 单声道，单条 **4.4 s**，全量 531 s；时长 3.08–12.46 s 全部 ≥ 官方 `duration_min_s` |
 
 **Kimi CUDA Graph 回退的稳定性已闭环**（原 P1-4）：同配置 round1 vs round2 六档差异
-+2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2%，即 16K/c64 的 −6.3% 是**配置级回退**而非抖动，
-结论稳定可用。
++2.6% / +1.6% / +1.4% / +0.2% / −0.2% / +0.2% —— 但那两轮之间恰好没覆盖到 16K/c64 的取值区间；
+2026-11-05 用 5 变体复测（§7.4）才确认该档单轮波动 ±7%，**原记的 −6.3% 是噪声，不是配置回退**。
 
 ### 7.0 今天的两个「不可行」也是有价值的结论
 
@@ -444,7 +444,7 @@ python3 -m pip download --no-deps --dest wheels \
 | 项 | 数值 |
 | --- | --- |
 | 条目总数 | **15**（7 个 official-eval 全绿 / 1 个 partial 53-60 / 3 个 bench / 3 个 smoke / 2 个 blocked） |
-| 官方条件真实产物 | **990 条**（不含 OmniWeaving 未完成的 7 条） |
+| 官方条件真实产物 | **923 条**（官方清单 935 条 − hy_world 5 − omni 7） |
 | 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
 | 踩坑 | 24 条（`docs/gotchas.md`） |
 | 硬约束 | 5 条（`docs/REPORT.md` §4） |
@@ -454,62 +454,88 @@ python3 -m pip download --no-deps --dest wheels \
 **随时可做的**：拿到任何有 `hx1hdnormal` 权限的账号后，按 `docs/repro.md` 用归档镜像重跑，
 OmniWeaving 只需 `sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm` 补 7 条（3.5 h）。
 
-## 9. TODO（活文档）
+## 9. 机时恢复后怎么重启（runbook）
 
-### 🔴 P0 —— 只能你做，且阻塞最多条目
+> 触发条件：平台把某个账号加入 `hx1hdnormal` 的 `AllowAccounts` **且**绑定
+> `QoS=partition_hx1hdnormal`。先做 §9.0 的判定，通过后再往下走。
 
-| # | 事项 | 影响 |
-| --- | --- | --- |
-| P0-1 | 群里要 **T01/T02 的 `baselines/<模型>.json`** 与**官方 GPU 性能基线** | 3 个有 6 档基准的条目 §6 全为 `[BLOCKED]`；所有吞吐数字无官方对照 |
-| P0-2 | 群里要 **T02 评测器**（OCRBench / MMMU）与 `data/` 子集 | Recon2Reason、RoboBrain 停在 smoke |
-| P0-3 | ~~确认 T03 图片尺寸 2048×2048 还是 1024×1024~~ | ✅ **已自行解决**：条件清单 `params.width/height` 写的就是 2048（以机器可读为准），无需等人 |
-| P0-4 | 确认 **T04 到底要不要 2% 基线门槛**（赛事详情 §五要求比基线；T03/T04 材料说"不进行统一评分"） | ASR/FA 的自算指标能否作为验收依据 |
-| P0-5 | 恢复 **`luql` 在郑州集群的 SSH 密钥** | 镜像归档与数据无法搬到永久账号 |
-| P0-6 | 拿 **Harbor 凭据**（个人中心→访问控制，找"镜像仓库"） | ⬆️ **升为第一优先**：按新原则，镜像归档是核心资产；只有推到自己命名空间才能真正摆脱「上游删仓 + 临时账号回收」两个风险；顺带也解决了比赛对镜像归属的要求 |
-| P0-7 | 确认 **`scnethr2601a10` 是否赛事账号** | 若否，BW1000 全线作废（`luql` 进不了 `hx1hdnormal`） |
-| P0-8 | 补 `platform/` 截图（17 条清单见 `docs/platform-checklist.md`） | 7 个条目都空着 |
+### 9.0 先判定"真的能提交了"（3 分钟）
 
-### 🟡 P1 —— 我能做，有明确解法
+```bash
+ssh <账号>@zzeshell.scnet.cn -p 65032        # 或 zzeshell-hz1 / luql 的别名
+# 1) 是否在分区白名单（有输出才算通过）
+scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
+  | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"
+# 2) 最小作业能否起来
+printf '#!/bin/bash\n#SBATCH -p hx1hdnormal\n#SBATCH -N 1\n#SBATCH --gres=dcu:1\n#SBATCH -t 00:05:00\nhostname\n' > ~/t.slurm
+sbatch ~/t.slurm && sleep 20 && squeue -u $USER
+```
 
-| # | 事项 | 预估 | 解法 |
+失败表现与含义见 `docs/gotchas.md` #24。
+
+### 9.1 恢复数据（不需要重下权重）
+
+```bash
+# 归档唯一位置
+B=/public/home/luql/archive/zoo-dcu-2026-11
+
+# 1) 镜像（3 个，30 GB，sha256 已核对）
+cd $B/images && sha256sum -c <(cat <<'EOF'
+f16125ba6dcb3020aaef33b89d390508f99aad980d7436286f043ed68596d77a  mimo-sglang-bw10000_1.1.1.tar.gz
+986f95a3e5599f024797e41faa614f72cbd5a6c87e5e97f71c172f730269d45f  vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz
+b61b05bd7df45fdfe81885cb898f88572860a37734ececc23018dbfd531d7d87  minimax-music3-bw-sglang_20261031-rc1.tar.gz
+EOF
+)
+
+# 2) 依赖与源码（166 MB）
+mkdir -p ~/wheels && tar xzf $B/assets/wheels-auk-cp310.tar.gz -C ~/wheels   # 其余同理
+
+# 3) 代码
+git clone https://github.com/lql341/scnet-dcu-model-zoo.git ~/zoo   # 或 GitLab
+
+# 4) 权重（ModelScope，按需下载；清单见 docs/weights-policy.md）
+```
+
+### 9.2 补完唯一未完成的条目（OmniWeaving 剩 7 条，约 3.5 h）
+
+```bash
+cd ~/zoo/models/Tencent-Hunyuan__HY-OmniWeaving__bw1000__hyvideo
+rsync -az --exclude logs --exclude official-eval -e "ssh -o BatchMode=yes" \
+  ./ <账号>@zzeshell.scnet.cn:/public/home/<账号>/work/zoo-omni/
+# 先确认产物已就位（否则会从零重跑）
+rsync -az $B/products/omniweaving/ <账号>@...:/public/home/<账号>/work/omnirun/repo/official-eval/
+ssh <账号>@... 'cd ~/work/zoo-omni && sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm'
+```
+
+`evaluate_official.py` 会跳过已有的 53 个产物，只补 7 条。
+
+### 9.3 恢复后值得做的（按性价比）
+
+| # | 事项 | 成本 | 为什么 |
 | --- | --- | --- | --- |
-| P1-0 | **知识库双远端同步**（本轮已建） | 每次 1 min | `git push origin main && git push sourcefind main`；GitLab 仓 `luql/scnet-dcu-model-zoo` 已建 |
-| P1-0b | **依赖归档**（本轮已做） | 新增一个就归档 | `~/zoo-images/assets/wheels-*-cp310.tar.gz` + `MANIFEST.md` |
-| P1-1 | **AuK 官方 120 条收尾** | 已花 ~1 卡时，余 5 卡时 | 作业 `1022507` 已带续跑（已有产物跳过）；跑完后回填 `反馈表.csv` / `eval_result.json` / README §5–7 |
-| P1-2 | **Qwen-Image 官方 180 条收尾** | 已花 ~1 卡时，余 1 卡时 | 作业 `1022166`；跑完后抽查 3 张尺寸 + 回填 §5–7 |
-| P1-3 | Recon2Reason / RoboBrain 的 **int8/int4** | 各 3–5 卡时 | 量化件单独计件；**但都要等 P0-1 的基线** |
-| P1-4 | ~~Kimi CUDA Graph 二次确认~~ | ✅ 已完成 | round1/round2 六档差异 ≤2.6%，−6.3% 是配置级回退，结论稳定 |
-| P1-5 | **把 cp310 轮子规则固化成工具** | 0.5 h | `tools/fetch_wheels.sh`：统一 `--python-version 310 --abi cp310`，防再犯 gotchas #18 |
-| P1-7 | **Wan2.1 全量 60 条收尾** | 在跑 | 作业 `1029458`（4 卡 FSDP）；跑完回填 README/meta 并推送 |
-| P1-8 | **HY-OmniWeaving 适配** | 4–8 卡时 | 依赖补齐中（Qwen2.5-VL-7B / byt5-small / Glyph-SDXL-v2 / FLUX-Redux siglip）；byT5 缺失已定位 |
-| P1-9 | **vLLM v0 引擎对比** | 0.5 卡时 | `VLLM_USE_V1=0` 是否绕开 Triton paged decode（gotchas #21 的下一步） |
-| P1-10 | **Music3 镜像复现验证** | 0.5 卡时 | 从归档 tar 还原 + 跑 2 条，证明归档可用（当前只校验了 sha256） |
-| P1-6 | **两轮审自己的结论** | 0.5 h | 本轮教训：两个「blocked」都是工程错，`blocked` 以后必须附「已核对 `requires_dist` / wheel tag」证据 |
+| 1 | **把 3 个镜像推到自有 Harbor 命名空间** | 0.5 卡时 | 只有这一步能真正摆脱"上游删仓 + 临时账号回收"两个风险（需 Harbor 凭据） |
+| 2 | 量化条目（AWQ 已验证可跑） | 4–8 卡时 | 全库唯一空白；AWQ 慢 5× 但显存收益真实，适合"装不下 bf16"的场景 |
+| 3 | WorldMirror（需编 ROCm 版 gsplat） | 8+ 卡时，可能失败 | T03 第 5 个模型 |
+| 4 | T01/T02 精度 | 需官方 baselines | 材料从未下发，无法自证 |
+| 5 | `platform/` 截图 17 项 | 无卡时 | 只有人能在平台上点 |
 
-### 🟢 P2 —— 材料已备但需 8 卡 / 大空间
+### 9.4 明确不必再做的（已有结论，别再烧卡时）
 
-| # | 模型 | 权重 | 障碍 |
-| --- | --- | --- | --- |
-| P2-1 | Wan2.1-I2V-14B-480P | 82 G | 8 卡 FSDP + USP |
-| P2-2 | HY-OmniWeaving | 55 G | 8 卡 torchrun |
-| P2-3 | MiniMax-Music3 | 52 G | README 称推理需 CUDA |
-| P2-4 | HY-World-2.0 | 174 G | 空间只剩 155 G + 要 FA3(Hopper) |
-
-### ⚫ 不可行（已论证）
-
-| 模型 | 原因 |
-| --- | --- |
-| DeepSeek-V4.1-Flash-1017 | ~1 TB，需 2–3 节点 |
-| DeepSeek-V4-Flash-Vision-Exp | 官方仅 FP8/FP4，需转 BF16（609 GB） |
+- vLLM 16K 调参：chunked 切片 / AITER / backend 覆盖 / fp8 KV / TP=2 / **v0 引擎** —— 全部无效（gotchas #21）
+- Qwen-Image 合批：2048² 显存无余量，batch=2 即 OOM（`sweep/results-batching-*.md`）
+- Kimi 16K/c64 "回退"：是噪声，不是配置问题（§8 的 §7.4）
+- fp8 在线量化：DCU 无 kernel（gotchas #22）
 
 ---
 
 ## 10. 给新会话的开场提示
 
 ```
-读 ~/Downloads/pi-test/zoo/HANDOFF.md 和 docs/gotchas.md，然后按 §9 的 TODO 继续。
-当前余额 4344.02，集群唯一可用 SSH 是 zzeshell-hz1（用户 scnethr2601a10），
-分区只能用 hx1hdnormal。每次改动后跑 lint_entry.sh + gen_index.py + check_quota.sh。
+读 ~/Downloads/pi-test/zoo/HANDOFF.md、docs/REPORT.md 和 docs/gotchas.md。
+**项目已结项**（2026-11-09）：两个账号都没有 hx1hdnormal 的提交权限（详见 §11）。
+若机时恢复，按 §9 的 runbook 走（§9.0 先判定、§9.2 补 OmniWeaving 剩 7 条）。
+余额约 4275；数据全在 luql:/public/home/luql/archive/zoo-dcu-2026-11/（31 GB）。
+每次改动后跑四件套：lint_entry.sh + gen_index.py + check_quota.sh + check_products.py。
 跑不通的配置要标 blocked 并留证据，不要删。
 ```
 

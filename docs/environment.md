@@ -14,6 +14,16 @@
 
 ## 软件
 
+镜像有 **3 个**（都用 Harbor 匿名 pull，均已归档，见 `docs/image-archive.md`）：
+
+| 用途 | 镜像 | digest | 覆盖条目 |
+| --- | --- | --- | --- |
+| SGLang 推理 / 需要 DCU 版 torchaudio | `dcu/linshp/base/mimo-sglang-bw10000:1.1.1` | `sha256:db981c46…` | Kimi、MiMo×SGLang、Recon2Reason、RoboBrain、Trident×SGLang、AuK、AuK-Flash、Qwen-Image、Wan2.1-I2V、HY-OmniWeaving |
+| vLLM 推理 / 音频 | `dcu/linshp/base/vllm0.20-…-qwen_asr1.7_bw:1.0.0` | `sha256:07930260…` | MiMo×vLLM、ASR、ForcedAligner、Trident×vLLM、AWQ 探针 |
+| 音乐生成（社区自建） | `dcu/acizv7iztz/base/minimax-music3-bw-sglang:20261031-rc1` | `sha256:20f071aa…` | MiniMax-Music3（含 Hygon SGLang + BW 适配 harness） |
+
+### 前两个镜像的组件版本
+
 | 组件 | SGLang 镜像 | vLLM 镜像 |
 | --- | --- | --- |
 | 镜像 | `image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1` | `image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0` |
@@ -28,6 +38,16 @@
 
 镜像仓库 `image.ac.com:5000` 是 **Harbor**，公开项目 13 个、`dcu` 项目下 12555 个仓库，
 **匿名可 pull**（`--tls-verify=false`）。SSH 端口全不通，只能 HTTPS。
+
+## 账号状态（2026-11-09）
+
+| 账号 | 能力 | 状态 |
+| --- | --- | --- |
+| `scnethr2601a10` | BW1000 Slurm（唯一曾能提交 `hx1hdnormal`） | ❌ **2026-11-07 被移出分区 `AllowAccounts`**，提交被拒；SSH 与 `/public` 读写正常 |
+| `luql` | 平台账号（OpenAPI/Notebook/GitLab）+ 郑州 SSH | ✅ SSH 正常（用于归档）；❌ **无 GPU 卡权限**，同样不能提交 |
+
+> 判定方法见 `docs/gotchas.md` #24。恢复需平台把账号加入 `hx1hdnormal` 的 `AllowAccounts`
+> 并绑定 `QoS=partition_hx1hdnormal`。
 
 ## 访问路径
 

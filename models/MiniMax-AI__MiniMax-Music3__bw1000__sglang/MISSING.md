@@ -17,7 +17,7 @@
 
 | # | 风险 | 现状 |
 | --- | --- | --- |
-| ① | 官方无独立推理仓，必须有 SGLang-Omni 服务端 | 用 Harbor 上 BW 专用镜像 + 镜像作者 harness（已归档到 `zoo-images/assets/`） |
+| ① | 官方无独立推理仓，必须有 SGLang-Omni 服务端 | 用 Harbor 上 BW 专用镜像 + 镜像作者 harness（已归档到 `/public/home/luql/archive/zoo-dcu-2026-11/assets/`） |
 | ② | 上游说需 2 张 CUDA 卡 | BW 单卡实测可用（TP=1，峰值 33.7 GB） |
 | ③ | 镜像可能被上游删除 | 待归档镜像 tar（12.27 GB）；届时本条目不可复现 |
 

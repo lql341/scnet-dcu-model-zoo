@@ -73,12 +73,12 @@ $PD image inspect image.ac.com:5000/aihub/dcu/<账号>/mimo-sglang-bw10000:1.1.1
 
 ## 路径 B：离线 tar 推送（Harbor 上已没有，但本地有归档）
 
-归档位置：`/public/home/scnethr2601a10/zoo-images/`（已 `chmod 755`，`luql` 账号可直接读）
+归档位置：`/public/home/luql/archive/zoo-dcu-2026-11/images/`（luql 账户，项目结项后唯一副本；临时账号 `scnethr2601a10` 已于 2026-11-07 被回收）
 
 ```bash
 # 1) 还原
-gunzip -c zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
-gunzip -c zoo-images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
 
 # 2) 之后的 tag / login / push / 校验与路径 A 的第 3–5 步相同
 ```
@@ -115,7 +115,7 @@ skopeo copy --src-tls-verify=false --dest-tls-verify=false \
 
 - 镜像来源为第三方账号 `dcu/linshp`
 - 已用 `image.lock` 锁 digest
-- 本地有 tar 归档（`zoo-images/`，含 sha256）
+- 本地有 tar 归档（`/public/home/luql/archive/zoo-dcu-2026-11/images/`，含 sha256）
 - 风险：上游删除仓库时不可复现，需从归档恢复
 
 **不要**把别人的镜像写成自己构建的。

@@ -41,7 +41,7 @@
 
 **镜像 `/tmp/music3-hygon/` 里带着镜像作者的适配工作区**（`serve.py`、`music3_hygon/` runtime、
 `patches/0001-hygon-eager-components.patch`、`evaluate.py`、`env.sh`）。`/tmp` 会随容器消失，
-因此我们把它归档为 `zoo-images/assets/music3-hygon-harness.tar.gz`（sha256 `d5e119a5…`），
+因此我们把它归档为 `/public/home/luql/archive/zoo-dcu-2026-11/assets/music3-hygon-harness.tar.gz`（sha256 `d5e119a5…`），
 并在启动时挂载到容器的 `/work/harness`。
 
 ### 3.2 软件包升级
