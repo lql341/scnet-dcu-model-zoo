@@ -1,5 +1,10 @@
 # SCNet 侧原始产物位置
 
+> ⚠️ **2026-11-07 起 `scnethr2601a10` 被移出 BW1000 分区的 AllowAccounts**，集群侧数据随时可能被清空。
+> 三层保全现状与还原步骤见 **[docs/ARCHIVE-SUMMARY.md](docs/ARCHIVE-SUMMARY.md)**：
+> ① Git 双远端（代码与经验）→ ② 本机 `~/Downloads/pi-test/archive/` + **luql 郑州 `/public/home/luql/zoo-archive-2026-11/`**（产物与镜像）
+> → ③ 原集群（即将失效）。
+
 所有数据目前落在临时 Slurm 账号名下。**GitHub 是本仓库的权威副本**，下列路径仅用于回溯。
 
 ## 郑州集群（BW1000，Slurm 账号 `scnethr2601a10`）
