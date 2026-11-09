@@ -1,6 +1,10 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> 最后更新：2026-11-06　余额 **≈4300**　状态：14 个条目完成（含 Music3 60/60、Wan 60/60）；OmniWeaving 按修正后的尺寸重跑中
+> ⚠️ **2026-11-07 14:12 CST 起，`hx1hdnormal` 提交被拒**（`Invalid account or account/partition combination`），
+> 正在跑的 OmniWeaving 作业被 CANCELLED（22 h，**53/60 产物已在盘上**）。集群范围内 `squeue -a` 为 0 条作业、
+> OpenAPI 的 `queues` 也返回空 → 判断为账号/分区权限变更（正是 §9 的 P0-7）。详见 §11「事故记录」。
+>
+> 最后更新：2026-11-07　余额 **4275.25**　状态：14 个条目完成（含 Music3 60/60、Wan 60/60）；OmniWeaving 按修正后的尺寸重跑中
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -31,7 +35,7 @@
 
 | 账号 | 用途 | 状态 |
 | --- | --- | --- |
-| `scnethr2601a10` | 郑州集群 Slurm 账号（BW1000 唯一可用） | ✅ 正常，`/public` 400 G 配额 |
+| `scnethr2601a10` | 郑州集群 Slurm 账号（BW1000 唯一可用） | ⚠️ **2026-11-07 起提交被拒**（Invalid account/partition），SSH 仍可登录、文件可读写 |
 | `luql` | SCNet **平台账号**（OpenAPI / Notebook / GitLab） | ✅ OpenAPI 正常；❌ **郑州 SSH 密钥被拒** |
 | `lql341` | GitHub | ✅ `gh auth status` 已登录，scopes: repo/gist/admin:public_key |
 
@@ -503,3 +507,22 @@ python3 -m pip download --no-deps --dest wheels \
    再下结论。详见 gotchas #18–#20。
 5. **产物要落盘、作业要能续跑** —— 单条 150 s 的评测跑不完一趟 1 h 作业；
    `evaluate_official.py` 一律支持「产物已存在则跳过」，否则每次重跑都从零烧卡时。
+
+
+---
+
+## 11. 事故记录
+
+### 2026-11-07 14:12 CST：BW1000 提交权限丢失（P0-7 的现实版）
+
+| 时间 | 事件 |
+| --- | --- |
+| 14:12 | OmniWeaving 全量作业 `1048411` 在跑 22:00 后被 `CANCELLED`（产物 53/60 已落盘） |
+| 之后 | `sbatch` 一律报 `Invalid account or account/partition combination specified`（最小作业也一样） |
+| 诊断 | ① `squeue -a` 全集群 0 条作业；② `sinfo`（默认视图）空，`scontrol -a show partition hx1hdnormal` 仍可见（QoS=partition_hx1hdnormal）；③ 我们的 assoc QOS 是 `user_scnethr2601a10`，`--qos=partition_hx1hdnormal` 报 `Invalid qos specification`；④ OpenAPI `resource-summary` 的 `queues` 返回 `[]` |
+| 判断 | **分区/账号的 QOS 绑定被改**（或临时账号到期）。SSH 与 `/public` 读写仍正常，只是不能提交作业 |
+| 未受影响 | 53 条 OmniWeaving 产物、3 个镜像归档、全部仓库数据（GitHub/GitLab 已同步） |
+| 恢复后要做的第一件事 | `cd ~/work/zoo-omni && sbatch --export=ALL container/submit.slurm`（`evaluate_official.py` 会跳过已存在产物，只补剩下 7 条，约 3.5 h），然后回填 README/meta |
+
+**问平台时要问的三句**：① `scnethr2601a10` 是否仍是有效赛事账号；② 它是否仍被允许提交到 `hx1hdnormal`；
+③ 若已停用，`luql` 账号能否获得该分区权限（同时解决 §9 的 P0-5「luql 郑州 SSH 被拒」）。
