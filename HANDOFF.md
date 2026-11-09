@@ -524,5 +524,25 @@ python3 -m pip download --no-deps --dest wheels \
 | 未受影响 | 53 条 OmniWeaving 产物、3 个镜像归档、全部仓库数据（GitHub/GitLab 已同步） |
 | 恢复后要做的第一件事 | `cd ~/work/zoo-omni && sbatch --export=ALL container/submit.slurm`（`evaluate_official.py` 会跳过已存在产物，只补剩下 7 条，约 3.5 h），然后回填 README/meta |
 
+### 2026-11-07 冒烟测试结论（六项，全部实测）
+
+| # | 检查 | 结果 |
+| --- | --- | --- |
+| 1 | SSH 登录 | ✅ 正常（`scnethr2601a10@zz-login02`） |
+| 2 | `/public` 读写 | ✅ 正常（写入/删除测试通过） |
+| 3 | `sbatch` 提交 | ❌ `Invalid account or account/partition combination specified`（最小作业也一样） |
+| 4 | 16 个分区逐个查 `AllowAccounts` | ❌ **没有任何一个分区包含 `scnethr2601a10`** |
+| 5 | OpenAPI 提交（`scnet.py submit`） | ❌ 同一个 Slurm 错误（说明不是提交通道的问题） |
+| 6 | 数据保全 | ✅ OmniWeaving 53/60 产物、3 个镜像归档 30 G、仓库双远端全部完好 |
+
+**决定性证据**：`hx1hdnormal` 的 `AllowAccounts` 有 **10552** 条，包含 `scnethr2601a05`、`scnethr2601a07`、
+`scnethr202601`，**独独没有 `scnethr2601a10`** → 我们的账号是被**从分区的允许列表里移除**了（权限回收/试用到期），
+不是集群故障、不是脚本问题。
+
 **问平台时要问的三句**：① `scnethr2601a10` 是否仍是有效赛事账号；② 它是否仍被允许提交到 `hx1hdnormal`；
 ③ 若已停用，`luql` 账号能否获得该分区权限（同时解决 §9 的 P0-5「luql 郑州 SSH 被拒」）。
+
+**恢复后的第一件事**（产物续跑，只补剩下 7 条，约 3.5 h）：
+```bash
+ssh zzeshell-hz1 'cd ~/work/zoo-omni && sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm'
+```
