@@ -146,6 +146,11 @@ triton 3.5.1+das.opt1.dtk2604.torch290.2605181637.gd4164b
 
 基于 `image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1`。选它的原因：它是当前 Harbor 公共镜像里唯一同时满足「SGLang 0.5.10 das 版 + DTK 26.04 + gfx936 可跑」的组合，自带 `sglang 0.5.10rc0+das.opt2.alpha.dtk2604` 与 `triton 3.5.1`，无需自行编译。
 
+> **镜像归属说明**：本条目使用的镜像属于**第三方账号**（`dcu/linshp` 或 `dcu/acizv7iztz`），
+> 非本项目构建。已用 `image.lock` 锁定 digest，并在
+> `/public/home/luql/archive/zoo-dcu-2026-11/images/` 保留 tar.gz 归档（sha256 已核对、还原验证通过），
+> 以应对上游删除仓库。推送到自有命名空间需要 Harbor 凭据，平台不提供自助获取接口（2026-11-11 已确认无法推进）。
+
 ### 3.2 软件包升级
 
 无。镜像内组件版本已满足要求，`requirements-extra.txt` 仅保留说明性注释。

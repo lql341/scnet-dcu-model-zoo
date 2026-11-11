@@ -116,6 +116,11 @@ triton: 3.5.0
 
 基于 `image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0`。选它的原因：这是 Harbor 公共镜像里带 `_bw` 标识、明确面向 BW1000 构建的 vLLM 0.20 镜像，自带 `torch 2.10.0` 与 `transformers 5.8.1`，无需自行编译。
 
+> **镜像归属说明**：本条目使用的镜像属于**第三方账号**（`dcu/linshp` 或 `dcu/acizv7iztz`），
+> 非本项目构建。已用 `image.lock` 锁定 digest，并在
+> `/public/home/luql/archive/zoo-dcu-2026-11/images/` 保留 tar.gz 归档（sha256 已核对、还原验证通过），
+> 以应对上游删除仓库。推送到自有命名空间需要 Harbor 凭据，平台不提供自助获取接口（2026-11-11 已确认无法推进）。
+
 ### 3.2 软件包升级
 
 无。镜像内组件版本已满足要求，`requirements-extra.txt` 仅保留说明性注释。

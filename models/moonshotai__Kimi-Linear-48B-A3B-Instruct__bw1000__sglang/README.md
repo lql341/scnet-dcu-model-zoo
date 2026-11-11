@@ -142,6 +142,11 @@ transformers: 5.3.0
 
 基于 `image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1`。选它的原因：它是 Harbor 公共镜像里同时满足「SGLang das 版 + DTK 26.04 + gfx936 可跑」的组合，且 `sglang 0.5.10rc0` 已内置 `kimi_linear` 实现与 vendored KDA kernel（见 §3.3 实测记录）。
 
+> **镜像归属说明**：本条目使用的镜像属于**第三方账号**（`dcu/linshp` 或 `dcu/acizv7iztz`），
+> 非本项目构建。已用 `image.lock` 锁定 digest，并在
+> `/public/home/luql/archive/zoo-dcu-2026-11/images/` 保留 tar.gz 归档（sha256 已核对、还原验证通过），
+> 以应对上游删除仓库。推送到自有命名空间需要 Harbor 凭据，平台不提供自助获取接口（2026-11-11 已确认无法推进）。
+
 ### 3.2 软件包升级
 
 **无。** `requirements-extra.txt` 仅保留说明性注释。

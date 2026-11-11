@@ -132,6 +132,16 @@ skopeo copy --src-tls-verify=false --dest-tls-verify=false \
 4. `docs/environment.md` 的镜像表
 5. 跑一遍 `./tools/lint_entry.sh` + `python3 tools/gen_index.py`
 
+## ✅ 结论（2026-11-11）：本路径关闭
+
+平台**没有自助获取 Harbor 凭据的接口**（网页端也没有可用的「镜像仓库密码」入口），
+用户侧无法取得推送权限。**本项目不再尝试推送到自有命名空间**，改走下面的「保留现状 + 诚实标注」。
+
+- 已写好的一键脚本 `tools/push_harbor.sh` 保留（含 `DRY_RUN=1`），**若将来凭据可得，直接跑即可**
+- 已实测：`image.ac.com:5000` 可达、匿名可 pull、推送需登录、luql 在 Harbor 里 0 个仓库
+- 风险状态：镜像仍指向第三方账号（`dcu/linshp`、`dcu/acizv7iztz`），**已用 3 份 tar.gz 归档兜底**
+  （`/public/home/luql/archive/zoo-dcu-2026-11/images/`，sha256 全核对 + 功能性还原验证通过）
+
 ## 如果最终拿不到凭据
 
 退路是保留现状 + 诚实标注。在 `MISSING.md` 写明：
