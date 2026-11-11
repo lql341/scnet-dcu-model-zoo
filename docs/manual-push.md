@@ -12,6 +12,29 @@
 已做的缓解：`image.lock` 锁定 digest，能防"tag 被重指"，**防不住"仓库被删"**。
 彻底解法是把镜像归档到自有命名空间。
 
+## 地址与命名（2026-11-11 实测）
+
+| 项 | 值 |
+| --- | --- |
+| Harbor 地址 | **`image.ac.com:5000`**（内网 IP `10.13.17.207`，仅 HTTPS 5000 端口） |
+| 登录节点可达性 | ✅ 域名解析正常、5000 端口通、`/v2/` 返回 401（需认证） |
+| 匿名可读 | ✅ 可列项目/仓库/拉镜像；**推送需登录** |
+| 个人命名空间 | `image.ac.com:5000/dcu/luql/base/<name>:<tag>` |
+| **平台镜像库（比赛用这个）** | `image.ac.com:5000/aihub/dcu/luql/<name>:<tag>` |
+| luql 现有仓库数 | **0**（从未推送过，首次 push 会自动建仓库） |
+
+命名是照同批账号的实测惯例（`aihub/dcu/<账号>/<名字>`，例如
+`aihub/dcu/zhanghengyu3766/mimo-v2.6-distill-qwen-9b-vllm-bw`）。
+
+**一键脚本**：`tools/push_harbor.sh`（3 个镜像 × 2 个目标，含 digest 校验与本地存储释放）
+
+```bash
+# 只需先准备好凭据文件（见下节），然后
+ACCOUNT=luql sbatch tools/push_harbor.sh          # 全推
+ONLY=m3 ACCOUNT=luql sbatch tools/push_harbor.sh  # 只推 Music3
+DRY_RUN=1 bash tools/push_harbor.sh               # 只看命令不执行
+```
+
 ## 前置：拿 Harbor 凭据
 
 按实测，凭据**不在集群上、也不在 OpenAPI 里**（OpenAPI 的"容器"章节只有 Notebook 实例，无镜像推送 API）。
