@@ -22,11 +22,11 @@ echo "[host] node=$(hostname) tmp_free=${FREE}G"
 mkdir -p "$XDG_RUNTIME_DIR" "$WORK"; chmod 700 "$XDG_RUNTIME_DIR"
 
 if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then
-  $PD load -i "$HOST_IMAGE_TAR" >/tmp/load.log 2>&1
+  $PD load -i "$HOST_IMAGE_TAR" >/tmp/load-$JID.log 2>&1
 fi
 $PD image exists "$IMAGE" 2>/dev/null \
-  || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load.log 2>&1
-$PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/load.log; exit 1; }
+  || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load-$JID.log 2>&1
+$PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/load-$JID.log; exit 1; }
 
 mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
 echo "[host] start $(date +%T)"

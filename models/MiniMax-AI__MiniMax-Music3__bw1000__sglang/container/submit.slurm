@@ -26,8 +26,8 @@ echo "[host] node=$(hostname) tmp_free=${FREE}G"
 # 实测解包需 >56 GB，56 G 的节点直接 no space left on device → 门槛设 80 G
 [ "$FREE" -lt 80 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 
-$PD image exists "$IMAGE" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull.log 2>&1
-$PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/pull.log; exit 1; }
+$PD image exists "$IMAGE" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull-$JID.log 2>&1
+$PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/pull-$JID.log; exit 1; }
 
 mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
 echo "[host] run $(date +%T)"

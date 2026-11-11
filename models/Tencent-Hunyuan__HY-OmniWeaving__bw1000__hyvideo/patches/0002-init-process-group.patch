@@ -1,0 +1,18 @@
+--- a/generate.py
++++ b/generate.py
+@@ -39,8 +39,14 @@
+ from hyvideo.commons.parallel_states import initialize_parallel_state
+ from hyvideo.commons.infer_state import initialize_infer_state
+ 
+-parallel_dims = initialize_parallel_state(sp=int(os.environ.get('WORLD_SIZE', '1')))
++# [patch] 多卡（torchrun）时必须先 init_process_group，否则 build_mesh / init_device_mesh
++# 在没有 process group 的情况下会失败（原代码从头到尾没有 init_process_group 调用）。
++# 单卡路径跳过，保持原行为不变。
++_ws = int(os.environ.get('WORLD_SIZE', '1'))
++if _ws > 1 and not dist.is_initialized():
++    dist.init_process_group(backend='nccl')
+ torch.cuda.set_device(int(os.environ.get('LOCAL_RANK', '0')))
++parallel_dims = initialize_parallel_state(sp=_ws)
+ 
+ def save_video(video, path, fps=24):
+     if video.ndim == 5:

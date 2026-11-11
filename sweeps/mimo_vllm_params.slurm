@@ -27,8 +27,8 @@ FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "tmp free=${FREE}G"
 
 for I in "$IMG_VLLM" "$IMG_SGL"; do
   echo "== pull $I $(date +%T) =="
-  $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$I" >/tmp/pull.log 2>&1
-  $PD image exists "$I" || { echo "PULL_FAIL"; tail -3 /tmp/pull.log; exit 1; }
+  $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$I" >/tmp/pull-$JID.log 2>&1
+  $PD image exists "$I" || { echo "PULL_FAIL"; tail -3 /tmp/pull-$JID.log; exit 1; }
 done
 trap '$PD rm -f vsrv >/dev/null 2>&1' EXIT
 

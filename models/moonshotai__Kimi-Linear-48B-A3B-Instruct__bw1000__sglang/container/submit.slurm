@@ -37,11 +37,11 @@ if [ "$FREE" -lt 45 ]; then echo "[host] NOT_ENOUGH_SPACE (need 45G)", exit 42; 
 
 echo "[host] load image"
 if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then
-  $PD load -i "$HOST_IMAGE_TAR" >/tmp/load.log 2>&1
+  $PD load -i "$HOST_IMAGE_TAR" >/tmp/load-$JID.log 2>&1
 fi
 $PD image exists "$IMAGE" 2>/dev/null \
-  || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load.log 2>&1
-$PD image exists "$IMAGE" || { echo "[host] image not available"; tail -5 /tmp/load.log; exit 1; }
+  || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load-$JID.log 2>&1
+$PD image exists "$IMAGE" || { echo "[host] image not available"; tail -5 /tmp/load-$JID.log; exit 1; }
 
 cat > /tmp/inner.sh <<'EOS'
 set -uo pipefail

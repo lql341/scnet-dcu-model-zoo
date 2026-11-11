@@ -43,11 +43,30 @@ python3 -c 'import hyvideo; print("hyvideo import OK")' || exit 4
 echo '--- 官方条件评测 ---'
 cd /work/repo
 mkdir -p official-eval/outputs logs/shard
-OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="${NPROC:-1}" \
-  COND_FILE=conditions/omniweaving.jsonl python3 evaluate_official.py 2>&1 | tail -30
+# 【多卡要点】generate.py 用 WORLD_SIZE 做序列并行，torchrun 会设 WORLD_SIZE/RANK/LOCAL_RANK。
+# 但容器里若残留 HIP_VISIBLE_DEVICES/CUDA_VISIBLE_DEVICES（Slurm 只给 1 张卡的可见性），
+# 其余 rank 会越界 → build_mesh 失败。多卡时必须 unset 让 torch 看到 cgroup 允许的全部卡。
+# PROBE_FRESH=1：探针要真的生成（否则 PROBE_ONLY=1 会因为首条已存在而被跳过）
+if [ "${PROBE_FRESH:-0}" = "1" ]; then
+  export OUTDIR_OVERRIDE=official-eval/probe-outs
+  mkdir -p "$OUTDIR_OVERRIDE"
+  echo "[omni] PROBE_FRESH=1 → 输出到 $OUTDIR_OVERRIDE（不影响正式产物）"
+fi
+if [ "${NPROC:-1}" -gt 1 ]; then
+  echo "[omni] 多卡模式：NPROC=$NPROC，unset 可见性变量"
+  OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="$NPROC" \
+    COND_FILE=conditions/omniweaving.jsonl \
+    env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
+    python3 evaluate_official.py 2>&1 | tail -40
+else
+  OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="${NPROC:-1}" \
+    COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
+    env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
+    python3 run_missing.py 2>&1 | tail -40
+fi
 
 echo '--- 产物规格校验（帧数/fps/分辨率）---'
-python3 - <<'PYEOF'
+RUN_TAG="${SLURM_JOB_ID:-x}" python3 - <<'PYEOF'
 import glob, json, os
 try:
     import imageio.v2 as iio
@@ -68,7 +87,8 @@ stats = {"files": len(files),
          "bytes_total_MB": round(sum(os.path.getsize(f) for f in files) / 1e6, 1),
          "dur_s": {"min": min(durs) if durs else None, "max": max(durs) if durs else None},
          "spec_violation_count": len(bad), "violations": bad[:5]}
-json.dump(stats, open("stats.json", "w"), ensure_ascii=False, indent=1)
+import os as _os
+json.dump(stats, open(f"stats-{_os.environ.get('RUN_TAG','x')}.json", "w"), ensure_ascii=False, indent=1)
 print(json.dumps(stats, ensure_ascii=False))
 PYEOF
 echo '[omni] done'

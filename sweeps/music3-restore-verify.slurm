@@ -24,7 +24,7 @@ FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostn
 # 13.7 GB 归档（内含 14 GB core dump）解包 + podman 存储要双份空间，实测 83 G 仍失败 → 110 G
 [ "$FREE" -lt 110 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 echo "[host] 从归档还原（gunzip | podman load）$(date +%T)"
-gunzip -c "$TARGZ" | $PD load >/tmp/load.log 2>&1 || { echo "[host] load 失败"; tail -5 /tmp/load.log; exit 1; }
+gunzip -c "$TARGZ" | $PD load >/tmp/load-$JID.log 2>&1 || { echo "[host] load 失败"; tail -5 /tmp/load-$JID.log; exit 1; }
 $PD images --format '{{.Repository}}:{{.Tag}}' | grep -i music3 || { echo "[host] 镜像名不符（可能被重建）"; exit 2; }
 echo "[host] load OK $(date +%T)"
 echo "[host] 跑 1 条官方条件验证功能"

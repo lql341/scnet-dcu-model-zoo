@@ -26,8 +26,8 @@ PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay 
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostname) tmp_free=${FREE}G frames=$FRAMES steps=$STEPS"
 # SGLang 镜像解包约 32 GB，留 45 G 足够（60 G 门槛在拥挤时段几乎排不上）
 [ "$FREE" -lt 45 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
-[ -s "$TAR" ] && $PD load -i "$TAR" >/tmp/load.log 2>&1
-$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load.log 2>&1
+[ -s "$TAR" ] && $PD load -i "$TAR" >/tmp/load-$JID.log 2>&1
+$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load-$JID.log 2>&1
 $PD image exists "$IMG" || { echo "[host] image unavailable"; exit 1; }
 echo "[host] run $(date +%T)"
 $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypoint=/bin/bash \

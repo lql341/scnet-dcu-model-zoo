@@ -27,8 +27,8 @@ PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay 
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostname) tmp_free=${FREE}G"
 [ "$FREE" -lt 60 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 
-$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/pull.log 2>&1
-$PD image exists "$IMG" || { echo "[host] image unavailable"; tail -3 /tmp/pull.log; exit 1; }
+$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/pull-$JID.log 2>&1
+$PD image exists "$IMG" || { echo "[host] image unavailable"; tail -3 /tmp/pull-$JID.log; exit 1; }
 echo "[host] image ready $(date +%T)"
 
 # 官方条件清单：由 submit 侧准备好（~/work/official-conds/music3.jsonl ← 仓库 conditions/music3.jsonl）

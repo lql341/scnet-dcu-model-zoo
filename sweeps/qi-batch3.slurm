@@ -21,8 +21,8 @@ JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "[host] node=$(hostname) tmp_free=${FREE}G"
 [ "$FREE" -lt 50 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
-[ -s "$TAR" ] && $PD load -i "$TAR" >/tmp/load.log 2>&1
-$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load.log 2>&1
+[ -s "$TAR" ] && $PD load -i "$TAR" >/tmp/load-$JID.log 2>&1
+$PD image exists "$IMG" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load-$JID.log 2>&1
 $PD image exists "$IMG" || { echo "[host] image unavailable"; exit 1; }
 mkdir -p "$WORK"/{repo,bench-batch}
 COND=/public/home/scnethr2601a10/work/official-conds/qwen_image.jsonl

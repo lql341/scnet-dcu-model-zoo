@@ -26,8 +26,8 @@ echo "== node $(hostname) $(date +%T) =="
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}'); echo "tmp free=${FREE}G"
 [ "$FREE" -lt 45 ] && { echo "NOT_ENOUGH_SPACE exit 42"; exit 42; }
 
-$PD load -i "$TAR" >/tmp/load.log 2>&1 || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load.log 2>&1
-$PD image exists "$IMG" || { tail -5 /tmp/load.log; exit 1; }
+$PD load -i "$TAR" >/tmp/load-$JID.log 2>&1 || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/load-$JID.log 2>&1
+$PD image exists "$IMG" || { tail -5 /tmp/load-$JID.log; exit 1; }
 echo "image ready $(date +%T)"
 
 cat > /tmp/sweep_inner.sh <<'EOS'

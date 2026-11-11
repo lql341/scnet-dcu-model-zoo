@@ -12,9 +12,51 @@
 
 续跑：产物已存在且 > 200 KB 的条目直接跳过（81 帧 480p 的 mp4 不会小于这个数）。
 """
-import json, os, subprocess, sys, time
+import json, os, struct, subprocess, sys, time
 
-TOL_BYTES = 200 * 1024
+MIN_BYTES = 40 * 1024          # 低于这个基本是空文件/截断
+EXPECT_DUR = 81 / 16           # 5.0625 s，官方 81 帧 / 16 fps
+
+
+def _boxes(buf, start, end):
+    i = start
+    while i + 8 <= end:
+        size = struct.unpack(">I", buf[i:i + 4])[0]
+        typ = buf[i + 4:i + 8]
+        hdr = 8
+        if size == 1:
+            size = struct.unpack(">Q", buf[i + 8:i + 16])[0]; hdr = 16
+        if size < hdr:
+            return
+        yield typ, i + hdr, i + size
+        i += size
+
+
+def mp4_ok(path):
+    """真正校验产物：能解析出 moov/mvhd，且时长≈5.06 s。
+    为什么不用文件大小：81 帧 832×480 的 H.264 依内容可从 100 KB 到 500 KB，
+    早先按 200 KB 判会把手头已有的合法产物误判成无效并重跑（2026-11-11 踩过，白烧 2 h）。"""
+    try:
+        if os.path.getsize(path) < MIN_BYTES:
+            return False
+        with open(path, "rb") as f:
+            buf = f.read(4 << 20)          # moov 一般在头部；少数在尾部，退化为只看大小
+        for typ, s_, e_ in _boxes(buf, 0, len(buf)):
+            if typ != b"moov":
+                continue
+            for t2, s2, e2 in _boxes(buf, s_, e_):
+                if t2 != b"mvhd":
+                    continue
+                ver = buf[s2]
+                if ver == 0:
+                    ts, dur = struct.unpack(">II", buf[s2 + 12:s2 + 20])
+                else:
+                    ts = struct.unpack(">I", buf[s2 + 20:s2 + 24])[0]
+                    dur = struct.unpack(">Q", buf[s2 + 24:s2 + 32])[0]
+                return ts > 0 and abs(dur / ts - EXPECT_DUR) < 0.3
+        return os.path.getsize(path) > MIN_BYTES   # 解析不到 moov 时按大小兜底
+    except Exception:
+        return False
 
 
 def load_items(cond):
@@ -29,6 +71,7 @@ def main():
     outdir = os.environ.get("OUTDIR", "outputs")
     nproc = int(os.environ.get("NPROC", "1"))
     os.makedirs(outdir, exist_ok=True)
+    run_tag = os.environ.get("RUN_TAG", "") or str(os.getpid())
     os.makedirs("logs/shard", exist_ok=True)
 
     items = load_items(cond)
@@ -41,7 +84,7 @@ def main():
     rows, t0 = [], time.time()
     for n, it in enumerate(items, 1):
         out = os.path.abspath(os.path.join(outdir, it["id"] + ".mp4"))
-        if os.path.exists(out) and os.path.getsize(out) > TOL_BYTES:
+        if os.path.exists(out) and mp4_ok(out):
             rows.append({"id": it["id"], "status": "成功", "path": out,
                          "bytes": os.path.getsize(out), "resumed": True})
             print(f"[omni] {n}/{len(items)} resume {it['id']}", flush=True)
@@ -73,7 +116,7 @@ def main():
             cmd = [sys.executable] + cmd
 
         t1 = time.time()
-        elog = f"logs/shard/stderr_{it['id']}.log"
+        elog = f"logs/shard/stderr_{it['id']}_{run_tag}.log"
         with open(elog, "w", encoding="utf-8") as fe:
             r = subprocess.run(cmd, cwd=src, text=True, timeout=8 * 3600,
                                stdout=fe, stderr=subprocess.STDOUT)
@@ -90,7 +133,7 @@ def main():
             rows.append({"id": it["id"], "status": "失败", "error": msg})
             print(f"[omni] {n}/{len(items)} FAIL {it['id']}  {msg}", flush=True)
 
-    with open("反馈表.csv", "w", encoding="utf-8", newline="") as f:
+    with open(f"反馈表-{run_tag}.csv", "w", encoding="utf-8", newline="") as f:
         f.write("condition_id,model,status,output_path,error,parameter_changes\n")
         for row in rows:
             if row["status"] == "成功":
@@ -103,7 +146,8 @@ def main():
                "elapsed_s": round(time.time() - t0, 1), "nproc": nproc,
                "bytes_total_MB": round(sum(r.get("bytes", 0) for r in ok) / 1e6, 1),
                "note": "官方不进行统一评分和性能比较；本文件不含评分"}
-    json.dump(summary, open("eval_result.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump(summary, open(f"eval_result-{run_tag}.json", "w", encoding="utf-8"),
+              ensure_ascii=False, indent=1)
     print(json.dumps(summary, ensure_ascii=False), flush=True)
 
 

@@ -21,8 +21,8 @@ echo "[host] node=$(hostname) tmp_free=${FREE}G"
 [ "$FREE" -lt 35 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 mkdir -p "$XDG_RUNTIME_DIR"; chmod 700 "$XDG_RUNTIME_DIR"
 
-$PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull.log 2>&1 \
-  || { tail -3 /tmp/pull.log; exit 1; }
+$PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull-$JID.log 2>&1 \
+  || { tail -3 /tmp/pull-$JID.log; exit 1; }
 
 mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
 
