@@ -359,3 +359,20 @@ scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
    要么临时 `chmod o+rx` 走 `rsync`，要么用 OpenAPI 上传（>1 GB 会 `write operation timed out`，必须分块）。
 3. **长作业要能在任意时刻中断而不丢结果**：本项目所有评测脚本都做了"产物存在则跳过"，
    所以 22 小时的作业被砍后，53/60 的产物仍可直接续跑，只损失 3.5 小时。
+
+## 25. 换账号重启时的三个坑（多账号共享节点）
+
+2026-11-11 把工作从 `scnethr2601a10` 切到 `luql` 时踩到的，都发生在**同一台计算节点**上：
+
+| 现象 | 根因 | 修法 |
+| --- | --- | --- |
+| `bash: /tmp/load.log: Permission denied` | 计算节点的 `/tmp` 是**多账号共享**的，上一个账号（或别人）建的同名文件属主不同 | 所有临时文件带作业号：`/tmp/load-$SLURM_JOB_ID.log` |
+| `podman load` 跑到一半 `no space left on device`（起始 84 G） | 解压 32 GB 镜像 + podman 自己的临时副本，实际需要 ≈2× | 门槛设 **100 G**；作业开头先 `rm -rf /tmp/pr-* /tmp/prr-*` 清理自己遗留的 podman 存储 |
+| `ImportError: libomp.so: cannot open shared object file` | 容器里只传了部分 `LD_LIBRARY_PATH` | 必须带全 15 段（`/opt/dtk/llvm/lib` 等，见 HANDOFF §6.1）——`libomp.so` 在 llvm 目录下 |
+
+**顺带验证到的一条好消息**：`gunzip -c 归档.tar.gz | podman load` **8 分钟**就能把 7.9 GB 归档还原成
+32 GB 可用镜像，`torch.cuda.is_available()` 为 True、`Device: BW / 64 GB / gfx936`、bf16 matmul 正常。
+说明"镜像归档 + 还原"这条路是真能救命的，不只是 sha256 对得上。
+
+**跨账号搬数据的实测数字**：`/public` 同机直拷 **74 GB / 427 s ≈ 177 MB/s**，
+比「拉到本机再上传」（~1.7 MB/s，30 GB 要 5 小时）快两个数量级 —— 条件是源目录临时 `chmod o+rx`。

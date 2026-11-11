@@ -1,6 +1,8 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> ✅ **项目已结项（2026-11-09）**。`luql` 有 SSH 但**没有被授权 GPU 卡**，因此无法再提交任何作业。
+> 🔄 **2026-11-11 更新：`luql` 的郑州 `hx1hdnormal` 权限已开通，项目已重启。**
+> 全链路验证通过（提交作业 / 从归档 tar.gz 还原镜像 / torch 见卡 / bf16 matmul），
+> 正在补 OmniWeaving 剩 7 条。旧记录如下（保留作历史）：
 > 所有数据、镜像、经验均已归档完毕：代码在 GitHub+GitLab 双远端，二进制在
 > `luql:/public/home/luql/archive/zoo-dcu-2026-11/`（31 GB，sha256 全核对）。
 > 收尾报告见 `docs/REPORT.md`（含 §9 结项说明），归档细节见 `docs/ARCHIVE-SUMMARY.md`。
@@ -40,8 +42,8 @@
 
 | 账号 | 用途 | 状态 |
 | --- | --- | --- |
-| `scnethr2601a10` | 郑州集群 Slurm 账号（BW1000 唯一可用） | ⚠️ **2026-11-07 起提交被拒**（Invalid account/partition），SSH 仍可登录、文件可读写 |
-| `luql` | SCNet **平台账号**（OpenAPI / Notebook / GitLab） | ✅ OpenAPI 正常；❌ **郑州 SSH 密钥被拒** |
+| `scnethr2601a10` | 郑州集群旧临时账号 | ⚠️ 提交仍被拒（不在 `AllowAccounts`），但 **SSH 与文件读写正常**（用于把 74 GB 权重直拷给 luql） |
+| `luql` | SCNet **平台账号** + 郑州集群 | ✅ **2026-11-11 起 SSH 与 `hx1hdnormal` 提交均正常**（已在 `AllowAccounts`） |
 | `lql341` | GitHub | ✅ `gh auth status` 已登录，scopes: repo/gist/admin:public_key |
 
 ### SSH 别名（`~/.ssh/config`）
@@ -454,79 +456,87 @@ python3 -m pip download --no-deps --dest wheels \
 **随时可做的**：拿到任何有 `hx1hdnormal` 权限的账号后，按 `docs/repro.md` 用归档镜像重跑，
 OmniWeaving 只需 `sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm` 补 7 条（3.5 h）。
 
-## 9. 机时恢复后怎么重启（runbook）
+## 9. 重启与续跑（runbook，2026-11-11 已实测通过）
 
-> 触发条件：平台把某个账号加入 `hx1hdnormal` 的 `AllowAccounts` **且**绑定
-> `QoS=partition_hx1hdnormal`。先做 §9.0 的判定，通过后再往下走。
+> 触发：`luql` 在 2026-11-11 获得 `hx1hdnormal` 权限。以下命令全部实跑过。
 
-### 9.0 先判定"真的能提交了"（3 分钟）
+### 9.0 判定"能不能提交"
 
 ```bash
-ssh <账号>@zzeshell.scnet.cn -p 65032        # 或 zzeshell-hz1 / luql 的别名
-# 1) 是否在分区白名单（有输出才算通过）
+ssh luql@zzeshell.scnet.cn -p 65032
 scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
-  | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"
-# 2) 最小作业能否起来
-printf '#!/bin/bash\n#SBATCH -p hx1hdnormal\n#SBATCH -N 1\n#SBATCH --gres=dcu:1\n#SBATCH -t 00:05:00\nhostname\n' > ~/t.slurm
-sbatch ~/t.slurm && sleep 20 && squeue -u $USER
+  | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"      # 有输出（luql）即通过
 ```
 
-失败表现与含义见 `docs/gotchas.md` #24。
-
-### 9.1 恢复数据（不需要重下权重）
+### 9.1 从归档恢复（已验证）
 
 ```bash
-# 归档唯一位置
 B=/public/home/luql/archive/zoo-dcu-2026-11
-
-# 1) 镜像（3 个，30 GB，sha256 已核对）
-cd $B/images && sha256sum -c <(cat <<'EOF'
-f16125ba6dcb3020aaef33b89d390508f99aad980d7436286f043ed68596d77a  mimo-sglang-bw10000_1.1.1.tar.gz
-986f95a3e5599f024797e41faa614f72cbd5a6c87e5e97f71c172f730269d45f  vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz
-b61b05bd7df45fdfe81885cb898f88572860a37734ececc23018dbfd531d7d87  minimax-music3-bw-sglang_20261031-rc1.tar.gz
-EOF
-)
-
-# 2) 依赖与源码（166 MB）
-mkdir -p ~/wheels && tar xzf $B/assets/wheels-auk-cp310.tar.gz -C ~/wheels   # 其余同理
-
-# 3) 代码
-git clone https://github.com/lql341/scnet-dcu-model-zoo.git ~/zoo   # 或 GitLab
-
-# 4) 权重（ModelScope，按需下载；清单见 docs/weights-policy.md）
+# 镜像：gunzip | podman load，约 8 分钟/个
+gunzip -c $B/images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
+# 依赖 / 产物 / 源码
+tar xzf $B/assets/wheels-auk-cp310.tar.gz -C ~/wheels
+cp -r $B/products/omniweaving/ <条目>/official-eval/
+cp -r $B/sources/OmniWeaving-src ~/
 ```
 
-### 9.2 补完唯一未完成的条目（OmniWeaving 剩 7 条，约 3.5 h）
+**实测数据**（2026-11-11，节点 f11r1n20）：
+- 镜像 load **8 min**（从 7.9 GB 归档 → 32 GB 镜像）
+- torch 2.9.0 见卡：`Device: BW / 64.0 GB / gfx936`，bf16 2048² matmul 通过
+- 权重同机直拷 **74 GB / 427 s ≈ 177 MB/s**
+
+### 9.2 续跑 OmniWeaving（脚本已支持跳过已有产物）
 
 ```bash
-cd ~/zoo/models/Tencent-Hunyuan__HY-OmniWeaving__bw1000__hyvideo
-rsync -az --exclude logs --exclude official-eval -e "ssh -o BatchMode=yes" \
-  ./ <账号>@zzeshell.scnet.cn:/public/home/<账号>/work/zoo-omni/
-# 先确认产物已就位（否则会从零重跑）
-rsync -az $B/products/omniweaving/ <账号>@...:/public/home/<账号>/work/omnirun/repo/official-eval/
-ssh <账号>@... 'cd ~/work/zoo-omni && sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm'
+cd ~/work/zoo-omni
+sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有 53 条，只补 7 条
 ```
+单卡 26 min/条 → 7 条约 **3 h**。
 
-`evaluate_official.py` 会跳过已有的 53 个产物，只补 7 条。
+### 9.3 本次重启踩到的三个新坑（已写入 gotchas #25）
 
-### 9.3 恢复后值得做的（按性价比）
+| 现象 | 原因 | 修法 |
+| --- | --- | --- |
+| `Permission denied: /tmp/load.log` | 节点 `/tmp` 是**多账号共享**的，固定文件名会被别人占住 | 日志一律用 `/tmp/xxx-$SLURM_JOB_ID.log` |
+| `podman load` 中途 `no space left on device` | 84 G 起始空间不够（32 GB 镜像 + podman 临时副本） | 门槛提到 **100 G**，并在作业开头 `rm -rf /tmp/pr-* /tmp/prr-*` |
+| `ImportError: libomp.so` | 只传了部分 `LD_LIBRARY_PATH` | 必须带全 `/opt/dtk/llvm/lib` 等 15 段（见 §6.1） |
 
-| # | 事项 | 成本 | 为什么 |
-| --- | --- | --- | --- |
-| 1 | **把 3 个镜像推到自有 Harbor 命名空间** | 0.5 卡时 | 只有这一步能真正摆脱"上游删仓 + 临时账号回收"两个风险（需 Harbor 凭据） |
-| 2 | 量化条目（AWQ 已验证可跑） | 4–8 卡时 | 全库唯一空白；AWQ 慢 5× 但显存收益真实，适合"装不下 bf16"的场景 |
-| 3 | WorldMirror（需编 ROCm 版 gsplat） | 8+ 卡时，可能失败 | T03 第 5 个模型 |
-| 4 | T01/T02 精度 | 需官方 baselines | 材料从未下发，无法自证 |
-| 5 | `platform/` 截图 17 项 | 无卡时 | 只有人能在平台上点 |
+### 9.4 待办优先级（见 §9.5 的模型与调优清单）
 
-### 9.4 明确不必再做的（已有结论，别再烧卡时）
+### 9.5 还没做的模型 / 还能调优的（2026-11-11 盘点）
 
-- vLLM 16K 调参：chunked 切片 / AITER / backend 覆盖 / fp8 KV / TP=2 / **v0 引擎** —— 全部无效（gotchas #21）
-- Qwen-Image 合批：2048² 显存无余量，batch=2 即 OOM（`sweep/results-batching-*.md`）
-- Kimi 16K/c64 "回退"：是噪声，不是配置问题（§8 的 §7.4）
-- fp8 在线量化：DCU 无 kernel（gotchas #22）
+**A. 官方 T03/T04 覆盖：8/9 份清单有产出，只差 1 个**
 
----
+| 清单 | 条件数 | 状态 |
+| --- | ---: | --- |
+| qwen_image / omniweaving / wan_i2v / music3 / auk / auk_flash / qwen3_asr / forced_aligner | 855 | ✅ 全绿（omni 补跑中） |
+| **hy_world（HY-World-2.0）** | **5** | ❌ 未做：`worldrecon/rasterization.py` 硬 import `gsplat`，DCU 无 wheel，需自编 ROCm 版（8–16 卡时，可能失败） |
+
+**B. T01/T02：官方 `baselines/` 从未下发，精度无法自证，但"跑通/deploy"仍可做**
+
+| 条目 | 现状 | 还能做什么 |
+| --- | --- | --- |
+| Recon2Reason-4B × SGLang | smoke | 跑通多图推理（已通），等 T02 评测器才能出分 |
+| RoboBrain2.5-8B × SGLang | smoke | 同上 |
+| Trident-2B × SGLang/vLLM | blocked | 用官方 `TridentQwen3VLBackend` + transformers 直载自建 serving（3–5 卡时） |
+| **新增候选**：Kimi-VL-A3B-Thinking（32.8 GB）/ Qwen3-VL-8B-Instruct（17.5 GB） | 未做 | ModelScope 均可得；竞争者跑过 kimi-vl（含 int4/int8 变体）。MiniCPM-V-4.7 在 MS 是 404，只有 4.5 |
+
+**C. 性能调优（按实测 ROI 排序）**
+
+| # | 条目 | 现状 | 可试 | 预期 | 成本 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | **OmniWeaving** | 单卡 26 min/条 | 修 4/8 卡 SP（`build_mesh` 曾失败，是设备可见性问题） | 最多 4× | 4–6 卡时 |
+| 2 | **Wan2.1-I2V** | 4 卡 FSDP 18.6 min/条 | 8 卡 FSDP；或改 `--ulysses_size` 序列并行 | 最多 2× | 4–8 卡时 |
+| 3 | **Kimi-Linear** | TP=4 | TP=8（整节点 8 卡） | 单流更好，长上下文不一定 | 2 卡时 |
+| 4 | **MiMo × SGLang** | 4K/c64 998 tok/s | 16K 档已 +5~8%（chunked 4096）；再试 CUDA Graph 与 chunked 组合的全档位扫描 | +5% | 2 卡时 |
+| 5 | **vLLM 长上下文** | 16K 只有 SGLang 的 1/5 | **自建镜像**重编 aiter / 找 paged-attn kernel | 可能 3–5× | 8–16 卡时 |
+| 6 | **量化** | 仅 AWQ 探针（慢 5×） | MiMo/Kimi 无官方 AWQ 权重 → 用 `llm-compressor` 自量化；或试 GPTQ | 显存 2–4×↓ | 4–8 卡时 |
+| 7 | **Qwen-Image** | 19.8 s/张 | 已证合批不可行（显存）；可试 `torch.compile` | 未知 | 2 卡时 |
+| 8 | **ASR** | 300 条 30 s | 已 −10%（mns64+16 并发）；再试 batch 推理 API | 小 | 1 卡时 |
+
+**D. 资产侧还差一步（不需要卡，只要凭据）**
+
+- 3 个镜像仍在 `luql:archive/`（个人目录）。**推到自有 Harbor 命名空间**才真正摆脱"平台清账号"风险 —— 需要 Harbor 凭据（P0-6）。
 
 ## 10. 给新会话的开场提示
 
