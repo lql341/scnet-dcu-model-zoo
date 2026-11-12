@@ -9,6 +9,7 @@
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | sglang 0.5.10rc0 | bf16 | 1 | 400–410 s | 44.31 | 360.23 | 998.05 | 41.47 | 308.72 | 299.81 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) |
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | vllm 0.20.0 | bf16 | 1 | 270–410 s | 20.73 | 160.63 | 489.52 | 8.19 | 44.83 | 100.82 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) |
 | Kimi-Linear-48B-A3B-Instruct | BW1000 ×4 | sglang 0.5.10rc0 | bf16 | 4 | 280–360 s | 104.67 | 353.53 | 839.00 | 50.80 | 119.21 | 234.17 | [→](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) |
+| Kimi-Linear-48B-A3B-Instruct | BW1000 ×4 | vllm 0.20.0（vllm0.20-qwen_asr1.7_bw 镜像） | bf16 | 4 | 640–700 s | 40.73 | 304.18 | 858.08 | 37.36 | 197.83 | — | [→](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__vllm/) |
 
 单位：output tok/s（取 `bench/round2.jsonl`）。
 

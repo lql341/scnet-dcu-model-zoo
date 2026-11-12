@@ -1,0 +1,29 @@
+{
+  "model_id": "moonshotai/Kimi-Linear-48B-A3B-Instruct",
+  "org": "moonshotai",
+  "model": "Kimi-Linear-48B-A3B-Instruct",
+  "card": "BW1000",
+  "cards_used": 4,
+  "tp": 4,
+  "framework": "vllm",
+  "framework_version": "0.20.0（vllm0.20-qwen_asr1.7_bw 镜像）",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "6 档中 5 档有效；16K/c64 两轮均失败（vLLM 长上下文缺 paged-attn 内核，见 gotchas #21）",
+  "cold_start_s": [
+    640,
+    700
+  ],
+  "throughput": {
+    "4k_c1": 40.73,
+    "4k_c8": 304.18,
+    "4k_c64": 858.08,
+    "16k_c1": 37.36,
+    "16k_c8": 197.83,
+    "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-12",
+  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；6 档中 5 档大幅提升，16K/c64 回退 6.3%"
+}

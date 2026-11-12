@@ -1,0 +1,185 @@
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/kimi-linear-48b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/kimi-linear-48b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+benchmark_args=Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='kimi-linear-48b', served_model_name=None, tokenizer='/models/Kimi', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=4096, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round2.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+Waiting up to 60s for http://127.0.0.1:30000/v1/models to become ready...
+Server ready in 0.0s.
+Fail to load tokenizer config with error=Can't load the configuration of 'kimi-linear-48b'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'kimi-linear-48b' is the correct path to a directory containing a config.json file
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='kimi-linear-48b', served_model_name=None, tokenizer='/models/Kimi', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=4096, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round2.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+
+#Input tokens: 524288
+#Output tokens: 131072
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 0/128 [00:00<?, ?it/s]  1%|          | 1/128 [01:13<2:35:42, 73.57s/it]  2%|▏         | 2/128 [01:13<1:03:45, 30.36s/it]  2%|▏         | 3/128 [01:14<34:42, 16.66s/it]    3%|▎         | 4/128 [01:14<21:08, 10.23s/it]  4%|▍         | 5/128 [01:14<13:40,  6.67s/it]  5%|▍         | 6/128 [01:15<09:12,  4.53s/it]  5%|▌         | 7/128 [01:15<06:23,  3.17s/it]  6%|▋         | 8/128 [01:15<04:32,  2.27s/it]  7%|▋         | 9/128 [01:16<03:19,  1.68s/it]  8%|▊         | 10/128 [01:16<02:29,  1.27s/it]  9%|▊         | 11/128 [01:16<01:56,  1.01it/s]  9%|▉         | 12/128 [01:17<01:32,  1.25it/s] 10%|█         | 13/128 [01:17<01:16,  1.50it/s] 11%|█         | 14/128 [01:18<01:05,  1.74it/s] 12%|█▏        | 15/128 [01:18<00:57,  1.95it/s] 12%|█▎        | 16/128 [01:18<00:52,  2.14it/s] 13%|█▎        | 17/128 [01:19<00:48,  2.30it/s] 14%|█▍        | 18/128 [01:19<00:51,  2.14it/s] 15%|█▍        | 19/128 [01:20<00:47,  2.30it/s] 16%|█▌        | 20/128 [01:20<00:44,  2.43it/s] 16%|█▋        | 21/128 [01:20<00:42,  2.52it/s] 17%|█▋        | 22/128 [01:21<00:41,  2.58it/s] 18%|█▊        | 23/128 [01:21<00:40,  2.62it/s] 19%|█▉        | 24/128 [01:21<00:39,  2.65it/s] 20%|█▉        | 25/128 [01:22<00:38,  2.68it/s] 20%|██        | 26/128 [01:22<00:37,  2.69it/s] 21%|██        | 27/128 [01:22<00:37,  2.71it/s] 22%|██▏       | 28/128 [01:23<00:36,  2.74it/s] 23%|██▎       | 29/128 [01:23<00:35,  2.75it/s] 23%|██▎       | 30/128 [01:24<00:35,  2.77it/s] 24%|██▍       | 31/128 [01:24<00:40,  2.42it/s] 25%|██▌       | 32/128 [01:24<00:38,  2.52it/s] 26%|██▌       | 33/128 [01:25<00:36,  2.59it/s] 27%|██▋       | 34/128 [01:25<00:35,  2.65it/s] 27%|██▋       | 35/128 [01:25<00:34,  2.69it/s] 28%|██▊       | 36/128 [01:26<00:33,  2.72it/s] 29%|██▉       | 37/128 [01:26<00:33,  2.75it/s] 30%|██▉       | 38/128 [01:27<00:32,  2.77it/s] 30%|███       | 39/128 [01:27<00:32,  2.78it/s] 31%|███▏      | 40/128 [01:27<00:31,  2.78it/s] 32%|███▏      | 41/128 [01:28<00:31,  2.80it/s] 33%|███▎      | 42/128 [01:28<00:30,  2.80it/s] 34%|███▎      | 43/128 [01:29<00:34,  2.43it/s] 34%|███▍      | 44/128 [01:29<00:33,  2.53it/s] 35%|███▌      | 45/128 [01:29<00:31,  2.61it/s] 36%|███▌      | 46/128 [01:30<00:30,  2.67it/s] 37%|███▋      | 47/128 [01:30<00:29,  2.71it/s] 38%|███▊      | 48/128 [01:30<00:29,  2.74it/s] 38%|███▊      | 49/128 [01:31<00:28,  2.77it/s] 39%|███▉      | 50/128 [01:31<00:27,  2.79it/s] 40%|███▉      | 51/128 [01:31<00:27,  2.80it/s] 41%|████      | 52/128 [01:32<00:27,  2.80it/s] 41%|████▏     | 53/128 [01:32<00:30,  2.44it/s] 42%|████▏     | 54/128 [01:33<00:29,  2.54it/s] 43%|████▎     | 55/128 [01:33<00:27,  2.63it/s] 44%|████▍     | 56/128 [01:33<00:26,  2.68it/s] 45%|████▍     | 57/128 [01:34<00:26,  2.72it/s] 45%|████▌     | 58/128 [01:34<00:25,  2.76it/s] 46%|████▌     | 59/128 [01:34<00:24,  2.78it/s] 47%|████▋     | 60/128 [01:35<00:24,  2.79it/s] 48%|████▊     | 61/128 [01:35<00:23,  2.80it/s] 48%|████▊     | 62/128 [01:35<00:23,  2.81it/s] 49%|████▉     | 63/128 [01:36<00:26,  2.46it/s] 50%|█████     | 64/128 [01:36<00:24,  2.56it/s] 51%|█████     | 65/128 [02:27<16:17, 15.51s/it] 52%|█████▏    | 66/128 [02:27<11:15, 10.90s/it] 52%|█████▏    | 67/128 [02:27<07:47,  7.66s/it] 53%|█████▎    | 68/128 [02:27<05:23,  5.40s/it] 54%|█████▍    | 69/128 [02:28<03:44,  3.81s/it] 55%|█████▍    | 70/128 [02:28<02:36,  2.70s/it] 55%|█████▌    | 71/128 [02:28<01:49,  1.92s/it] 56%|█████▋    | 72/128 [02:28<01:17,  1.38s/it] 57%|█████▋    | 73/128 [02:28<00:54,  1.00it/s] 58%|█████▊    | 74/128 [02:28<00:39,  1.37it/s] 59%|█████▊    | 75/128 [02:28<00:29,  1.79it/s] 59%|█████▉    | 76/128 [02:28<00:22,  2.36it/s] 60%|██████    | 77/128 [02:28<00:16,  3.05it/s] 61%|██████    | 78/128 [02:29<00:13,  3.84it/s] 62%|██████▎   | 80/128 [02:29<00:08,  5.38it/s] 64%|██████▍   | 82/128 [02:29<00:06,  6.66it/s] 66%|██████▌   | 84/128 [02:29<00:06,  7.19it/s] 67%|██████▋   | 86/128 [02:29<00:05,  8.09it/s] 69%|██████▉   | 88/128 [02:30<00:04,  8.84it/s] 70%|███████   | 90/128 [02:30<00:03,  9.61it/s] 72%|███████▏  | 92/128 [02:30<00:03, 10.24it/s] 73%|███████▎  | 94/128 [02:30<00:03, 10.03it/s] 75%|███████▌  | 96/128 [02:30<00:03, 10.61it/s] 77%|███████▋  | 98/128 [02:30<00:02, 11.32it/s] 78%|███████▊  | 100/128 [02:31<00:02, 12.06it/s] 80%|███████▉  | 102/128 [02:31<00:02, 11.84it/s] 81%|████████▏ | 104/128 [02:31<00:01, 12.52it/s] 83%|████████▎ | 106/128 [02:31<00:01, 13.34it/s] 84%|████████▍ | 108/128 [02:31<00:01, 14.04it/s] 86%|████████▌ | 110/128 [02:31<00:01, 14.89it/s] 88%|████████▊ | 112/128 [02:31<00:01, 14.59it/s] 90%|████████▉ | 115/128 [02:32<00:00, 16.34it/s] 91%|█████████▏| 117/128 [02:32<00:00, 17.15it/s] 93%|█████████▎| 119/128 [02:32<00:00, 17.80it/s] 95%|█████████▍| 121/128 [02:32<00:00, 17.15it/s] 96%|█████████▌| 123/128 [02:32<00:00, 17.77it/s] 98%|█████████▊| 125/128 [02:32<00:00, 18.28it/s] 99%|█████████▉| 127/128 [02:32<00:00, 18.71it/s]100%|██████████| 128/128 [02:32<00:00,  1.19s/it]
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+
+============ Serving Benchmark Result ============
+Backend:                                 vllm      
+Traffic request rate:                    inf       
+Max request concurrency:                 64        
+Successful requests:                     128       
+Benchmark duration (s):                  152.75    
+Total input tokens:                      524288    
+Total input text tokens:                 524288    
+Total generated tokens:                  131072    
+Total generated tokens (retokenized):    127475    
+Request throughput (req/s):              0.84      
+Input token throughput (tok/s):          3432.32   
+Output token throughput (tok/s):         858.08    
+Peak output token throughput (tok/s):    1204.00   
+Peak concurrent requests:                67        
+Total token throughput (tok/s):          4290.40   
+Concurrency:                             63.09     
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   75283.89  
+Median E2E Latency (ms):                 73916.60  
+P90 E2E Latency (ms):                    91936.32  
+P99 E2E Latency (ms):                    96278.23  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          6751.82   
+Median TTFT (ms):                        1449.60   
+P99 TTFT (ms):                           23372.07  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          66.99     
+Median TPOT (ms):                        70.31     
+P99 TPOT (ms):                           71.43     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           68.88     
+Median ITL (ms):                         56.00     
+P95 ITL (ms):                            177.73    
+P99 ITL (ms):                            182.13    
+Max ITL (ms):                            361.04    
+==================================================

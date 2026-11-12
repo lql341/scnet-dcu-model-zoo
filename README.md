@@ -72,6 +72,7 @@ python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/benc
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |
 | [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) | BW1000 ×4 | sglang | bf16 | ✅ 6 档基准 | 839.00 | 119.21 |
+| [Kimi-Linear-48B-A3B-Instruct](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__vllm/) | BW1000 ×4 | vllm | bf16 | ✅ 6 档基准 | 858.08 | 197.83 |
 <!-- MATRIX:END -->
 
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |

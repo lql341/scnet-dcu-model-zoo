@@ -1,0 +1,65 @@
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/kimi-linear-48b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/kimi-linear-48b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+benchmark_args=Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='kimi-linear-48b', served_model_name=None, tokenizer='/models/Kimi', num_prompts=8, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=16384, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=1, output_file='bench/round2.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+Waiting up to 60s for http://127.0.0.1:30000/v1/models to become ready...
+Server ready in 0.0s.
+Fail to load tokenizer config with error=Can't load the configuration of 'kimi-linear-48b'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'kimi-linear-48b' is the correct path to a directory containing a config.json file
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='kimi-linear-48b', served_model_name=None, tokenizer='/models/Kimi', num_prompts=8, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=16384, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=1, output_file='bench/round2.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+
+#Input tokens: 131072
+#Output tokens: 8192
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:27<03:12, 27.52s/it] 25%|██▌       | 2/8 [00:54<02:44, 27.41s/it] 38%|███▊      | 3/8 [01:22<02:18, 27.61s/it] 50%|█████     | 4/8 [01:50<01:50, 27.57s/it] 62%|██████▎   | 5/8 [02:17<01:22, 27.38s/it] 75%|███████▌  | 6/8 [02:44<00:54, 27.38s/it] 88%|████████▊ | 7/8 [03:12<00:27, 27.43s/it]100%|██████████| 8/8 [03:39<00:00, 27.33s/it]100%|██████████| 8/8 [03:39<00:00, 27.41s/it]
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+Calling super().encode with {'add_special_tokens': False}
+
+============ Serving Benchmark Result ============
+Backend:                                 vllm      
+Traffic request rate:                    inf       
+Max request concurrency:                 1         
+Successful requests:                     8         
+Benchmark duration (s):                  219.26    
+Total input tokens:                      131072    
+Total input text tokens:                 131072    
+Total generated tokens:                  8192      
+Total generated tokens (retokenized):    7037      
+Request throughput (req/s):              0.04      
+Input token throughput (tok/s):          597.78    
+Output token throughput (tok/s):         37.36     
+Peak output token throughput (tok/s):    41.00     
+Peak concurrent requests:                2         
+Total token throughput (tok/s):          635.14    
+Concurrency:                             1.00      
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   27407.07  
+Median E2E Latency (ms):                 27445.66  
+P90 E2E Latency (ms):                    27626.31  
+P99 E2E Latency (ms):                    27822.17  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          1597.56   
+Median TTFT (ms):                        1595.55   
+P99 TTFT (ms):                           1678.21   
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          25.23     
+Median TPOT (ms):                        25.23     
+P99 TPOT (ms):                           25.64     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           29.43     
+Median ITL (ms):                         25.40     
+P95 ITL (ms):                            50.93     
+P99 ITL (ms):                            51.13     
+Max ITL (ms):                            54.84     
+==================================================
