@@ -1,0 +1,27 @@
+{
+ "total": 60,
+ "ok": 60,
+ "fail": 0,
+ "params": {
+  "width": 832,
+  "height": 480,
+  "frames": 81,
+  "fps": 16,
+  "num_inference_steps": 50
+ },
+ "spec": {
+  "duration_s": 5.0625,
+  "wh": [
+   832,
+   480
+  ]
+ },
+ "dur_s": {
+  "min": 5.06,
+  "max": 5.06
+ },
+ "bytes_total_MB": 19.2,
+ "spec_violation_count": 0,
+ "violations": [],
+ "note": "官方不进行统一评分和性能比较；本文件不含评分。宿主侧用 mp4 header 逐条校验生成。"
+}

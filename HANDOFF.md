@@ -1,8 +1,9 @@
 # HANDOFF —— 会话交接与 living TODO
 
-> 🔄 **2026-11-11 更新：`luql` 的郑州 `hx1hdnormal` 权限已开通，项目已重启。**
-> 全链路验证通过（提交作业 / 从归档 tar.gz 还原镜像 / torch 见卡 / bf16 matmul），
-> 正在补 OmniWeaving 剩 7 条。旧记录如下（保留作历史）：
+> ✅ **2026-11-12 更新：T03 六个模型全部 60/60 全绿（OmniWeaving 已补齐）。**
+> `luql` 账号在 2026-11-11 获得 `hx1hdnormal` 权限后，项目重启并完成最后一环：
+> 官方 T03/T04 的 9 份清单里 **8 份已全绿**，仅 `hy_world`（5 条，需 ROCm 版 gsplat）未做。
+> 全链路验证：提交作业 / 从归档 tar.gz 还原镜像（8 min）/ torch 见卡 / bf16 matmul 全部通过。
 > 所有数据、镜像、经验均已归档完毕：代码在 GitHub+GitLab 双远端，二进制在
 > `luql:/public/home/luql/archive/zoo-dcu-2026-11/`（31 GB，sha256 全核对）。
 > 收尾报告见 `docs/REPORT.md`（含 §9 结项说明），归档细节见 `docs/ARCHIVE-SUMMARY.md`。
@@ -445,10 +446,10 @@ python3 -m pip download --no-deps --dest wheels \
 
 | 项 | 数值 |
 | --- | --- |
-| 条目总数 | **15**（7 个 official-eval 全绿 / 1 个 partial 53-60 / 3 个 bench / 3 个 smoke / 2 个 blocked） |
-| 官方条件真实产物 | **923 条**（官方清单 935 条 − hy_world 5 − omni 7） |
+| 条目总数 | **15**（**8 个 official-eval 全绿** / 3 个 bench / 3 个 smoke / 1 个 blocked×2 条目内） |
+| 官方条件真实产物 | **930 条**（官方清单 935 条，只差 hy_world 的 5 条） |
 | 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
-| 踩坑 | 24 条（`docs/gotchas.md`） |
+| 踩坑 | 25 条（`docs/gotchas.md`） |
 | 硬约束 | 5 条（`docs/REPORT.md` §4） |
 | Git 提交 | 64+（GitHub 与 GitLab 完全同步） |
 

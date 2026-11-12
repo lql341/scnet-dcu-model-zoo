@@ -1,4 +1,4 @@
-# HY-OmniWeaving on BW1000 × 官方 hyvideo 代码 —— 🟡 进行中
+# HY-OmniWeaving on BW1000 × 官方 hyvideo 代码 —— ✅ 官方 60/60 完成
 
 ## 1. 简介
 
@@ -70,30 +70,39 @@ PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
 
 ## 5. Smoke 测试
 
-两轮探针（2026-11-04 夜，单卡）：
+`PROBE_ONLY=N` 只跑前 N 条真实条件。2026-11 实测：
 
 | 探针 | 结果 |
 | --- | --- |
-| 17 帧 / 8 步 | ✅ 出片 101 KB，含 16 个轮子安装与模型加载共 **3.6 min** |
-| **81 帧 / 50 步（= 官方条件）** | ✅ 出片 **285 KB**，从容器启动到结束 **26 min**（含模型加载与 CPU offload 搬运） |
+| 17 帧 / 8 步 | ✅ 出片 101 KB，含依赖安装与模型加载共 **3.6 min** |
+| **81 帧 / 50 步（= 官方条件）** | ✅ 出片 285 KB，容器启动到结束 **26 min** |
+| 依赖与导入 | ✅ 16 个 cp310 轮子全装；`hyvideo import OK`；`flash3` 缺失自动回落 `torch` attention |
+| 显存 | 单卡 64 GB 够（32 G DiT + 16 G MLLM 走 offloading 分组搬运，未 OOM） |
 
-显存：单卡 64 GB 够（32 G DiT + 16 G MLLM 走 offloading 分组搬运，未 OOM）。
-
-## 6. 精度测评
+## 6. 精度测评（官方条件）
 
 官方条件：`conditions/omniweaving.jsonl`，**60 条**（20 prompt × seed 42/2026/1234）。
-参数逐条取自清单：832×480 / 81 帧 / 16 fps / 50 步 / guidance 6.0 / flow_shift 7.0 / bf16。
-官方明示不评分 → 只交原始产物 + 规格统计。
+参数逐条取自清单：832×480、81 帧、16 fps、50 步、guidance 6.0、flow_shift 7.0、bf16。
 
-### 结果：**53 / 60**（2026-11-07 14:12 账号被回收时中断，剩 7 条）
+### 结果：**60 / 60 成功，0 失败**
 
 | 指标 | 实测 |
 | --- | --- |
-| 已完成 | **53 条**，832×480 / 81 帧 / 16 fps（首条即经 `check_products.py` 同口径校验） |
-| 单条耗时 | ~26 min（单卡，offloading 开启） |
-| 中断原因 | `scnethr2601a10` 被移出 `hx1hdnormal` 的 `AllowAccounts`，作业 `CANCELLED`（见 `HANDOFF.md` §11） |
-| 续跑 | `evaluate_official.py` 会跳过已存在产物，剩下 7 条约 3.5 h |
-| 首轮教训 | 第 1 轮 60 条全部 848×480（`--aspect_ratio 16:9` 落到最近的尺寸桶）→ 作废重跑，见 §3.3 与 gotchas #23 |
+| 成功 / 总数 | **60 / 60** |
+| 单条耗时 | 1475 s ≈ **24.6 min**（单卡，offloading 开启） |
+| 规格校验 | 60 条全部 **832×480 / 81 帧 / 16 fps（5.0625 s）**，`spec_violation_count=0` |
+| 产物体积 | 19.2 MB 合计（单条 100–480 KB）—— 不入库 |
+| 入库物 | `official-eval/{反馈表.csv, eval_result.json, stats.json, 环境说明.txt}` + 1 条样例 mp4 |
+
+**官方不进行统一评分和性能比较** → 不计 VBench 等任何指标。
+
+### 走过的弯路（都已修正，留痕）
+
+| 问题 | 后果 | 修法 |
+| --- | --- | --- |
+| `--aspect_ratio 16:9` | 首轮 60 条全是 **848×480**（比官方宽 2%），26 卡时作废 | 传 `832:480` 精确命中尺寸桶 |
+| 续跑用「文件 >200 KB」判有效 | 合法 mp4 可以只有 100 KB → 被误判为无效，白跑 2 h | 改为解析 mp4 `moov/mvhd` 校验时长≈5.06 s |
+| 集群换账号后 `WORK` 仍指旧账号家目录 | 连续 6 次 `PermissionError`（写别人家目录） | 路径改到当前账号，并加 `[host] REPO=… WORK=…` 自检输出 |
 
 ## 7. 性能参考
 
@@ -101,8 +110,10 @@ PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
 
 | 场景 | 实测 |
 | --- | --- |
-| 单条（81 帧 / 480p / 50 步，单卡） | **26 min**（含模型加载；offloading 开启） |
-| 60 条预估（单卡） | ~26 h → 因此改用 4 卡序列并行（`WORLD_SIZE=4`）跑全量 |
+| 单条（81 帧 / 480p / 50 步，单卡） | **24.6 min**（含 offloading 搬运） |
+| 60 条全量 | ~24.6 h / 单卡（含一次中断重跑） |
+| 权重加载 | ~6 min（55.3 GB 主检查点 + 4 份依赖权重共 23 GB） |
+| 多卡序列并行 | ⚠️ 已加补丁（`0002-init-process-group`），**4 卡 SP 尚未跑通**，是后续优化项 |
 
 ## 8. 注意事项
 

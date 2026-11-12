@@ -1,0 +1,23 @@
+里程碑：HY-OmniWeaving 官方 60 条全量完成（单卡 BW，2026-11-12）
+
+模型及权重版本：Tencent-Hunyuan/HY-OmniWeaving（ModelScope 快照，主检查点 55.3 GB）
+  + 依赖权重：Qwen2.5-VL-7B-Instruct(16.6G)、byt5-small(3.6G)、Glyph-SDXL-v2(1.9G)、FLUX.1-Redux siglip(1.1G)
+框架及版本：官方 hyvideo 代码（2026-11 clone）+ PyTorch eager
+torch：2.9.0+das（HIP 6.3.26113）　transformers：4.57.1　diffusers：0.32.2（隔离装于 /opt/omni-libs）
+镜像：image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1（digest sha256:db981c46…）
+设备：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡
+
+执行范围：official/t03-t04/conditions/omniweaving.jsonl，60 条（20 prompt × seed 42/2026/1234）
+输入：prompt（未使用任何参考答案）
+生成参数（逐条取自清单）：832×480、81 帧、16 fps、50 步、guidance 6.0、flow_shift 7.0、think=False、bf16
+  --aspect_ratio 用 "832:480"（不能用 16:9，否则落到 848×480 的尺寸桶）
+补丁（入库在 patches/）：
+  0001 flash_attn 的 unpad_input API 兼容（DCU 版返回 4 项，上游按 5 项解包）
+  0002 多卡时补 init_process_group（上游 generate.py 未调用）
+产物：outputs/<id>.mp4
+结果：**60/60 成功，0 失败**；单条约 24.6 min（1475 s），全量约 24.6 h（含一次中断重跑）
+规格：60 条全部 832×480 / 81 帧 / 16 fps（5.0625 s），mp4 header 逐条校验，spec_violation_count=0
+体积：19.2 MB（不入库，仅存 1 条样例与统计）
+
+自算指标：官方明示不评分，故不计算 VBench 等任何指标。
+备注：本文件由宿主侧用 mp4 header 校验生成（容器写 NFS 已有文件受限，汇总文件改由宿主生成），未编造数据。

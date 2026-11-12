@@ -1,0 +1,17 @@
+{
+ "files": 60,
+ "bytes_total_MB": 19.2,
+ "dur_s": {
+  "min": 5.06,
+  "max": 5.06
+ },
+ "spec_violation_count": 0,
+ "violations": [],
+ "expected": {
+  "dur_s": 5.0625,
+  "wh": [
+   832,
+   480
+  ]
+ }
+}
