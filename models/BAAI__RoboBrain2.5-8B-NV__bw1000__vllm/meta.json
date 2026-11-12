@@ -1,0 +1,28 @@
+{
+  "model_id": "BAAI/RoboBrain2.5-8B-NV",
+  "org": "BAAI",
+  "model": "RoboBrain2.5-8B-NV",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.20.0（vllm0.20-qwen_asr1.7_bw 镜像）",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "T02 评测器未下发（无精度口径）；6 档吞吐为跨引擎证据，非官方评分",
+  "cold_start_s": [
+    200,
+    260
+  ],
+  "throughput": {
+    "4k_c1": 64.01,
+    "4k_c8": 387.93,
+    "4k_c64": 667.69,
+    "16k_c1": 51.14,
+    "16k_c8": 225.76,
+    "16k_c64": 175.71
+  },
+  "optimized": false,
+  "verified_on": "2026-11-12"
+}

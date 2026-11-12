@@ -50,7 +50,8 @@ done
 mkdir -p "$WORK/repo"
 rsync -a --exclude bench --exclude official-eval "$REPO"/ "$WORK/repo"/ 2>/dev/null
 chmod -R a+rwX "$WORK/repo" 2>/dev/null
-cleanup() { $PD rm -f vllm-srv >/dev/null 2>&1; }
+# 收容器前先把服务端日志落盘，否则 500/崩溃的根因随容器消失（踩过：只剩 1 行 digest）
+cleanup() { $PD logs vllm-srv > "$WORK/vllm-logs-$JID.txt" 2>&1; $PD rm -f vllm-srv >/dev/null 2>&1; }
 trap cleanup EXIT
 
 # ---------- 容器 A：起服务（前台，detached） ----------

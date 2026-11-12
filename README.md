@@ -58,7 +58,9 @@ python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/benc
 | 模型 | 参数/权重 | 卡型 | 框架 | 精度 | 状态 | 4K/c64 | 16K/c8 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | [Recon2Reason-Reasoning-4B](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
+| [Recon2Reason-Reasoning-4B](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 845.30 | 267.09 |
 | [RoboBrain2.5-8B-NV](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 跑通（bench 口径未下发） | — | — |
+| [RoboBrain2.5-8B-NV](models/BAAI__RoboBrain2.5-8B-NV__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 667.69 | 225.76 |
 | [MiniMax-Music3](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 官方 60/60 条完成 | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | blocked | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | blocked | — | — |

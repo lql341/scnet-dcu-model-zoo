@@ -1,0 +1,3 @@
+# 本件无额外依赖。
+# 模型是标准 Qwen3VLForConditionalGeneration（config.json: architectures=['Qwen3VLForConditionalGeneration'],
+# model_type=qwen3_vl），SGLang 0.5.10rc0 镜像内置 qwen3_vl 实现，无需装包、无需 patch。

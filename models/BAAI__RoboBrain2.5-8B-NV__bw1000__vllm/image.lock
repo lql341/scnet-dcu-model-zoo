@@ -1,0 +1,29 @@
+# image.lock —— 镜像锁定
+
+| 项 | 值 |
+| --- | --- |
+| registry | `image.ac.com:5000` |
+| repository | `dcu/wqxyyt06/base/vllm0.21.0-ubuntu22.04-dtk2604-py3.10` |
+| tag | `v1` |
+| digest | `sha256:c6a2f5546fa2c769c263209620f5c595cbd0a3591af2a0f65ec553a11c735f99` |
+| 框架版本 | vLLM 0.21.0（Ubuntu 22.04 / DTK 26.04 / Python 3.10） |
+
+## 为什么用 0.21 而不是 0.20
+
+vLLM **0.20** 的 `model_executor/models/qwen3_vl.py::_get_deepstack_input_embeds` 会硬性断言：
+
+```
+ValueError: Requested more deepstack tokens than available in buffer: num_tokens=72 > 67
+```
+
+任何带图的请求都 500（纯文本正常）。**0.21 已删除该断言**（只做切片），实测单图/多图均正常。
+
+## 风险提示
+
+⚠️ 该镜像**尚未归档**（不在 `archive/` 里）。上游删除即不可复现 —— 下次有卡时应补：
+```bash
+podman save image.ac.com:5000/dcu/wqxyyt06/base/vllm0.21.0-ubuntu22.04-dtk2604-py3.10:v1 \
+  | gzip -1 > ~/archive/zoo-dcu-2026-11/images/vllm0.21.0-dtk2604-py3.10.tar.gz
+```
+
+> **镜像归属说明**：镜像属第三方账号 `dcu/wqxyyt06`，非本项目构建。

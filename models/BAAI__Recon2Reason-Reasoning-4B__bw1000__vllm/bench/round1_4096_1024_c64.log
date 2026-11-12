@@ -1,0 +1,57 @@
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/recon2reason-4b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/recon2reason-4b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+benchmark_args=Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='recon2reason-4b', served_model_name=None, tokenizer='/models/M', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=4096, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round1.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+Waiting up to 60s for http://127.0.0.1:30000/v1/models to become ready...
+Server ready in 0.0s.
+Fail to load tokenizer config with error=Can't load the configuration of 'recon2reason-4b'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'recon2reason-4b' is the correct path to a directory containing a config.json file
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='vllm', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='recon2reason-4b', served_model_name=None, tokenizer='/models/M', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=4096, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round1.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+
+#Input tokens: 524288
+#Output tokens: 131072
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 0/128 [00:00<?, ?it/s]  1%|          | 1/128 [01:07<2:22:28, 67.31s/it]  2%|▏         | 3/128 [01:07<36:51, 17.69s/it]    5%|▌         | 7/128 [01:09<11:52,  5.89s/it]  9%|▊         | 11/128 [01:10<06:07,  3.14s/it] 12%|█▏        | 15/128 [01:11<03:36,  1.92s/it] 12%|█▎        | 16/128 [01:11<03:13,  1.73s/it] 13%|█▎        | 17/128 [01:12<02:54,  1.57s/it] 14%|█▍        | 18/128 [01:12<02:31,  1.37s/it] 15%|█▍        | 19/128 [01:13<02:09,  1.19s/it] 16%|█▌        | 20/128 [01:13<01:51,  1.03s/it] 16%|█▋        | 21/128 [01:14<01:35,  1.12it/s] 17%|█▋        | 22/128 [01:14<01:23,  1.28it/s] 18%|█▊        | 23/128 [01:15<01:13,  1.43it/s] 19%|█▉        | 24/128 [01:15<01:05,  1.58it/s] 20%|█▉        | 25/128 [01:16<01:00,  1.70it/s] 20%|██        | 26/128 [01:16<00:56,  1.81it/s] 21%|██        | 27/128 [01:17<00:53,  1.89it/s] 22%|██▏       | 28/128 [01:17<00:51,  1.96it/s] 23%|██▎       | 29/128 [01:18<00:56,  1.76it/s] 23%|██▎       | 30/128 [01:18<00:52,  1.87it/s] 24%|██▍       | 31/128 [01:19<00:49,  1.95it/s] 25%|██▌       | 32/128 [01:19<00:47,  2.01it/s] 26%|██▌       | 33/128 [01:20<00:46,  2.05it/s] 27%|██▋       | 34/128 [01:20<00:45,  2.08it/s] 27%|██▋       | 35/128 [01:20<00:44,  2.10it/s] 28%|██▊       | 36/128 [01:21<00:43,  2.12it/s] 29%|██▉       | 37/128 [01:21<00:42,  2.14it/s] 30%|██▉       | 38/128 [01:22<00:47,  1.89it/s] 30%|███       | 39/128 [01:23<00:45,  1.97it/s] 31%|███▏      | 40/128 [01:23<00:43,  2.03it/s] 32%|███▏      | 41/128 [01:23<00:42,  2.06it/s] 33%|███▎      | 42/128 [01:24<00:40,  2.11it/s] 34%|███▎      | 43/128 [01:24<00:39,  2.13it/s] 34%|███▍      | 44/128 [01:25<00:39,  2.15it/s] 35%|███▌      | 45/128 [01:25<00:38,  2.17it/s] 36%|███▌      | 46/128 [01:26<00:37,  2.19it/s] 37%|███▋      | 47/128 [01:26<00:42,  1.93it/s] 38%|███▊      | 48/128 [01:27<00:39,  2.01it/s] 38%|███▊      | 49/128 [01:27<00:38,  2.07it/s] 39%|███▉      | 50/128 [01:28<00:36,  2.12it/s] 40%|███▉      | 51/128 [01:28<00:35,  2.15it/s] 41%|████▏     | 53/128 [01:29<00:26,  2.85it/s] 42%|████▏     | 54/128 [01:29<00:27,  2.69it/s] 43%|████▎     | 55/128 [01:30<00:32,  2.25it/s] 44%|████▍     | 56/128 [01:30<00:31,  2.26it/s] 45%|████▍     | 57/128 [01:31<00:35,  2.01it/s] 45%|████▌     | 58/128 [01:31<00:33,  2.09it/s] 46%|████▌     | 59/128 [01:32<00:31,  2.16it/s] 47%|████▋     | 60/128 [01:32<00:30,  2.20it/s] 48%|████▊     | 61/128 [01:33<00:34,  1.96it/s] 48%|████▊     | 62/128 [01:33<00:31,  2.07it/s] 50%|█████     | 64/128 [01:34<00:22,  2.79it/s] 51%|█████     | 65/128 [02:27<14:12, 13.53s/it] 52%|█████▏    | 66/128 [02:27<10:22, 10.03s/it] 52%|█████▏    | 67/128 [02:28<07:27,  7.34s/it] 53%|█████▎    | 68/128 [02:28<05:19,  5.32s/it] 54%|█████▍    | 69/128 [02:28<03:46,  3.84s/it] 55%|█████▍    | 70/128 [02:28<02:39,  2.76s/it] 55%|█████▌    | 71/128 [02:28<01:53,  2.00s/it] 56%|█████▋    | 72/128 [02:28<01:20,  1.44s/it] 57%|█████▋    | 73/128 [02:28<00:57,  1.04s/it] 58%|█████▊    | 74/128 [02:28<00:41,  1.31it/s] 59%|█████▊    | 75/128 [02:28<00:30,  1.77it/s] 60%|██████    | 77/128 [02:29<00:18,  2.76it/s] 62%|██████▏   | 79/128 [02:29<00:12,  3.89it/s] 63%|██████▎   | 81/128 [02:29<00:09,  5.05it/s] 64%|██████▍   | 82/128 [02:29<00:08,  5.41it/s] 66%|██████▌   | 84/128 [02:29<00:06,  6.72it/s] 67%|██████▋   | 86/128 [02:30<00:05,  7.91it/s] 69%|██████▉   | 88/128 [02:30<00:04,  8.89it/s] 70%|███████   | 90/128 [02:30<00:04,  9.22it/s] 72%|███████▏  | 92/128 [02:30<00:03, 10.21it/s] 73%|███████▎  | 94/128 [02:30<00:03, 11.07it/s] 75%|███████▌  | 96/128 [02:30<00:02, 11.15it/s] 77%|███████▋  | 98/128 [02:31<00:02, 12.14it/s] 78%|███████▊  | 100/128 [02:31<00:02, 12.36it/s] 80%|███████▉  | 102/128 [02:31<00:01, 13.39it/s] 81%|████████▏ | 104/128 [02:31<00:01, 14.37it/s] 83%|████████▎ | 106/128 [02:31<00:01, 15.35it/s] 84%|████████▍ | 108/128 [02:31<00:01, 15.38it/s] 87%|████████▋ | 111/128 [02:31<00:00, 17.17it/s] 89%|████████▉ | 114/128 [02:31<00:00, 18.19it/s] 91%|█████████▏| 117/128 [02:32<00:00, 20.38it/s] 94%|█████████▍| 120/128 [02:32<00:00, 21.95it/s] 97%|█████████▋| 124/128 [02:32<00:00, 25.88it/s]100%|██████████| 128/128 [02:32<00:00,  1.19s/it]
+
+============ Serving Benchmark Result ============
+Backend:                                 vllm      
+Traffic request rate:                    inf       
+Max request concurrency:                 64        
+Successful requests:                     128       
+Benchmark duration (s):                  152.37    
+Total input tokens:                      524288    
+Total input text tokens:                 524288    
+Total generated tokens:                  131072    
+Total generated tokens (retokenized):    31088     
+Request throughput (req/s):              0.84      
+Input token throughput (tok/s):          3441.00   
+Output token throughput (tok/s):         860.25    
+Peak output token throughput (tok/s):    280.00    
+Peak concurrent requests:                70        
+Total token throughput (tok/s):          4301.25   
+Concurrency:                             63.26     
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   75299.75  
+Median E2E Latency (ms):                 75052.90  
+P90 E2E Latency (ms):                    88662.61  
+P99 E2E Latency (ms):                    93620.42  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          4863.42   
+Median TTFT (ms):                        4362.66   
+P99 TTFT (ms):                           17429.14  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          68.85     
+Median TPOT (ms):                        70.33     
+P99 TPOT (ms):                           79.81     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           69.95     
+Median ITL (ms):                         55.11     
+P95 ITL (ms):                            219.50    
+P99 ITL (ms):                            243.78    
+Max ITL (ms):                            735.34    
+==================================================

@@ -6,6 +6,8 @@
 
 | 模型 | 卡型×卡数 | 框架 | 精度 | TP | 冷启动 | 4K/c1 | 4K/c8 | 4K/c64 | 16K/c1 | 16K/c8 | 16K/c64 | 详情 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Recon2Reason-Reasoning-4B | BW1000 ×1 | vllm 0.20.0（vllm0.20-qwen_asr1.7_bw 镜像） | bf16 | 1 | 200–260 s | 98.83 | 544.43 | 845.30 | 81.93 | 267.09 | 190.66 | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__vllm/) |
+| RoboBrain2.5-8B-NV | BW1000 ×1 | vllm 0.20.0（vllm0.20-qwen_asr1.7_bw 镜像） | bf16 | 1 | 200–260 s | 64.01 | 387.93 | 667.69 | 51.14 | 225.76 | 175.71 | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__vllm/) |
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | sglang 0.5.10rc0 | bf16 | 1 | 400–410 s | 44.31 | 360.23 | 998.05 | 41.47 | 308.72 | 299.81 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) |
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | vllm 0.20.0 | bf16 | 1 | 270–410 s | 20.73 | 160.63 | 489.52 | 8.19 | 44.83 | 100.82 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) |
 | Kimi-Linear-48B-A3B-Instruct | BW1000 ×4 | sglang 0.5.10rc0 | bf16 | 4 | 280–360 s | 104.67 | 353.53 | 839.00 | 50.80 | 119.21 | 234.17 | [→](models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__sglang/) |

@@ -376,3 +376,53 @@ scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
 
 **跨账号搬数据的实测数字**：`/public` 同机直拷 **74 GB / 427 s ≈ 177 MB/s**，
 比「拉到本机再上传」（~1.7 MB/s，30 GB 要 5 小时）快两个数量级 —— 条件是源目录临时 `chmod o+rx`。
+
+## 26. 同一台机器上换账号：`WORK` 路径不改会写进别人家目录
+
+**现象**：把工作从 `scnethr2601a10` 切到 `luql` 后，容器里的每个写操作都 `Permission denied`
+（`反馈表.csv`、`stats.json`、`logs/shard/stderr_*.log`），但 `chmod 666/777`、`--userns=keep-id`、
+改文件名、换 rsync 同步全都没用。
+
+**根因**：`submit.slurm` 里 `WORK="${WORK:-/public/home/<旧账号>/work/...}"` —— 这个默认值没跟着换，
+于是容器一直在往**另一个账号的家目录**写。权限模型本身没问题。
+
+**定位方法（10 秒）**：在 submit.slurm 里加一行自检并打印出来
+```bash
+echo "[host] REPO=$REPO WORK=$WORK  run_missing.py=$(ls "$WORK/repo/run_missing.py" 2>/dev/null || echo 缺失)"
+```
+一眼就能看到路径对不对、文件有没有同步过去。**这行现在是所有 submit.slurm 的标配。**
+
+**教训**：`Permission denied` 在跨账号场景下，先怀疑路径，再怀疑权限模型。
+另外 `cp -rf` 在 NFS 上既不可靠覆盖、也可能整片漏拷（实测漏过 `.py`），同步一律用 `rsync -a`。
+
+## 27. 同一模型「SGLang 能跑、vLLM 不能」常常是版本问题
+
+**现象**：Recon2Reason / RoboBrain（Qwen3-VL 底座）在 vLLM 0.20 上，**纯文本正常、任何带图请求 500**：
+
+```
+ValueError: Requested more deepstack tokens than available in buffer: num_tokens=72 > 67
+  File vllm/model_executor/models/qwen3_vl.py, line 1711, in _get_deepstack_input_embeds
+```
+
+**根因**：0.20 的实现里 deepstack 缓冲按**首个视觉请求的 token 数**分配，后续请求 token 更多就越界、
+直接抛异常。**vLLM 0.21 已删除该断言**（只做切片），换镜像即可，单图/多图都正常。
+
+**教训**：
+1. 别急着判定"某引擎不支持某模型" —— 先在镜像里 `grep` 源码确认版本行为（`grep -n "<报错文本>" $SITE/vllm/...`）。
+2. 换镜像通常比改模型/改源码便宜得多。
+3. **收容器前先把 `podman logs` 落盘**：detached 容器的 stdout 不进 $WORK 日志文件，
+   `podman rm` 后根因就没了（本项目为此白跑过两轮）。
+
+## 28. `ModelRegistry.get_supported_archs()` 的 grep 别用下划线
+
+**现象**：曾用 `[a for a in archs if "qwen3_vl" in a.lower()]` 判断支持性，结果返回空，
+据此记下"vLLM 不支持 Qwen3-VL"——但同目录里明明有 `qwen3_vl.py`。
+
+**根因**：架构类是 `Qwen3VLForConditionalGeneration`，小写后是 `qwen3vlfor...`，**不含下划线**。
+
+**正确做法**：
+```python
+[k for k in ModelRegistry.get_supported_archs() if "qwen3vl" in k.lower()]   # 去掉下划线
+# 或者直接看文件：ls $SITE/vllm/model_executor/models/ | grep -i qwen3
+```
+同样的坑也发生在 `KimiLinearForCausalLM` 上（曾被误记为"vLLM 不支持 Kimi-Linear"）。

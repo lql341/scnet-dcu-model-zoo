@@ -446,10 +446,10 @@ python3 -m pip download --no-deps --dest wheels \
 
 | 项 | 数值 |
 | --- | --- |
-| 条目总数 | **15**（**8 个 official-eval 全绿** / 3 个 bench / 3 个 smoke / 1 个 blocked×2 条目内） |
+| 条目总数 | **18**（8 个 official-eval 全绿 / 6 个 bench / 2 个 smoke / 2 个 blocked） |
 | 官方条件真实产物 | **930 条**（官方清单 935 条，只差 hy_world 的 5 条） |
 | 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
-| 踩坑 | 25 条（`docs/gotchas.md`） |
+| 踩坑 | 28 条（`docs/gotchas.md`） |
 | 硬约束 | 5 条（`docs/REPORT.md` §4） |
 | Git 提交 | 64+（GitHub 与 GitLab 完全同步） |
 

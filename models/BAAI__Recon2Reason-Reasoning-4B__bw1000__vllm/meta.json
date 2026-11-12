@@ -1,0 +1,28 @@
+{
+  "model_id": "BAAI/Recon2Reason-Reasoning-4B",
+  "org": "BAAI",
+  "model": "Recon2Reason-Reasoning-4B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.20.0（vllm0.20-qwen_asr1.7_bw 镜像）",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "T02 评测器未下发（无精度口径）；6 档吞吐为跨引擎证据，非官方评分",
+  "cold_start_s": [
+    200,
+    260
+  ],
+  "throughput": {
+    "4k_c1": 98.83,
+    "4k_c8": 544.43,
+    "4k_c64": 845.3,
+    "16k_c1": 81.93,
+    "16k_c8": 267.09,
+    "16k_c64": 190.66
+  },
+  "optimized": false,
+  "verified_on": "2026-11-12"
+}
