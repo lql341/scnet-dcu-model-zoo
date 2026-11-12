@@ -113,7 +113,7 @@ PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
 | 单条（81 帧 / 480p / 50 步，单卡） | **24.6 min**（含 offloading 搬运） |
 | 60 条全量 | ~24.6 h / 单卡（含一次中断重跑） |
 | 权重加载 | ~6 min（55.3 GB 主检查点 + 4 份依赖权重共 23 GB） |
-| 多卡序列并行 | ⚠️ 已加补丁（`0002-init-process-group`），**4 卡 SP 尚未跑通**，是后续优化项 |
+| 多卡序列并行 | ⚠️ **4 卡 SP 尚未跑通**：已修掉"上游缺 `init_process_group`"与"设备可见性"两个前置问题（4 个 rank 能起来），但 rank 2 仍退出，且**当前抓不到 rank 级 traceback**。完整排查记录见 [`sweeps/results-omniweaving-sp-2026-11-12.md`](../../../sweeps/results-omniweaving-sp-2026-11-12.md) |
 
 ## 8. 注意事项
 
