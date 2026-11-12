@@ -54,10 +54,10 @@ if [ "${PROBE_FRESH:-0}" = "1" ]; then
 fi
 if [ "${NPROC:-1}" -gt 1 ]; then
   echo "[omni] 多卡模式：NPROC=$NPROC，unset 可见性变量"
-  OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="$NPROC" \
-    COND_FILE=conditions/omniweaving.jsonl \
+  OUTDIR="${OUTDIR_OVERRIDE:-official-eval/outputs}" PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="$NPROC" \
+    COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
     env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
-    python3 evaluate_official.py 2>&1 | tail -40
+    python3 run_missing.py 2>&1 | tail -40
 else
   OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="${NPROC:-1}" \
     COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
