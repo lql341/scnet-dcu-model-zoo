@@ -1,0 +1,57 @@
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/recon2reason-4b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+'[Errno -3] Temporary failure in name resolution' thrown while requesting HEAD https://huggingface.co/recon2reason-4b/resolve/main/config.json
+Retrying in 1s [Retry 1/5].
+benchmark_args=Namespace(backend='sglang', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='recon2reason-4b', served_model_name=None, tokenizer='/models/Recon', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=16384, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round1.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+Waiting up to 60s for http://127.0.0.1:30000/v1/models to become ready...
+Server ready in 0.0s.
+Fail to load tokenizer config with error=Can't load the configuration of 'recon2reason-4b'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'recon2reason-4b' is the correct path to a directory containing a config.json file
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='sglang', base_url=None, host='127.0.0.1', port=30000, ready_check_timeout_sec=60, dataset_name='random-ids', dataset_path='', model='recon2reason-4b', served_model_name=None, tokenizer='/models/Recon', num_prompts=128, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=16384, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=64, output_file='bench/round1.jsonl', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, seed=1, disable_ignore_eos=False, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=False, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', tag=None, header=None)
+
+#Input tokens: 2097152
+#Output tokens: 131072
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 0/128 [00:00<?, ?it/s]  1%|          | 1/128 [01:26<3:02:48, 86.37s/it]  5%|▍         | 6/128 [01:26<21:36, 10.62s/it]    9%|▊         | 11/128 [01:27<09:18,  4.77s/it] 14%|█▍        | 18/128 [01:40<08:45,  4.77s/it] 15%|█▍        | 19/128 [03:28<19:18, 10.63s/it] 29%|██▉       | 37/128 [05:32<12:27,  8.21s/it] 42%|████▏     | 54/128 [07:24<09:11,  7.46s/it] 43%|████▎     | 55/128 [07:35<09:13,  7.59s/it] 56%|█████▋    | 72/128 [09:25<06:35,  7.07s/it] 57%|█████▋    | 73/128 [09:36<06:36,  7.20s/it] 70%|███████   | 90/128 [10:23<03:12,  5.06s/it] 71%|███████   | 91/128 [11:28<04:34,  7.41s/it] 72%|███████▏  | 92/128 [11:39<04:33,  7.61s/it] 84%|████████▍ | 108/128 [12:24<01:39,  4.98s/it] 85%|████████▌ | 109/128 [13:31<02:29,  7.87s/it] 86%|████████▌ | 110/128 [13:44<02:27,  8.17s/it] 98%|█████████▊| 126/128 [13:53<00:07,  3.71s/it]100%|██████████| 128/128 [14:04<00:00,  3.88s/it]100%|██████████| 128/128 [14:04<00:00,  6.60s/it]
+
+============ Serving Benchmark Result ============
+Backend:                                 sglang    
+Traffic request rate:                    inf       
+Max request concurrency:                 64        
+Successful requests:                     128       
+Benchmark duration (s):                  844.96    
+Total input tokens:                      2097152   
+Total input text tokens:                 2097152   
+Total generated tokens:                  131072    
+Total generated tokens (retokenized):    18763     
+Request throughput (req/s):              0.15      
+Input token throughput (tok/s):          2481.96   
+Output token throughput (tok/s):         155.12    
+Peak output token throughput (tok/s):    252.00    
+Peak concurrent requests:                82        
+Total token throughput (tok/s):          2637.08   
+Concurrency:                             51.28     
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   338518.63 
+Median E2E Latency (ms):                 367500.91 
+P90 E2E Latency (ms):                    491067.36 
+P99 E2E Latency (ms):                    588106.30 
+---------------Time to First Token----------------
+Mean TTFT (ms):                          206126.60 
+Median TTFT (ms):                        259666.71 
+P99 TTFT (ms):                           408600.79 
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          129.42    
+Median TPOT (ms):                        82.70     
+P99 TPOT (ms):                           480.75    
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           89.08     
+Median ITL (ms):                         78.40     
+P95 ITL (ms):                            81.11     
+P99 ITL (ms):                            82.64     
+Max ITL (ms):                            297292.07 
+==================================================

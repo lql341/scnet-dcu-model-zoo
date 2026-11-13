@@ -3,11 +3,11 @@
 # 标准 Qwen3VLForConditionalGeneration（qwen3_vl，结构与 Qwen3-VL-8B 相同）：无需装包、无需 patch
 export MODEL_ID="BAAI/RoboBrain2.5-8B-NV"
 export MODEL_PATH="/models/RoboBrain"
-export HOST_MODEL_PATH="/public/home/scnethr2601a10/models/RoboBrain2.5-8B-NV"
+export HOST_MODEL_PATH="/public/home/luql/models/RoboBrain2.5-8B-NV"
 export SERVED_NAME="robobrain2.5-8b-nv"
 
 export IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"
-export HOST_IMAGE_TAR="/public/home/scnethr2601a10/images/mimo-sglang-bw10000_1.1.1.tar"
+export HOST_IMAGE_TAR="/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz"
 export FRAMEWORK="sglang"
 export CARD="BW1000"
 export PRECISION="bf16"

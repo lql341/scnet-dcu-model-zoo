@@ -1,4 +1,4 @@
-# Recon2Reason-Reasoning-4B on BW1000 + SGLang 0.5.10
+# Recon2Reason-Reasoning-4B on BW1000 × **SGLang 0.5.10** —— ✅ 6 档完成（与 vLLM 配对）
 
 > T02 视觉多模态理解。本条目验证「图像预处理 → vision encoder → LLM」全链路，含**多图**输入。
 
@@ -101,11 +101,21 @@ python3 -m sglang.launch_server \
 
 ## 7. 性能参考
 
-**未做 6 档基准**：T02 的文本类压测虽可套用 `bench.sh`，但本模型的主验收指标是视觉任务，
-性能测法随分题材料下发。已在 `bench/NA.md` 说明。
+6 档 × 2 轮，取 `bench/round2.jsonl`（output tok/s）：
 
-已有数据：冷启动 150 s；`/v1/models` 报 `max_model_len: 32768`；单图请求 `prompt_tokens=67`、
-多图 `prompt_tokens=115`。
+| 档位 | SGLang | vLLM 0.21 | 差值 |
+| --- | ---: | ---: | ---: |
+| 4K / c1 | 78.35 | 98.83 | vLLM **+26%** |
+| 4K / c8 | 441.43 | 544.43 | vLLM **+23%** |
+| 4K / c64 | 719.64 | 845.30 | vLLM **+17%** |
+| 16K / c1 | 57.86 | 81.93 | vLLM **+42%** |
+| 16K / c8 | 226.27 | 267.09 | vLLM **+18%** |
+| 16K / c64 | 149.34 | 190.66 | vLLM **+28%** |
+
+**结论：这个模型上 vLLM 全面优于 SGLang（+17% ~ +42%）**，与 MiMo 的结论相反、与 Kimi「高并发 vLLM 反超」部分一致。
+可能原因：Recon2Reason 是 4B 小模型，vLLM 的调度开销占比更低；而 MiMo（9B）在 SGLang 的 triton 后端上更吃得开。
+
+**注意**：T02 官方评测器（OCRBench / MMMU）未下发，这些数字是**引擎能力与吞吐证据**，不是官方评分依据。
 
 ## 8. 注意事项
 

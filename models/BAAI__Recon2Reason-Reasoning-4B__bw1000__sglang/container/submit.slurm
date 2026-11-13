@@ -9,7 +9,7 @@
 set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"
 source "$REPO/env.sh"
-WORK="${WORK:-/public/home/scnethr2601a10/work/recon}"
+WORK="${WORK:-/public/home/luql/work/recon-sglang}"
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
@@ -28,11 +28,12 @@ $PD image exists "$IMAGE" 2>/dev/null \
   || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load-$JID.log 2>&1
 $PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/load-$JID.log; exit 1; }
 
-mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
+mkdir -p "$WORK/repo" && rsync -a --exclude bench --exclude logs "$REPO"/ "$WORK/repo"/ 2>/dev/null
 echo "[host] start $(date +%T)"
 $PD run -d --name recon-srv --network=host --privileged --security-opt seccomp=unconfined \
   --entrypoint=/bin/bash --device /dev/kfd --device /dev/mkfd --device /dev/dri \
   -v /opt/hyhal:/opt/hyhal:ro -v "$HOST_MODEL_PATH":$MODEL_PATH:ro -v "$WORK":/work \
+  -v "$REPO/preflight_lib.py":/preflight_lib.py:ro \
   "$IMAGE" -c "
 export LD_LIBRARY_PATH=$LIBP:\$LD_LIBRARY_PATH
 export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
@@ -52,5 +53,13 @@ done
 
 echo "[host] smoke $(date +%T)"
 $PD exec recon-srv bash -lc "cd /work/repo && bash smoke.sh" || echo "[host] smoke 有失败项"
+
+# 6 档基准（服务仍在运行）：输入 4K/16K × 输出 1K × 并发 1/8/64，每档 2 轮取第 2 轮
+if [ "${SKIP_BENCH:-0}" = "1" ]; then
+  echo "[host] SKIP_BENCH=1，跳过压测"
+else
+  echo "[host] bench $(date +%T)"
+  $PD exec recon-srv bash -lc "cd /work/repo && bash bench.sh" 2>&1 | grep -viE "subuid|rootless|level=warning" | tail -30
+fi
 $PD rm -f recon-srv >/dev/null 2>&1
 echo "[host] DONE $(date +%T)  产物 $WORK/repo/logs"
