@@ -8,11 +8,21 @@
   "framework": "sglang",
   "framework_version": "0.5.10rc0+das.opt2.alpha.dtk2604",
   "precision": "bf16",
-  "status": "smoke",
-  "bench": "no-material",
-  "bench_note": "T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成视觉链路 smoke",
-  "cold_start_s": [150, 200],
-  "throughput": {"4k_c1": null, "4k_c8": null, "4k_c64": null, "16k_c1": null, "16k_c8": null, "16k_c64": null},
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "T02 评测器未下发；6 档吞吐为跨引擎证据",
+  "cold_start_s": [
+    160,
+    160
+  ],
+  "throughput": {
+    "4k_c1": 45.69,
+    "4k_c8": 327.14,
+    "4k_c64": 543.8,
+    "16k_c1": 37.14,
+    "16k_c8": 126.65,
+    "16k_c64": 141.66
+  },
   "optimized": false,
-  "verified_on": "2026-11-02"
+  "verified_on": "2026-11-13"
 }

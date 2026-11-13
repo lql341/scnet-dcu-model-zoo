@@ -8,6 +8,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Recon2Reason-Reasoning-4B | BW1000 ×1 | sglang 0.5.10rc0 | bf16 | 1 | 200–260 s | 78.35 | 441.43 | 719.64 | 57.86 | 226.27 | 149.34 | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__sglang/) |
 | Recon2Reason-Reasoning-4B | BW1000 ×1 | vllm 0.20.0（vllm0.20-qwen_asr1.7_bw 镜像） | bf16 | 1 | 200–260 s | 98.83 | 544.43 | 845.30 | 81.93 | 267.09 | 190.66 | [→](models/BAAI__Recon2Reason-Reasoning-4B__bw1000__vllm/) |
+| RoboBrain2.5-8B-NV | BW1000 ×1 | sglang 0.5.10rc0 | bf16 | 1 | 160–160 s | 45.69 | 327.14 | 543.80 | 37.14 | 126.65 | 141.66 | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) |
 | RoboBrain2.5-8B-NV | BW1000 ×1 | vllm 0.20.0（vllm0.20-qwen_asr1.7_bw 镜像） | bf16 | 1 | 200–260 s | 64.01 | 387.93 | 667.69 | 51.14 | 225.76 | 175.71 | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__vllm/) |
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | sglang 0.5.10rc0 | bf16 | 1 | 400–410 s | 44.31 | 360.23 | 998.05 | 41.47 | 308.72 | 299.81 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) |
 | MiMo-V2.6-Distill-Qwen-9B | BW1000 ×1 | vllm 0.20.0 | bf16 | 1 | 270–410 s | 20.73 | 160.63 | 489.52 | 8.19 | 44.83 | 100.82 | [→](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) |
@@ -20,7 +21,6 @@
 
 | 模型 | 卡型×卡数 | 框架 | 精度 | 状态 | 冷启动 | 原因 | 详情 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| RoboBrain2.5-8B-NV | BW1000 ×1 | sglang | bf16 | smoke | 150–200 s | T02 多模态评测器与性能测法随分题材料下发，尚未获取；本件完成视觉链路 smoke | [→](models/BAAI__RoboBrain2.5-8B-NV__bw1000__sglang/) |
 | MiniMax-Music3 | BW1000 ×1 | sglang | bf16 | official-eval | 600–700 s | 官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件生成 32 kHz 立体声、≤750 声学帧 | [→](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) |
 | Qwen-Image-2.1-Turbo | BW1000 ×1 | diffusers | bf16 | official-eval | 60–90 s | 官方 T03 明确「不进行统一评分和性能比较」；已按官方 180 条条件完成（2048×2048、8 步、KV cache） | [→](models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/) |
 | Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | official-eval | 150–200 s | 官方 T04 明确「不进行统一评分和性能比较」，不要求服务接口；已按官方 300 条条件完成评测 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |

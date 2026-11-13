@@ -1,4 +1,4 @@
-# RoboBrain2.5-8B-NV on BW1000 + SGLang 0.5.10
+# RoboBrain2.5-8B-NV on BW1000 × **SGLang 0.5.10** —— ✅ 6 档完成（与 vLLM 配对）
 
 > T02 视觉多模态理解。本条目验证「图像预处理 → vision encoder → LLM」全链路，含**多图**输入。
 
@@ -107,11 +107,24 @@ python3 -m sglang.launch_server \
 
 ## 7. 性能参考
 
-**未做 6 档基准**：T02 的文本类压测虽可套用 `bench.sh`，但本模型的主验收指标是视觉任务，
-性能测法随分题材料下发。已在 `bench/NA.md` 说明。
+6 档 × 2 轮，取 `bench/round2.jsonl`（output tok/s）：
 
-已有数据：冷启动 200 s；`/v1/models` 报 `max_model_len: 32768`；单图请求 `prompt_tokens=67`、
-多图 `prompt_tokens=115`。
+| 档位 | SGLang | vLLM 0.21 | 差值 |
+| --- | ---: | ---: | ---: |
+| 4K / c1 | 45.69 | 64.01 | vLLM **+40%** |
+| 4K / c8 | 327.14 | 387.93 | vLLM **+19%** |
+| 4K / c64 | 543.80 | 667.69 | vLLM **+23%** |
+| 16K / c1 | 37.14 | 51.14 | vLLM **+38%** |
+| 16K / c8 | 126.65 | 225.76 | vLLM **+78%** |
+| 16K / c64 | 141.66 | 175.71 | vLLM **+24%** |
+
+**结论：与同族的 Recon2Reason 一致 —— vLLM 全面优于 SGLang（+19% ~ +78%）。**
+两个 Qwen3-VL 小模型都呈现这个规律，说明不是偶然：
+小模型下 vLLM 的调度优势压过了 SGLang 的 kernel 优势。
+
+（对照：MiMo-9B 上 SGLang 领先 1.5–7 倍；Kimi-48B 上则是「单流 SGLang 赢、高并发 vLLM 赢」。）
+
+**注意**：T02 官方评测器未下发，这些数字是引擎能力证据，不是官方评分。
 
 ## 8. 注意事项
 
