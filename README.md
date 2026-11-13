@@ -70,6 +70,7 @@ python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/benc
 | [AuK-Flash](models/Tencent-Hunyuan__AuK-Flash__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 120/120 条完成 | — | — |
 | [AuK](models/Tencent-Hunyuan__AuK__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 120/120 条完成 | — | — |
 | [HY-OmniWeaving](models/Tencent-Hunyuan__HY-OmniWeaving__bw1000__hyvideo/) | BW1000 ×1 | hyvideo | bf16 | ✅ 官方 60/60 条完成 | — | — |
+| [HY-World-2.0](models/Tencent-Hunyuan__HY-World-2.0__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 官方 5/5 条完成 | — | — |
 | [Wan2.1-I2V-14B-480P](models/Wan-AI__Wan2.1-I2V-14B-480P__bw1000__wan2.1/) | BW1000 ×4 | wan2.1 | bf16 | ✅ 官方 60/60 条完成 | — | — |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 6 档基准 | 998.05 | 308.72 |
 | [MiMo-V2.6-Distill-Qwen-9B](models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 489.52 | 44.83 |

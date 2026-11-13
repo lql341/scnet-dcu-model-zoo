@@ -1,0 +1,59 @@
+{
+  "status": "completed",
+  "pid": 119,
+  "started_utc": "2026-11-13T20:47:04.627504+00:00",
+  "engine": "official WorldMirror PyTorch pipeline on BW; SGLang integration pending",
+  "conditions": [
+    {
+      "id": "dtu_scan1",
+      "status": "completed",
+      "duration_seconds": 120.75316390162334,
+      "output_path": "/work/out-044646/dtu_scan1",
+      "image_hw": [
+        714,
+        952
+      ]
+    },
+    {
+      "id": "dtu_scan4",
+      "status": "completed",
+      "duration_seconds": 92.47051169304177,
+      "output_path": "/work/out-044646/dtu_scan4",
+      "image_hw": [
+        714,
+        952
+      ]
+    },
+    {
+      "id": "dtu_scan9",
+      "status": "completed",
+      "duration_seconds": 96.72659095237032,
+      "output_path": "/work/out-044646/dtu_scan9",
+      "image_hw": [
+        714,
+        952
+      ]
+    },
+    {
+      "id": "dtu_scan10",
+      "status": "completed",
+      "duration_seconds": 96.95770785678178,
+      "output_path": "/work/out-044646/dtu_scan10",
+      "image_hw": [
+        714,
+        952
+      ]
+    },
+    {
+      "id": "dtu_scan11",
+      "status": "completed",
+      "duration_seconds": 103.57479548500851,
+      "output_path": "/work/out-044646/dtu_scan11",
+      "image_hw": [
+        714,
+        952
+      ]
+    }
+  ],
+  "finished_utc": "2026-11-13T20:55:35.227538+00:00"
+}

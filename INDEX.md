@@ -28,6 +28,7 @@
 | AuK-Flash | BW1000 ×1 | transformers | bf16 | official-eval | 47–47 s | 官方 T03 明确「不进行统一评分和性能比较」；AuK-Flash 为 4 步蒸馏版，条件清单 nfe=4 / cfg=0 | [→](models/Tencent-Hunyuan__AuK-Flash__bw1000__transformers/) |
 | AuK | BW1000 ×1 | transformers | bf16 | official-eval | 47–47 s | 官方 T03 明确「不进行统一评分和性能比较」；已按官方 120 条条件完成评测（参考音克隆） | [→](models/Tencent-Hunyuan__AuK__bw1000__transformers/) |
 | HY-OmniWeaving | BW1000 ×1 | hyvideo | bf16 | official-eval | 600–700 s | 官方 T03 明确「不进行统一评分和性能比较」；已按官方 60 条条件完成（832×480 / 81 帧 / 16 fps） | [→](models/Tencent-Hunyuan__HY-OmniWeaving__bw1000__hyvideo/) |
+| HY-World-2.0 | BW1000 ×1 | sglang | bf16 | official-eval | 60–90 s | 官方 T03 明确「不进行统一评分和性能比较」；5 条 DTU 场景重建全部完成（scene/cameras/render 三类产物齐全） | [→](models/Tencent-Hunyuan__HY-World-2.0__bw1000__sglang/) |
 | Wan2.1-I2V-14B-480P | BW1000 ×4 | wan2.1 | bf16 | official-eval | 360–420 s | 官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件产出 832×480/81 帧/16 fps 视频 | [→](models/Wan-AI__Wan2.1-I2V-14B-480P__bw1000__wan2.1/) |
 
 ## 失败记录（blocked）

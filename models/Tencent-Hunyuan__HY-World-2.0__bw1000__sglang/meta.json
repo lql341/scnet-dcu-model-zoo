@@ -1,0 +1,35 @@
+{
+  "model_id": "Tencent-Hunyuan/HY-World-2.0",
+  "org": "Tencent-Hunyuan",
+  "model": "HY-World-2.0",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "sglang",
+  "framework_version": "社区适配镜像（SGLang Diffusion 接入 + 官方 WorldMirror PyTorch 管线）",
+  "precision": "bf16",
+  "status": "official-eval",
+  "bench": "not-required",
+  "bench_note": "官方 T03 明确「不进行统一评分和性能比较」；5 条 DTU 场景重建全部完成（scene/cameras/render 三类产物齐全）",
+  "cold_start_s": [60, 90],
+  "throughput": {
+    "4k_c1": null, "4k_c8": null, "4k_c64": null,
+    "16k_c1": null, "16k_c8": null, "16k_c64": null
+  },
+  "optimized": false,
+  "verified_on": "2026-11-14",
+  "official_eval": {
+    "conditions": "official/t03-t04/conditions/hy_world.jsonl",
+    "total": 5,
+    "ok": 5,
+    "fail": 0,
+    "per_item_s": 102,
+    "output": {
+      "kind": "world",
+      "required_roles": ["scene", "cameras", "render"],
+      "renders_per_scene": 10,
+      "bytes_total_MB": 378.2
+    },
+    "note": "官方不要求评分；逐场景用 prediction-statistics.json 校验相机/点云形状，渲染 10 视图齐全"
+  }
+}

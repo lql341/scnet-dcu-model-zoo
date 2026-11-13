@@ -1,0 +1,167 @@
+{
+ "dtu_scan1": {
+  "files": 53,
+  "MB": 77.4,
+  "renders": 10,
+  "camera_shape": [
+   1,
+   10,
+   9
+  ],
+  "points_shape": null,
+  "timing_keys": [
+   "data_loading",
+   "inference",
+   "inference_preprocess",
+   "compute_mask",
+   "save_depth",
+   "save_normal"
+  ],
+  "timing": {
+   "data_loading": 0.0,
+   "inference": 8.8,
+   "inference_preprocess": 0.6,
+   "compute_mask": 87.5,
+   "save_depth": 0.3,
+   "save_normal": 0.5,
+   "save_gs_ply": 9.4,
+   "save_camera": 0.0,
+   "save_points": 10.0,
+   "compress_points": 9.9,
+   "save_total_wall": 10.8,
+   "case_total": 107.7
+  }
+ },
+ "dtu_scan10": {
+  "files": 53,
+  "MB": 73.8,
+  "renders": 10,
+  "camera_shape": [
+   1,
+   10,
+   9
+  ],
+  "points_shape": null,
+  "timing_keys": [
+   "data_loading",
+   "inference",
+   "inference_preprocess",
+   "compute_mask",
+   "save_depth",
+   "save_normal"
+  ],
+  "timing": {
+   "data_loading": 0.0,
+   "inference": 3.5,
+   "inference_preprocess": 0.5,
+   "compute_mask": 85.0,
+   "save_depth": 0.2,
+   "save_normal": 0.4,
+   "save_gs_ply": 5.8,
+   "save_camera": 0.0,
+   "save_points": 6.1,
+   "compress_points": 6.1,
+   "save_total_wall": 6.6,
+   "case_total": 95.7
+  }
+ },
+ "dtu_scan11": {
+  "files": 53,
+  "MB": 74.3,
+  "renders": 10,
+  "camera_shape": [
+   1,
+   10,
+   9
+  ],
+  "points_shape": null,
+  "timing_keys": [
+   "data_loading",
+   "inference",
+   "inference_preprocess",
+   "compute_mask",
+   "save_depth",
+   "save_normal"
+  ],
+  "timing": {
+   "data_loading": 0.0,
+   "inference": 3.5,
+   "inference_preprocess": 0.5,
+   "compute_mask": 88.8,
+   "save_depth": 0.3,
+   "save_normal": 0.5,
+   "save_gs_ply": 7.7,
+   "save_camera": 0.0,
+   "save_points": 8.1,
+   "compress_points": 8.1,
+   "save_total_wall": 8.9,
+   "case_total": 101.7
+  }
+ },
+ "dtu_scan4": {
+  "files": 53,
+  "MB": 79.0,
+  "renders": 10,
+  "camera_shape": [
+   1,
+   10,
+   9
+  ],
+  "points_shape": null,
+  "timing_keys": [
+   "data_loading",
+   "inference",
+   "inference_preprocess",
+   "compute_mask",
+   "save_depth",
+   "save_normal"
+  ],
+  "timing": {
+   "data_loading": 0.0,
+   "inference": 3.5,
+   "inference_preprocess": 0.6,
+   "compute_mask": 76.0,
+   "save_depth": 0.3,
+   "save_normal": 0.5,
+   "save_gs_ply": 9.2,
+   "save_camera": 0.0,
+   "save_points": 9.8,
+   "compress_points": 9.7,
+   "save_total_wall": 10.5,
+   "case_total": 90.7
+  }
+ },
+ "dtu_scan9": {
+  "files": 53,
+  "MB": 73.7,
+  "renders": 10,
+  "camera_shape": [
+   1,
+   10,
+   9
+  ],
+  "points_shape": null,
+  "timing_keys": [
+   "data_loading",
+   "inference",
+   "inference_preprocess",
+   "compute_mask",
+   "save_depth",
+   "save_normal"
+  ],
+  "timing": {
+   "data_loading": 0.0,
+   "inference": 3.5,
+   "inference_preprocess": 0.5,
+   "compute_mask": 82.3,
+   "save_depth": 0.3,
+   "save_normal": 0.6,
+   "save_gs_ply": 7.5,
+   "save_camera": 0.0,
+   "save_points": 7.9,
+   "compress_points": 7.9,
+   "save_total_wall": 8.7,
+   "case_total": 95.0
+  }
+ }
+}

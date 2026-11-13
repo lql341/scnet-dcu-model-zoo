@@ -1,0 +1,4 @@
+# 无需额外安装：33 个依赖已在镜像的 /opt/hyworld2-bw/deps（含 onnxruntime/jaxtyping/matplotlib）。
+# 唯一需外挂的文件：skyseg.onnx（176 MB，JianyuanWang/skyseg，sha256 ab9c34c6…）
+#   下载：curl -L -o skyseg.onnx https://hf-mirror.com/JianyuanWang/skyseg/resolve/main/skyseg.onnx
+#   放到 harness/assets/ 并在 cwd 建软链：ln -sf assets/skyseg.onnx skyseg.onnx

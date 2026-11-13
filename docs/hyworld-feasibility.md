@@ -47,7 +47,28 @@ Harbor 上存在 **`dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1`**
 | 「建议记为受阻」 | ❌ 过早：应改为「可复用社区镜像，待端到端验证」 |
 | 「权重 174.7 GB 放不下」 | ⚠️ 半对：174.7 GB 里 **169.4 GB 是 HY-Pano**，本次只需 WorldMirror 的 **5.1 GB** |
 
-## 要做成还差什么
+## ✅ 2026-11-14：已经跑通了
+
+```
+真总状态: completed
+  dtu_scan1  completed 121 s
+  dtu_scan4  completed  92 s
+  dtu_scan9  completed  97 s
+  dtu_scan10 completed  97 s
+  dtu_scan11 completed 104 s
+每场景 50 文件 / 74–79 MB：points.ply · gaussians.ply · camera_params.json
+  · renders/view_000..009.png · render_mosaic.png · depth/ · normal/
+```
+
+踩到并解决的四个点（都已写进条目 README §3.3）：
+1. 必须 `source env.sh`（PYTHONPATH 指向 upstream + deps + vendored gsplat）
+2. `skyseg.onnx` 176 MB 不在镜像里（只有 provenance），要从 hf-mirror 下并软链到 cwd
+3. 输出目录必须全新（`FileExistsError: Use a fresh output directory`）
+4. 素材挂载必须是真实目录树，不能用符号链接（`../../data/dtu/...` 会解析到链接外侧）
+
+镜像 digest：`sha256:3d436d42…`；harness 已归档 `assets/hyworld2-bw-harness.tar.gz`（198 MB）。
+
+## 当初的判断错在哪
 
 1. **权重** 5.1 GB（WorldMirror 子集；Mac 上正在下，集群登录节点 `import torch` 缺 `libMIOpen` 下不了）
 2. **官方素材** `data/dtu`（123 个文件，30 MB，已从赛事 zip 解出）
