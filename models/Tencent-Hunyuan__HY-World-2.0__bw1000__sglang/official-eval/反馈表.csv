@@ -1,0 +1,6 @@
+condition_id,model,status,output_path,error,parameter_changes
+dtu_scan1,hy-world2,成功,outputs/dtu_scan1/,,无
+dtu_scan4,hy-world2,成功,outputs/dtu_scan4/,,无
+dtu_scan9,hy-world2,成功,outputs/dtu_scan9/,,无
+dtu_scan10,hy-world2,成功,outputs/dtu_scan10/,,无
+dtu_scan11,hy-world2,成功,outputs/dtu_scan11/,,无

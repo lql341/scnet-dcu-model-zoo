@@ -1,0 +1,25 @@
+{
+ "total": 5,
+ "ok": 5,
+ "fail": 0,
+ "params": {
+  "view_count": 10
+ },
+ "output": {
+  "kind": "world",
+  "required_roles": [
+   "scene",
+   "cameras",
+   "render"
+  ],
+  "renders_per_scene": 10
+ },
+ "per_scene_s": {
+  "dtu_scan1": 120.8,
+  "dtu_scan4": 92.5,
+  "dtu_scan9": 96.7,
+  "dtu_scan10": 97.0,
+  "dtu_scan11": 103.6
+ },
+ "note": "官方不进行统一评分；本文件不含评分"
+}

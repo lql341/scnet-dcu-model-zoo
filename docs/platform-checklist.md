@@ -52,7 +52,7 @@ ls -l <HOST_MODEL_PATH> | tee platform/04-model.txt
 
 | 条目 | platform/ 内容 |
 | --- | --- |
-| 全部 9 个条目 | ⬜ 空（只有本清单） |
+| 全部 19 个条目 | ⬜ 空（仅 `platform/EVIDENCE.txt`，无截图） |
 
 **这不是技术问题**：所有证据都能从已有日志里重建（`logs/server.log` 里有 `hy-smi` 输出，
 `env.log` 中有卡型与显存）。文本版证据（`platform/EVIDENCE.txt`）已由现有日志生成，

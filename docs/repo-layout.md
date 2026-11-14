@@ -11,7 +11,7 @@
 
 | 事实 | 说明 |
 | --- | --- |
-| 4 个条目只用到 **2 个镜像** | SGLang 镜像 + vLLM 镜像，见各条目 `image.lock` |
+| 19 个条目只用到 **5 个镜像** | SGLang / vLLM 0.20 / vLLM 0.21 / Music3 / HY-World，见各条目 `image.lock` |
 | 镜像全部来自 Harbor 现成品 | `image.ac.com:5000/dcu/linshp/base/*`，公开项目、匿名可 pull |
 | 使用方式是 `load` 或 `pull` | 本地缓存 tar（31 GB）或直接内网拉（4–6 min） |
 | 没有任何条目需要 `Dockerfile` | 无一条目升级过包或打过 patch |
@@ -25,7 +25,7 @@
 
 ## 脚本复用的量化事实
 
-| 文件 | 4 个条目间的差异 |
+| 文件 | 各条目间的差异 |
 | --- | --- |
 | `bench.sh` | 完全相同（参数全部从 `env.sh` 读） |
 | `preflight_lib.py` | 完全相同 |
@@ -51,7 +51,7 @@
 | 大日志 | `server.log` 等 > 100 KB 一律 gzip（实测 552 KB → 40 KB，13:1） |
 | 禁止入库 | 模型权重、镜像 tar、`__pycache__` |
 
-当前**全库 2 MB / 4 个条目，平均 0.5 MB/条目**。按此推算铺满 30 个条目约 15 MB，仍在阈值内。
+当前**全库约 11 MB / 19 个条目**（含 bench 原始 jsonl 与日志），仍在 25 MB 阈值内。
 
 保留明文的内容：`bench/round1.jsonl`、`bench/round2.jsonl`、`bench/summary.md`、`logs/env.log`、`logs/smoke.log`
 （评审要能直接读）；压缩的只有冗长的 `server.log`。
