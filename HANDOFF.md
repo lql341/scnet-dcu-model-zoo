@@ -446,14 +446,15 @@ python3 -m pip download --no-deps --dest wheels \
 
 | 项 | 数值 |
 | --- | --- |
-| 条目总数 | **18**（8 个 official-eval 全绿 / 6 个 bench / 2 个 smoke / 2 个 blocked） |
-| 官方条件真实产物 | **930 条**（官方清单 935 条，只差 hy_world 的 5 条） |
+| 条目总数 | **19**（**9 个 official-eval 全绿** / **8 个 bench** / 2 个 blocked） |
+| 官方条件真实产物 | **935 条（官方 9 份清单全覆盖）** |
 | 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
-| 踩坑 | 28 条（`docs/gotchas.md`） |
+| 踩坑 | 29 条（`docs/gotchas.md`） |
 | 硬约束 | 5 条（`docs/REPORT.md` §4） |
 | Git 提交 | 64+（GitHub 与 GitLab 完全同步） |
 
-**不能再做的**：提交作业（两个账号都没卡权限）；T01/T02 精度（官方 baselines 从未下发）。
+**已经全绿的**：官方 T03/T04 的 9 份清单 **9/9 全覆盖**（HY-World 于 2026-11-14 补齐 5/5）。
+**仍缺的**：T01/T02 精度（官方 baselines 从未下发）、Trident（两引擎都不注册 embedding 架构）。
 **随时可做的**：拿到任何有 `hx1hdnormal` 权限的账号后，按 `docs/repro.md` 用归档镜像重跑，
 OmniWeaving 只需 `sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm` 补 7 条（3.5 h）。
 
