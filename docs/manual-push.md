@@ -101,7 +101,7 @@ $PD image inspect image.ac.com:5000/aihub/dcu/<账号>/mimo-sglang-bw10000:1.1.1
 ```bash
 # 1) 还原
 gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
-gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
 
 # 2) 之后的 tag / login / push / 校验与路径 A 的第 3–5 步相同
 ```

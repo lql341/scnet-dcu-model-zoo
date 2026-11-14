@@ -20,7 +20,7 @@ export XDG_RUNTIME_DIR=/tmp/xdg-$$ && mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XD
 JID=${SLURM_JOB_ID:-$$}
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load     # 32.2 GB
-gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load # 29.6 GB
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw_1.0.0.tar.gz | $PD load # 29.6 GB
 $PD images --format '{{.Repository}}:{{.Tag}}'
 ```
 

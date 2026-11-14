@@ -105,7 +105,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | 资产 | 位置 | 校验 |
 | --- | --- | --- |
 | SGLang 镜像 7.9 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz` | sha256 `f16125ba…` + load/smoke 验证 |
-| vLLM 镜像 8.7 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | sha256 `986f95a3…` + load/smoke 验证 |
+| vLLM 镜像 8.7 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw_1.0.0.tar.gz` | sha256 `986f95a3…` + load/smoke 验证 |
 | vLLM 0.21 镜像 9.5 GB | `ARCHIVE/images/vllm0.21.0-dtk2604-py3.10_20261112.tar.gz` | sha256 `c3b22bcc…` |
 | Music3 镜像 13.7 GB | `/public/home/luql/archive/zoo-dcu-2026-11/images/minimax-music3-bw-sglang_20261031-rc1.tar.gz` | sha256 `b61b05bd…` + 还原跑通 1 条 |
 | cp310 轮子 4 套 | `/public/home/luql/archive/zoo-dcu-2026-11/assets/*.tar.gz` | 53 + 3 + 8 个轮子，逐包 sha256 |

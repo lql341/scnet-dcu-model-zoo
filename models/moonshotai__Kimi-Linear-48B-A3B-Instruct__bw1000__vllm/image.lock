@@ -6,7 +6,7 @@
 | repository | `dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw` |
 | tag | `1.0.0` |
 | digest | `sha256:0793026099b56a06a3322637df8f822eccec3f6f882909ca91f444ee79709ce6` |
-| 归档 | `luql:/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz`（sha256 `986f95a3…`） |
+| 归档 | `luql:/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw_1.0.0.tar.gz`（sha256 `986f95a3…`） |
 
 > **镜像归属说明**：镜像属第三方账号 `dcu/linshp`，非本项目构建。已锁 digest + 保留归档；
 > 推自有命名空间需 Harbor 凭据，平台不提供自助获取接口（2026-11-11 确认）。
