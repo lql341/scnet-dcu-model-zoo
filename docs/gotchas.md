@@ -243,7 +243,7 @@ _sf.write(out, arr.squeeze(), int(sr), subtype="PCM_16")   # arr: float32 numpy,
 
 **现象**：Qwen-Image 条目「跑通」了 6 条探针，尺寸也对（2048×2048），但实际是 **40 步**——
 官方条件是 **8 步**（Turbo + KV cache）。若不核对，180 条产物会全部偏离官方条件，
-而且耗时多 5 倍，白烧卡时。
+而且耗时约为应有值的 5 倍，造成卡时浪费。
 
 **根因**：`evaluate_official.py` 把 `use_kv_cache=True` 写死，只从环境变量取 `WIDTH/HEIGHT`，
 从未读 `conditions/*.jsonl` 里的 `num_inference_steps` / `guidance_scale` / `schedule`。
@@ -342,15 +342,15 @@ SSH 能登录、`/public` 能读写、GitHub/GitLab 正常，唯独不能提交�
 ```bash
 # 1) 是不是集群没资源？
 squeue -a -h | wc -l                      # 0 → 不是排队问题
-# 2) 是不是我们不在分区白名单？
+# 2) 该账号是否在分区白名单？
 scontrol -a show partition hx1hdnormal | tr ' ' '\n' | grep '^AllowAccounts=' \
   | cut -d= -f2 | tr ',' '\n' | grep -x "$USER"    # 无输出 → 就是它
 # 3) 同批次其他账号在不在？（本例 scnethr2601a05 / a07 / scnethr202601 都在，只有 a10 没有）
 ```
 
-**结论**：`hx1hdnormal` 的 `AllowAccounts` 有 10552 条，我们被移除了。
+**结论**：`hx1hdnormal` 的 `AllowAccounts` 共 10552 条，不含该账号。
 这不是故障、不是脚本问题、不是 QOS 写法问题（`--qos=partition_hx1hdnormal` 只会得到
-`Invalid qos specification`，因为我们 assoc 上挂的是 `user_<账号>`）。
+`Invalid qos specification`，因为该 assoc 挂的是 `user_<账号>`）。
 
 **教训（最贵的一条）**：
 1. **临时账号下的任何数据都会随账号一起消失**。所以镜像归档要么推自己的 Harbor 命名空间，
@@ -433,7 +433,7 @@ ValueError: Requested more deepstack tokens than available in buffer: num_tokens
 实际 Harbor 上有 **`dcu/acizv7iztz/base/hy-world2-bw-sglang`**，镜像里连 gsplat 的 HIP 补丁都编好了 ——
 单场景 92–121 s，5 条官方条件一次跑通。
 
-**我当初怎么搜的**：`?q=gsplat`（空）、`?q=hyworld`（空）→ 结论"没有"。
+**实际检索过程**：`?q=gsplat`（空）、`?q=hyworld`（空）→ 曾据此判断"不存在"。
 **实际仓库名**：`hy-world2-bw-sglang` —— 带连字符，搜 `world` 才命中。
 
 **正确姿势**：
@@ -451,5 +451,5 @@ curl -sk "$H/api/v2.0/projects/dcu/repositories?page_size=100&q=name%3D~acizv7iz
 **更强的判据**：先查**同批账号**（`acizv7iztz`、`wzx`、`linshp` 等）的仓库清单，
 他们跑过什么、留了什么镜像，往往就意味着"这条路有人趟过了"。
 
-**教训**：把"我没找到"写成"不可行"，是最容易犯、代价最大的一类错误 ——
+**教训**：把"未检索到"写成"不可行"，是最容易犯、代价最大的一类错误 ——
 它会直接让一个条目被标 blocked 并在报告里写成硬约束。

@@ -8,12 +8,12 @@
 > 📄 **先读这个**：[docs/REPORT.md](docs/REPORT.md) —— BW1000 模型适配能力报告
 > 📊 **可视化报告**：[docs/report.html](docs/report.html) —— 单文件 HTML，汇总全部结果、数据与技术路线（`tools/gen_report.py` 生成）
 > 📦 **数据在哪**：[docs/ARCHIVE-SUMMARY.md](docs/ARCHIVE-SUMMARY.md) —— 三层保全与还原步骤（集群账号已被回收）
-> （15 个条目 / 923 条真实产物，官方清单共 935 条 / 3 个镜像归档 / 24 条踩坑 / 5 条硬约束 / 成本核算）。
+> （19 个条目 / 935 条真实产物，官方 9 份清单全覆盖 / 5 个镜像归档 / 29 条踩坑 / 4 条硬约束 / 成本核算）。
 >
 > **本仓库的第一原则：镜像与经验 > 比赛提交。**
 > 比赛提交是一次性的；「哪个参数能开、哪个版本能装、哪种现象会产出假数据」的经验，
 > 以及「上游随时可能删掉的那个镜像」，才是下次遇到同类国产卡时真正的起点。
-> 因此镜像归档（`docs/image-archive.md`，集群 `~/zoo-images/`）、踩坑清单（`docs/gotchas.md`）
+> 因此镜像归档（`docs/image-archive.md`，`/public/home/luql/archive/zoo-dcu-2026-11/`）、踩坑清单（`docs/gotchas.md`）
 > 与依赖 wheel 集都当作一等资产维护，并在 GitHub / GitLab 双远端同步（`tools/publish.sh`）。
 
 ## 目录约定

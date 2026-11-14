@@ -12,7 +12,7 @@
 > 正在跑的 OmniWeaving 作业被 CANCELLED（22 h，**53/60 产物已在盘上**）。集群范围内 `squeue -a` 为 0 条作业、
 > OpenAPI 的 `queues` 也返回空 → 判断为账号/分区权限变更（正是 §9 的 P0-7）。详见 §11「事故记录」。
 >
-> 最后更新：2026-11-09（结项）　余额 **4275.25**　状态：**15 个条目**——7 个官方评测全绿、1 个 partial（OmniWeaving 53/60）、3 个 bench、2 个 smoke、2 个 blocked
+> 最后更新：2026-11-14　余额约 **4275**　状态：**19 个条目**——9 个官方评测全绿（935 条全覆盖）、8 个 6 档基准、2 个 blocked
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -22,7 +22,7 @@
 > **本文件是活文档。每次会话结束前更新「§8 进度」与「§9 TODO」。**
 >
 > **第一原则：镜像与经验 > 比赛提交。** 比赛是一次性的，经验与可复现环境是下次的起点。
-> 因此每次会话收尾固定四件：① 新用过的镜像归档到 `~/zoo-images/` 并更新 MANIFEST；
+> 因此每次会话收尾固定四件：① 新用过的镜像归档到 `/public/home/luql/archive/zoo-dcu-2026-11/images/` 并更新 `SHA256SUMS`；
 > ② 新踩的坑写进 `docs/gotchas.md`；③ 三件套（lint / gen_index / quota）；
 > ④ **推两个远端**（GitHub `origin` + GitLab `sourcefind`）。
 
@@ -30,8 +30,8 @@
 
 ## 1. 一句话现状
 
-在 **BW1000（海光 DCU）** 上跑通 **15 个条目**（模型 × 框架 × 精度），其中
-**7 个完成官方条件评测且全绿**（923 条真实产物）、**1 个部分完成（53/60）**、**3 个有完整 6 档基准**。
+在 **BW1000（海光 DCU）** 上完成 **19 个条目**（模型 × 框架 × 精度），其中
+**9 个完成官方条件评测且全绿**（935 条真实产物，官方 9 份清单全覆盖）、**8 个有完整 6 档基准**。
 本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因重定位并修掉，**两个都已跑完官方全量条件**：
 - AuK：卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec → **120/120**，4.4 s/条
 - Qwen-Image：卡点 = hub 版本低于 diffusers 元数据要求（0.36.2 < 1.32）→ **180/180**，19.8 s/张
@@ -119,7 +119,7 @@ python3 $SK/scnet.py --region 11250 notebook resources # 昆山 K100-AI Notebook
 python3 $SK/scnet.py --region 11250 notebook list
 ```
 
-Notebook 驱动（我写的，绕开 skill 的镜像白名单）：
+Notebook 驱动（自研，绕开 skill 的镜像白名单）：
 `zoo/tools/nb_create.py`（建实例）、`zoo/tools/nb_exec.py`（Jupyter REST + kernel websocket 执行命令）。
 
 ### 3.4 镜像
@@ -187,11 +187,13 @@ git -c credential.helper='!f() { echo "password=$(cat ~/.sourcefind-token)"; }; 
 ├── Trident-Qwen3VL-2B/              4.0 G
 └── Qwen3-ForcedAligner-0.6B/        1.8 G
 
-~/images/mimo-sglang-bw10000_1.1.1.tar      31 G   未压缩，podman load 用（省 4-6 min pull）
-~/zoo-images/                                17 G   **镜像归档（防上游删除）**
-├── mimo-sglang-bw10000_1.1.1.tar.gz        7.9 G   digest sha256:db981c46...
-├── vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz    8.7 G   digest sha256:07930260...
-└── MANIFEST.md                             digest + sha256 + 还原命令
+/public/home/luql/archive/zoo-dcu-2026-11/   54 G   **二进制归档（唯一副本）**
+├── README.md                               入口：目录约定 + 校验 + 还原 + 条目映射
+├── SHA256SUMS                              11 条（5 镜像 + 6 依赖包），可用 sha256sum -c
+├── images/                                 5 个镜像 tar.gz 共 55 G
+├── assets/                                 wheel 集 4 套 + 2 个第三方 harness
+├── sources/                                AuK / Wan2.1 / OmniWeaving 源码
+└── products/                               8 个目录：7 个模型产物 + optimizations
 
 ~/work/official-t34/                         45 M   **官方测试数据**
 ├── formal/conditions/*.jsonl               9 份 935 条（入库到 zoo/official/）
@@ -220,7 +222,7 @@ git -c credential.helper='!f() { echo "password=$(cat ~/.sourcefind-token)"; }; 
 | **GitLab `luql/scnet-dcu-model-zoo`** | ✅ **同源镜像**（同一仓库推两个 remote，`sourcefind`），给比赛平台侧可读 |
 | GitLab `luql/*`（7 个 public 单件） | 参赛单件快照（早期按条目拆的） |
 | 集群 `~/models/` 权重 | 🔁 用完即删（策略见 `docs/weights-policy.md`），配额仅 400 G |
-| 集群 `~/zoo-images/` | ✅ **镜像归档**：2 个 tar.gz + `MANIFEST.md` + `assets/`（wheel 集、AuK 源码） |
+| 集群 `/public/home/luql/archive/zoo-dcu-2026-11/` | ✅ **二进制归档（54 GB）**：5 个镜像 tar.gz + `assets/`（wheel 集、harness）+ `products/`（官方产物）+ `sources/`；入口 `README.md`，校验 `SHA256SUMS` |
 | ❌ `/public/home/luql` | 无法写入（SSH 被拒），等恢复后需搬 `~/zoo-images` |
 
 **推送命令（两个远端都要推）**：
@@ -242,7 +244,7 @@ zoo/
 ├── ARTIFACTS.md               SCNet 侧产物位置与重建成本
 ├── docs/
 │   ├── entry-spec.md          ★ 条目规范（强制）
-│   ├── gotchas.md             ★ 24 条踩坑（按隐蔽度排序）
+│   ├── gotchas.md             ★ 29 条踩坑（按隐蔽度排序）
 │   ├── environment.md         硬件/软件/镜像能力实测
 │   ├── manual-push.md         手动推镜像到 SCNet 镜像库
 │   ├── image-archive.md       镜像归档与还原
@@ -251,7 +253,7 @@ zoo/
 │   ├── platform-checklist.md  platform/ 截图清单
 │   ├── landscape.md           93 个公开仓库竞争盘点
 │   └── SELF-CHECK-2026-11-02.md  T03/T04 材料到位后的自查
-├── models/<org>__<model>__<card>__<framework>/    15 个条目
+├── models/<org>__<model>__<card>__<framework>/    19 个条目
 ├── official/t03-t04/          ★ 官方条件清单 + file-manifest + provenance
 ├── sweeps/                    参数扫描脚本（非正式条目）
 └── tools/                     lint_entry.sh / gen_index.py / check_quota.sh
@@ -270,9 +272,9 @@ python3 tools/check_products.py  # 产物规格守门（stats.json 必须与条�
 ```
 
 > `check_products.py` 是 2026-11-05 那次事故的产物：OmniWeaving 跑完 60 条后只验"文件存在且 >200 KB"，
-> 实际全是 848×480（要 832×480），26 卡时白烧。现在"规格"是入库的硬门槛。
+> 实际全部为 848×480（期望 832×480），26 卡时作废。现「规格校验」为入库硬门槛。
 
-> **lint 已两次抓到我的错**：手打 §7.2 表格数字与 `bench/summary.md` 不一致；
+> **lint 已两次拦下错误**：手写 §7.2 表格与 `bench/summary.md` 不一致；
 > `meta.throughput` 取错列（把 `total_throughput` 当成 `output_throughput`，差 5 倍）。
 
 ---
@@ -551,7 +553,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有
 跑不通的配置要标 blocked 并留证据，不要删。
 ```
 
-### 四条最容易犯的错（我自己犯过的）
+### 五条高发错误（均已实际发生并修正）
 
 1. **不要把复杂 shell 塞进 `podman run -c "..."`** —— `$` 会被外层展开。把容器内逻辑写成独立
    `container/inner.sh` 并挂载，用 `/inner.sh` 执行。
@@ -577,7 +579,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有
 | --- | --- |
 | 14:12 | OmniWeaving 全量作业 `1048411` 在跑 22:00 后被 `CANCELLED`（产物 53/60 已落盘） |
 | 之后 | `sbatch` 一律报 `Invalid account or account/partition combination specified`（最小作业也一样） |
-| 诊断 | ① `squeue -a` 全集群 0 条作业；② `sinfo`（默认视图）空，`scontrol -a show partition hx1hdnormal` 仍可见（QoS=partition_hx1hdnormal）；③ 我们的 assoc QOS 是 `user_scnethr2601a10`，`--qos=partition_hx1hdnormal` 报 `Invalid qos specification`；④ OpenAPI `resource-summary` 的 `queues` 返回 `[]` |
+| 诊断 | ① `squeue -a` 全集群 0 条作业；② `sinfo`（默认视图）空，`scontrol -a show partition hx1hdnormal` 仍可见（QoS=partition_hx1hdnormal）；③ 该账号 assoc 上挂的 QOS 是 `user_scnethr2601a10`，`--qos=partition_hx1hdnormal` 报 `Invalid qos specification`；④ OpenAPI `resource-summary` 的 `queues` 返回 `[]` |
 | 判断 | **分区/账号的 QOS 绑定被改**（或临时账号到期）。SSH 与 `/public` 读写仍正常，只是不能提交作业 |
 | 未受影响 | 53 条 OmniWeaving 产物、3 个镜像归档、全部仓库数据（GitHub/GitLab 已同步） |
 | 恢复后要做的第一件事 | `cd ~/work/zoo-omni && sbatch --export=ALL container/submit.slurm`（`evaluate_official.py` 会跳过已存在产物，只补剩下 7 条，约 3.5 h），然后回填 README/meta |
@@ -594,7 +596,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有
 | 6 | 数据保全 | ✅ OmniWeaving 53/60 产物、3 个镜像归档 30 G、仓库双远端全部完好 |
 
 **决定性证据**：`hx1hdnormal` 的 `AllowAccounts` 有 **10552** 条，包含 `scnethr2601a05`、`scnethr2601a07`、
-`scnethr202601`，**独独没有 `scnethr2601a10`** → 我们的账号是被**从分区的允许列表里移除**了（权限回收/试用到期），
+`scnethr202601`，**不含 `scnethr2601a10`** → 该账号已被**从分区允许列表移除**（权限回收或试用到期），
 不是集群故障、不是脚本问题。
 
 **问平台时要问的三句**：① `scnethr2601a10` 是否仍是有效赛事账号；② 它是否仍被允许提交到 `hx1hdnormal`；

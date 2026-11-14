@@ -9,9 +9,9 @@
 
 | 层 | 位置 | 内容 | 状态 |
 | --- | --- | --- | --- |
-| ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 15 个条目、docs/gotchas（23 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
+| ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 19 个条目、docs/gotchas（29 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
 | ② 产物与归档（二进制） | **`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（唯一副本，31 GB）** | 产物 + 3 个镜像 + wheel 集 + 源码 | ✅ 已完成（服务端直拷 + sha256 校验） |
-| ③ 原集群（即将失效） | `scnethr2601a10:~/work`、`~/zoo-images`、`~/models` | 同上 + 权重（可重下） | ⚠️ 账号被回收，随时可能清空 |
+| ③ 原集群（仅历史） | `scnethr2601a10:~/work`、`~/zoo-images`、`~/models` | 同上 + 权重（可重下） | ⚠️ 该账号已失去分区权限，仅作溯源 |
 
 ---
 
@@ -50,7 +50,7 @@ scnethr$ chmod 700 ~
 
 ```text
 /public/home/luql/archive/zoo-dcu-2026-11/
-├── zoo-products-2026-11.tar.gz      628 MB  923 条官方条件产物 + 统计 + MANIFEST
+├── products/<model>/{outputs,反馈表.csv,eval_result.json,stats.json}
 ├── zoo-assets-2026-11.tar.gz        177 MB  轮子/源码/harness
 ├── omniweaving-products.tar.gz       17 MB  OmniWeaving 产物（单抽）
 └── images/                          30.3 GB 3 个镜像，500 MB 分块（*.pNNN），拼回后校验 sha256
@@ -63,11 +63,10 @@ scnethr$ chmod 700 ~
 
 | 包 | 内容 | 大小 | 校验 |
 | --- | --- | ---: | --- |
-| `zoo-products-2026-11.tar.gz` | 6 个模型 × 官方条件的全部真实产物 + 统计 + MANIFEST | 628 MB | 见 §4 |
+| `products/<model>/outputs/` | 7 个模型的官方条件产物（解包形态，便于按需复制） | 1.0 GB | 见 `SHA256SUMS` 与 §4 |
 | `zoo-assets-2026-11.tar.gz` | 4 套 cp310 轮子、AuK/Wan/OmniWeaving 源码、Music3 harness 归档 | 177 MB | sha256 清单在包内 |
 | `omniweaving-products.tar.gz` | 单独抽出的 OmniWeaving 产物（便于快速取用） | 17 MB | — |
-| `images/*.partNNN` | 3 个镜像归档的 500 MB 分块（OpenAPI 单文件大上传会 write timeout，故分块） | 30.3 GB / 61 块 | 拼回后比 `MANIFEST.md` 的 sha256 |
-
+| 
 具体到模型：
 
 | 模型 | 产物 | 条数 | 规格 |
@@ -88,7 +87,7 @@ scnethr$ chmod 700 ~
 # 1) 镜像（在集群上，拿到任意可用账号后）
 cd /public/home/luql/zoo-archive-2026-11/images
 cat minimax-music3-bw-sglang_20261031-rc1.tar.gz.part* > m3.tar.gz
-sha256sum m3.tar.gz      # 应等于 MANIFEST.md 里 b61b05bd…
+sha256sum -c SHA256SUMS  # 一次校验全部 11 项
 gunzip -c m3.tar.gz | podman load
 
 # 2) 产物
@@ -125,7 +124,7 @@ git clone https://github.com/lql341/scnet-dcu-model-zoo.git   # 或 GitLab 镜�
 
 ## 6. 这次归档暴露的三个问题（已写进 gotchas / HANDOFF）
 
-1. **临时账号不是存储**：`~/zoo-images` 在 Slurm 临时账号下，账号一被回收，30 GB 归档跟着消失。
+1. **临时账号不是存储**：原 `~/zoo-images` 位于 Slurm 临时账号下，账号被回收即随之失效。
    正确做法是第一时间推到自己的命名空间（Harbor）或自己的目录 —— 这正是 P0-6。
 2. **OpenAPI 单文件上传有写超时**：7.9 GB 直传失败（`write operation timed out`），
    628 MB 可以；**大于 ~1 GB 必须分块**（本归档用 500 MB 分块 + 幂等重试）。
@@ -144,5 +143,9 @@ git clone https://github.com/lql341/scnet-dcu-model-zoo.git   # 或 GitLab 镜�
 | 2026-11-04 | AuK-Flash 120/120（4.4× 加速）、Music3 60/60、Wan2.1 60/60、Music3 镜像归档 |
 | 2026-11-05 | 16K 调参定论（chunked-prefill 4096 + CUDA Graph，+5~8%）、vLLM v0 无效、分辨率桶事故与 `check_products.py` |
 | 2026-11-06 | AWQ 可行性（能跑但慢 5×）、ASR 批吞吐（−10%） |
-| 2026-11-07 | 账号被回收；冒烟测试定位到 `AllowAccounts` 移除 |
-| 2026-11-09 | 三层归档（本文件） |
+| 2026-11-07 | 原账号 `scnethr2601a10` 被移出分区允许列表；冒烟测试定位到 `AllowAccounts` 变更 |
+| 2026-11-09 | 三层归档方案建立（本文件） |
+| 2026-11-11 | `luql` 获得 `hx1hdnormal` 权限并完成全链路验证；归档经服务端直拷迁至 luql 账户（31 GB） |
+| 2026-11-12 | Kimi / Recon2Reason / RoboBrain 三条目补 vLLM 侧基准；归档 vLLM 0.21 镜像 |
+| 2026-11-13 | HY-World 可行性重新评估（找到社区镜像，推翻原「不可行」结论） |
+| 2026-11-14 | HY-World 官方 5/5 场景完成；归档 HY-World 镜像；归档结构规范化（README + SHA256SUMS，54 GB） |

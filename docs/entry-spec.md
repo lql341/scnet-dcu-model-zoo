@@ -88,7 +88,7 @@ models/<org>__<model>__<card>__<framework>[__<precision>]/
 改数字只改 `meta.json`，避免文档漂移。
 
 `tools/lint_entry.sh` 会校验 `meta.throughput` 与 `bench/summary.md` 的 `output_throughput`
-**逐字一致**——这是防漂移的关键一环（首次生成时它立刻抓出我取错列的错误：
+**逐字一致**——这是防漂移的关键一环（该机制在首次生成时即发现过一次取列错误：
 误取了 `total_throughput` 导致 Kimi 的 4K/c64 显示成 3041.13，正确值是 608.23）。
 
 ## 5. `image.lock` 要求

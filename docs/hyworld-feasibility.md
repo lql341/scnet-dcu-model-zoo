@@ -1,83 +1,78 @@
-# HY-World-2.0 在 BW1000 上能不能跑？—— **能，我之前的判断是错的**
+# HY-World-2.0 可行性结论（2026-11-14 修订）
 
-> 2026-11-13 更正。此前 `docs/REPORT.md` §4 把 HY-World 列为"硬约束 5：需 ROCm 版 gsplat，
-> 8–16 卡时，可能失败"。**这个结论不成立** —— 原因是漏查了 Harbor 上的现成镜像。
+## 结论
 
-## 决定性证据
+HY-World-2.0（WorldMirror 2.0 重建部分）在 BW1000 上**可运行**，官方 5 条 DTU 场景全部完成。
+此前将其列为「需自编 ROCm 版 gsplat、8–16 卡时、可能失败」的判断不成立，原因是未检索到
+Harbor 上已有的社区适配镜像。
 
-Harbor 上存在 **`dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1`**
-（与 Music3 同一个社区作者）。镜像里留了他的**完整适配工程**：
+## 依据
+
+Harbor 存在 `dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1`
+（digest `sha256:3d436d42be4784a9ffe4b7f0690f16d2657ce2e1408408259196cdb593704aa0`），
+镜像 `/tmp/` 下包含完整适配工程：
 
 ```
-/tmp/hyworld2-bw-source-update.tgz     ← 源码 + harness（已解包核对）
+/tmp/hyworld2-bw-source-update.tgz
   ├── upstream/                        官方 hyworld2（含 vendored gsplat 1.5.3 变体）
-  ├── patches/0001-bw-compatibility.patch   ← gsplat 的 HIP 改动
-  ├── build_gsplat.sh                   PYTORCH_ROCM_ARCH=gfx936，setup.py build_ext --inplace
-  ├── sglang_pipelines/hy_world.py      SGLang ComposedPipelineBase 子类（注册表可发现）
-  ├── run_conditions.py                 逐条跑官方条件（含 sha256 校验视图、配置校验）
-  ├── wheelhouse/ + fetch_wheels.py     离线依赖
+  ├── patches/0001-bw-compatibility.patch  gsplat 的 HIP 改动
+  ├── build_gsplat.sh                  PYTORCH_ROCM_ARCH=gfx936 构建脚本
+  ├── sglang_pipelines/hy_world.py     SGLang ComposedPipelineBase 子类
+  ├── run_conditions.py                逐条执行官方条件（含素材 sha256 校验）
+  ├── wheelhouse/ + fetch_wheels.py    离线依赖
   └── run.sh / smoke.sh / env_check.sh
-/tmp/hyworld-gsplat-build/             ← 已编译的 gsplat（build/ + gsplat/）
-/opt/hyworld2-bw/deps/                 ← 33 个离线依赖（含 jaxtyping、matplotlib、onnxruntime…）
-/tmp/hyworld2-bw-results-20261103.tgz  ← 他的构建记录（gsplat-build-v1…v11）
+/tmp/hyworld-gsplat-build/             已编译的 gsplat（build/ + gsplat/）
+/opt/hyworld2-bw/deps/                 33 个离线依赖
 ```
 
-他的 README 关键内容：
+其中 `patches/0001-bw-compatibility.patch` 覆盖了 DCU 适配所需的改动：完整 GLM 头文件、
+HIP 设备声明、逻辑线程组归约、hipCUB 别名、设备安全的固定数组索引、内核函数指针转换。
+即 gsplat 的 ROCm 构建问题已由社区解决，无需自行编译。
 
-- **WorldMirror 2.0 重建模型**：约 1.263B 参数，FP32 safetensors **5.054 GB**（单卡 BW 足够）
-- gsplat 用官方仓库内 1.5.3 变体，HIP 改动写在 `patches/0001-bw-compatibility.patch`：
-  完整 GLM 头文件、HIP 设备声明、逻辑线程组归约、hipCUB 别名、设备安全的固定数组索引、内核函数指针转换
-- 检查点 1545 个张量全部存在且形状匹配（缺的 48 项是按公式生成的 RoPE 周期缓冲区）
-- **保留厂商 Torch/DTK/FlashAttention，未改权重、模型结构或评测输入**
+## 实测结果
 
-## 但也没到我原以为的地步
+```
+status: completed
+  dtu_scan1   completed 121 s
+  dtu_scan4   completed  92 s
+  dtu_scan9   completed  97 s
+  dtu_scan10  completed  97 s
+  dtu_scan11  completed 104 s
+```
 
-他自己的 README 写的是：
+每场景 50 文件 / 74–79 MB，官方 `required_roles` 三类产物齐全：
+`points.ply` + `gaussians.ply`（scene）、`camera_params.json`（cameras）、
+`renders/view_000..009.png` + `render_mosaic.png`（render），另有 `depth/`、`normal/`。
 
-> 当前正在验证 SGLang Diffusion 接入和 3DGS 渲染；**尚不声明赛事验收通过**。
-> 这里没有完整 HY-Pano / WorldStereo 世界生成链路。
+## 落地时的四个必要条件
 
-即：**重建（WorldMirror）+ gsplat 编译这一段是通的，端到端 5 条官方条件他也没跑完**。
+| # | 条件 | 说明 |
+| --- | --- | --- |
+| 1 | `source env.sh` | 该脚本设置 `PYTHONPATH`（upstream + `/opt/hyworld2-bw/deps` + vendored gsplat），缺失时 `import hyworld2` 失败 |
+| 2 | `skyseg.onnx`（176 MB） | 镜像内只有 `assets/skyseg-provenance.json`（记录 URL 与 sha256），需从 `hf-mirror.com/JianyuanWang/skyseg` 下载，并在 cwd 建立 `skyseg.onnx` 链接 |
+| 3 | 输出目录必须全新 | `run_conditions.py` 对已存在的输出目录直接抛 `FileExistsError` |
+| 4 | 素材挂载须为真实目录树 | 条件文件中路径为 `../../data/dtu/...`，若挂载点为符号链接会解析到链接外侧 |
 
-## 所以正确的结论
+## 资源口径修正
 
-| 我原来的说法 | 实际 |
+| 早期判断 | 实际 |
 | --- | --- |
-| 「需自编 ROCm 版 gsplat，8–16 卡时，可能失败」 | ❌ 错：gsplat 的 HIP 补丁已有人做好，镜像是现成的 |
-| 「建议记为受阻」 | ❌ 过早：应改为「可复用社区镜像，待端到端验证」 |
-| 「权重 174.7 GB 放不下」 | ⚠️ 半对：174.7 GB 里 **169.4 GB 是 HY-Pano**，本次只需 WorldMirror 的 **5.1 GB** |
+| 权重 174.7 GB，超出配额 | 174.7 GB 中 169.4 GB 为 HY-Pano（全景生成），与本题无关；本题仅需 WorldMirror 的 5.1 GB |
+| 需自编 ROCm 版 gsplat | 社区镜像已包含 HIP 补丁与已编译产物 |
+| 需 Python 3.11 + FA2/FA3 | 镜像为 Python 3.10 + 厂商 FlashAttention，实测可用 |
 
-## ✅ 2026-11-14：已经跑通了
+## 未覆盖范围
 
-```
-真总状态: completed
-  dtu_scan1  completed 121 s
-  dtu_scan4  completed  92 s
-  dtu_scan9  completed  97 s
-  dtu_scan10 completed  97 s
-  dtu_scan11 completed 104 s
-每场景 50 文件 / 74–79 MB：points.ply · gaussians.ply · camera_params.json
-  · renders/view_000..009.png · render_mosaic.png · depth/ · normal/
-```
+镜像作者的 README 明确说明：该工程只覆盖 **WorldMirror 2.0 重建**，不含 HY-Pano / WorldStereo
+世界生成链路，且原作者的 SGLang Diffusion 端到端验收尚未完成。本次实测的 5 条官方条件
+（DTU 多视图重建）在 `run_conditions.py` 的官方 PyTorch 管线上完成，与 SGLang Diffusion
+接入路径无关。
 
-踩到并解决的四个点（都已写进条目 README §3.3）：
-1. 必须 `source env.sh`（PYTHONPATH 指向 upstream + deps + vendored gsplat）
-2. `skyseg.onnx` 176 MB 不在镜像里（只有 provenance），要从 hf-mirror 下并软链到 cwd
-3. 输出目录必须全新（`FileExistsError: Use a fresh output directory`）
-4. 素材挂载必须是真实目录树，不能用符号链接（`../../data/dtu/...` 会解析到链接外侧）
+## 关联资产
 
-镜像 digest：`sha256:3d436d42…`；harness 已归档 `assets/hyworld2-bw-harness.tar.gz`（198 MB）。
-
-## 当初的判断错在哪
-
-1. **权重** 5.1 GB（WorldMirror 子集；Mac 上正在下，集群登录节点 `import torch` 缺 `libMIOpen` 下不了）
-2. **官方素材** `data/dtu`（123 个文件，30 MB，已从赛事 zip 解出）
-3. **复用他的 harness**（已解包到 `luql:~/work/hyw-extract/harness/`）+ 该镜像
-4. GPU 侧：`bash build_gsplat.sh`（镜像内有编译缓存，预计 10–20 min）→ `run_conditions.py`
-5. 预计 1–2 卡时；风险是他自述的「3DGS 渲染尚未验证」
-
-## 教训
-
-**别把"我没找到"写成"不可行"**。这次是搜 Harbor 时只搜了 `gsplat`/`hyworld`（空），
-而仓库名是 `hy-world2-bw-sglang`（搜 `world` 才命中）。查现成镜像要用**多个关键词**，
-并且优先按"同批用户（acizv7iztz 等）已做了什么"去搜。
+| 资产 | 位置 | 校验 |
+| --- | --- | --- |
+| 镜像归档 | `luql:archive/zoo-dcu-2026-11/images/hy-world2-bw-sglang_20261103-rc1.tar.gz` | sha256 `3c7ffee6…` |
+| 适配工程 | `assets/hyworld2-bw-harness.tar.gz`（198 MB，不含 skyseg.onnx 与 upstream 权重） | sha256 `0b55cfca…` |
+| 官方产物 | `products/hyworld2/outputs/` | 20 个渲染图 + 点云 + 相机参数 |
+| 条目 | `models/Tencent-Hunyuan__HY-World-2.0__bw1000__sglang/` | lint 通过 |

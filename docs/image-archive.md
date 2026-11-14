@@ -2,7 +2,7 @@
 
 ## 为什么要归档
 
-本项目 4 个条目引用的镜像属于**第三方账号** `dcu/linshp`。上游删仓库时，
+本项目 19 个条目引用的 5 个镜像均属于**第三方账号**（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`）。上游删仓库时，
 `image.lock` 里的 digest 也救不回来（blob 随仓库消失）。归档是这道风险的兜底。
 
 同时它是**后续手动 push 到自有命名空间**的物料来源，见 `docs/manual-push.md`。
@@ -14,20 +14,19 @@
 （历史位置：/public/home/scnethr2601a10/zoo-images/）
 ├── mimo-sglang-bw10000_1.1.1.tar.gz             7.9 GB  sha256 f16125ba…
 ├── vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz         8.7 GB  sha256 986f95a3…
-├── MANIFEST.md                                  digest + sha256 + 还原命令
-├── sha256-all.txt                               两个 tar 的实测摘要
+├── README.md                                    入口：目录约定 + 校验 + 还原 + 条目映射
+├── SHA256SUMS                                   机器校验清单（sha256sum -c）
 ├── assets/                                      依赖与源码（体积小，重建难）
 │   ├── wheels-auk-cp310.tar.gz   104 MB         librosa 链 + AuK 依赖，全部 cp310
 │   ├── wheels-qi-cp310.tar.gz      6.6 MB       diffusers 0.41.0 + hub 1.33.0（可解析的版本对）
 │   ├── wheels-fa310.tar.gz        37 MB         ForcedAligner 的 transformers/hub/qwen_asr
 │   ├── AuK-src.tar.gz             30 MB         AuK 源码（集群直连 GitHub 不通）
 │   └── assets-sha256.txt
-├── archive_images.slurm / archive_vllm.slurm    生成脚本
-└── verify_archive.slurm                         还原验证脚本
+└── products/  sources/                          官方产物与上游源码（解包形态）
 ```
 
-> 位置在临时 Slurm 账户名下。**待 `luql` 账号恢复该集群 SSH 后应搬到 `/public/home/luql/zoo-images/`**
-> （见 `ARTIFACTS.md`）。当前该目录 `chmod 755` + 文件 `644`，`luql` 可直接 `cp` 走。
+> 2026-11-11 起，归档已迁至 `luql` 账户的 `/public/home/luql/archive/zoo-dcu-2026-11/`（原临时账号 `scnethr2601a10/zoo-images`
+> 仅作历史位置保留，该账号已于 2026-11-07 被移出分区允许列表）。
 >
 > **为什么把 wheel 也归档**：这两个镜像里没有 librosa / diffusers，而“按 cp312 下载的轮子
 > 装进 py3.10 镜像”曾把两个条目误判成 blocked（`docs/gotchas.md` #18）。镜像 + 正确的 wheel
@@ -36,7 +35,7 @@
 ### 为什么没有第二份离线副本
 
 实测从本机拉归档的速度：**16.4 MB / 289 s ≈ 57 KB/s**，17 GB 需 ~80 小时，不可行。
-所以集群内 `zoo-images/` 是**唯一**归档副本，抗风险靠三件事，不靠“再拷一份到同一块盘”：
+所以 `/public/home/luql/archive/zoo-dcu-2026-11/images/` 是**唯一**归档副本，抗风险依靠三项措施，而非在同一存储上复制：
 
 1. `sha256` + manifest（本文件）—— 发现损坏
 2. `verify_archive.slurm` 的 load + smoke —— 证明可还原
@@ -55,15 +54,15 @@
 | `vllm0.21.0-dtk2604-py3.10_20261112.tar.gz` | `dcu/wqxyyt06/base/vllm0.21.0-ubuntu22.04-dtk2604-py3.10:v1` | `sha256:c6a2f554…` | 9.5 GB | `c3b22bccb1e5d9c0af818452da4a5af554013d3cea02547c8c80bd87173728ab` |
 | `hy-world2-bw-sglang_20261103-rc1.tar.gz` | `dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1` | `sha256:3d436d42…` | 14.4 GB | `3c7ffee63de02080b5cf113bb67f57d59011b974e25da074e8e06257821ee0ab` |
 
-（tar sha256 已于 2026-11-03 全量重算写入集群 `zoo-images/sha256-all.txt`；
-完整清单（含 assets/ 与还原命令）见集群 `zoo-images/MANIFEST.md`。）
+（tar sha256 记录在 `SHA256SUMS`（2026-11-14 重建，覆盖 5 个镜像 + 6 个依赖包）；
+完整清单（含 assets/ 与还原命令）见 `/public/home/luql/archive/zoo-dcu-2026-11/README.md`。）
 
 没有做任何修改：`load` 后的镜像名与上游完全相同（`dcu/linshp/base/...`），
 说明 tar 直接来自上游镜像，未经重新构建。
 
 > **第三个（Music3）是怎么来的**：Harbor 上有社区用户自己构建的 BW 版 Music3 + SGLang 镜像
 > （`dcu/acizv7iztz/...`），里面还留着他自己的适配工作区（`/tmp/music3-hygon/`，已单独归档为
-> `assets/music3-hygon-harness.tar.gz`）。上游删除该仓库的代价对我们来说等于「Music3 条目报废」，
+> `assets/music3-hygon-harness.tar.gz`）。上游删除该仓库将导致 Music3 条目不可复现，
 > 所以即便它比前两个大（13.7 GB），也归档了。
 
 ### 关于 digest：两个不同的东西，不要混淆
@@ -78,7 +77,7 @@
 
 **正确的完整性校验方式**（`verify_archive.slurm` 采用后者）：
 
-1. 归档 tar 的 `sha256sum` 与 `MANIFEST.md` 记录一致（防传输/存储损坏）
+1. 归档 tar 的 `sha256sum` 与 `/public/home/luql/archive/zoo-dcu-2026-11/SHA256SUMS` 记录一致（防传输/存储损坏）
 2. `load` 成功且镜像名为上游原名（证明未经重建）
 3. 起服务跑 smoke 通过（功能性验证）
 
@@ -92,8 +91,8 @@ JID=${SLURM_JOB_ID:-$$}
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID \
     --storage-driver overlay --storage-opt ignore_chown_errors=true"
 
-gunzip -c zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
-gunzip -c zoo-images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz | $PD load
+gunzip -c /public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz | $PD load
 $PD images --format '{{.Repository}}:{{.Tag}}|{{.Digest}}'
 ```
 
