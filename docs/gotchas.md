@@ -426,3 +426,30 @@ ValueError: Requested more deepstack tokens than available in buffer: num_tokens
 # 或者直接看文件：ls $SITE/vllm/model_executor/models/ | grep -i qwen3
 ```
 同样的坑也发生在 `KimiLinearForCausalLM` 上（曾被误记为"vLLM 不支持 Kimi-Linear"）。
+
+## 29. Harbor 搜索：搜不到 ≠ 没有，关键词要试多个
+
+**现象**：判定「HY-World-2.0 在 DCU 上不可行」，理由是"没有现成的 gsplat ROCm 构建"。
+实际 Harbor 上有 **`dcu/acizv7iztz/base/hy-world2-bw-sglang`**，镜像里连 gsplat 的 HIP 补丁都编好了 ——
+单场景 92–121 s，5 条官方条件一次跑通。
+
+**我当初怎么搜的**：`?q=gsplat`（空）、`?q=hyworld`（空）→ 结论"没有"。
+**实际仓库名**：`hy-world2-bw-sglang` —— 带连字符，搜 `world` 才命中。
+
+**正确姿势**：
+
+```bash
+H=https://image.ac.com:5000
+# 1) 用「模型名的一段」而不是整串，且不假设分隔符
+for q in world hy-world2 hyworld2 gsplat 3dgs; do
+  curl -sk "$H/api/v2.0/search?q=$q" | jq -r '.repository[].repository_name'
+done
+# 2) 按「同批用户已做过什么」找：社区作者会把整套 harness 留在镜像 /tmp 里
+curl -sk "$H/api/v2.0/projects/dcu/repositories?page_size=100&q=name%3D~acizv7iztz"
+```
+
+**更强的判据**：先查**同批账号**（`acizv7iztz`、`wzx`、`linshp` 等）的仓库清单，
+他们跑过什么、留了什么镜像，往往就意味着"这条路有人趟过了"。
+
+**教训**：把"我没找到"写成"不可行"，是最容易犯、代价最大的一类错误 ——
+它会直接让一个条目被标 blocked 并在报告里写成硬约束。
