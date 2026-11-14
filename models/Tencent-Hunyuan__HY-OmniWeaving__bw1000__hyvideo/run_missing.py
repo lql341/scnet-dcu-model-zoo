@@ -21,6 +21,10 @@ def main():
     if probe:
         todo = todo[:probe]
     print(f"[miss] 总 {len(items)}，待跑 {len(todo)}", flush=True)
+    # 子进程日志必须写到宿主可见目录：容器内 /tmp 随容器销毁，rank 级 traceback 会全部丢失
+    logdir = os.path.abspath(os.path.join(os.path.dirname(OUT), "genlogs"))
+    os.makedirs(logdir, exist_ok=True)
+    print(f"[miss] 子进程日志目录 {logdir}", flush=True)
     ok = fail = 0
     for n, it in enumerate(todo, 1):
         p = it.get("params") or {}
@@ -35,22 +39,42 @@ def main():
                "--dtype", str(p.get("dtype", "bf16")),
                "--output_path", out]
         if NPROC > 1:
-            cmd = ["torchrun", f"--nproc_per_node={NPROC}"] + cmd
+            # --redirects 1：把每个 rank 的 stdout/stderr 直接进我们的日志文件
+            # （默认 3 只会记录 rank0，rank N 的 traceback 会丢失）
+            cmd = ["torchrun", f"--nproc_per_node={NPROC}", "--redirects", "1"] + cmd
         else:
             cmd = [sys.executable] + cmd
         t0 = time.time()
-        log = f"/tmp/gen-{it['id']}.log"
+        log = os.path.join(logdir, f"gen-{it['id']}.log")
+        elastic = os.path.join(logdir, f"elastic-{it['id']}.json")
+        env = dict(os.environ, TORCHELASTIC_ERROR_FILE=elastic)
         with open(log, "w", encoding="utf-8") as fe:
-            rc = subprocess.run(cmd, cwd=SRC, stdout=fe, stderr=subprocess.STDOUT).returncode
+            rc = subprocess.run(cmd, cwd=SRC, stdout=fe, stderr=subprocess.STDOUT, env=env).returncode
         size = os.path.getsize(out) if os.path.exists(out) else 0
         if rc == 0 and size > 40 * 1024:
             ok += 1
             print(f"[miss] {n}/{len(todo)} OK {it['id']} {time.time()-t0:.0f}s {size/1e6:.2f}MB", flush=True)
         else:
             fail += 1
-            tail = [l for l in open(log, encoding="utf-8", errors="replace").read().splitlines()[-6:]]
-            print(f"[miss] {n}/{len(todo)} FAIL {it['id']} rc={rc} size={size}", flush=True)
-            for l in tail: print("   |", l[:200], flush=True)
+            print(f"[miss] {n}/{len(todo)} FAIL {it['id']} rc={rc} size={size} log={log}", flush=True)
+            # 打印所有 rank 的关键报错行（不只末 6 行，避免被 teardown 噪声挤掉）
+            lines = open(log, encoding="utf-8", errors="replace").read().splitlines()
+            keys = ("Traceback", "Error", "error:", "AssertionError", "RuntimeError",
+                    "ValueError", "TypeError", "out of memory", "HIP", "rank", "throw")
+            hits = [l for l in lines if any(k in l for k in keys)
+                    and "NCCL" not in l and "nccl" not in l]
+            for l in hits[-25:]:
+                print("   |", l[:220], flush=True)
+            if os.path.exists(elastic):
+                try:
+                    d = json.load(open(elastic))
+                    msg = (d.get("message") or "")
+                    tb = (d.get("traceback") or "")
+                    print("   [elastic] root cause:", str(msg)[:300], flush=True)
+                    for l in str(tb).splitlines()[-12:]:
+                        print("   [elastic] |", l[:220], flush=True)
+                except Exception:
+                    pass
     print(f"[miss] 完成 ok={ok} fail={fail}", flush=True)
 
 if __name__ == "__main__":

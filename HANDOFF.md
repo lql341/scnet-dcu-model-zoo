@@ -244,7 +244,7 @@ zoo/
 ├── ARTIFACTS.md               SCNet 侧产物位置与重建成本
 ├── docs/
 │   ├── entry-spec.md          ★ 条目规范（强制）
-│   ├── gotchas.md             ★ 29 条踩坑（按隐蔽度排序）
+│   ├── gotchas.md             ★ 32 条踩坑（按隐蔽度排序）
 │   ├── environment.md         硬件/软件/镜像能力实测
 │   ├── manual-push.md         手动推镜像到 SCNet 镜像库
 │   ├── image-archive.md       镜像归档与还原
@@ -451,7 +451,7 @@ python3 -m pip download --no-deps --dest wheels \
 | 条目总数 | **19**（**9 个 official-eval 全绿** / **8 个 bench** / 2 个 blocked） |
 | 官方条件真实产物 | **935 条（官方 9 份清单全覆盖）** |
 | 归二进制归档 | 31 GB @ `luql:archive/zoo-dcu-2026-11/` |
-| 踩坑 | 29 条（`docs/gotchas.md`） |
+| 踩坑 | 32 条（`docs/gotchas.md`） |
 | 硬约束 | 5 条（`docs/REPORT.md` §4） |
 | Git 提交 | 64+（GitHub 与 GitLab 完全同步） |
 
@@ -529,9 +529,9 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有
 
 | # | 条目 | 现状 | 可试 | 预期 | 成本 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | **OmniWeaving** | 单卡 26 min/条 | 修 4/8 卡 SP（`build_mesh` 曾失败，是设备可见性问题） | 最多 4× | 4–6 卡时 |
-| 2 | **Wan2.1-I2V** | 4 卡 FSDP 18.6 min/条 | 8 卡 FSDP；或改 `--ulysses_size` 序列并行 | 最多 2× | 4–8 卡时 |
-| 3 | **Kimi-Linear** | TP=4 | TP=8（整节点 8 卡） | 单流更好，长上下文不一定 | 2 卡时 |
+| 1 | ~~**OmniWeaving**~~ | ✅ **4 卡 SP 已跑通**：24.6 → 11.0 min/条（2.23×） | 门槛是每卡 ≥8 CPU 与 `--mem=240G`（`docs/gotchas.md` 30–32） | — | 已完成 ~6 卡时 |
+| 2 | **Wan2.1-I2V** | 4 卡 FSDP 18.6 min/条 | 8 卡 FSDP（注意：整节点 8 卡需 `-c 64`）；或改 `--ulysses_size` 序列并行 | 最多 2× | 4–8 卡时 |
+| 3 | **Kimi-Linear** | TP=4 | TP=8（整节点 8 卡，`-c 64`） | 单流更好，长上下文不一定 | 2 卡时 |
 | 4 | **MiMo × SGLang** | 4K/c64 998 tok/s | 16K 档已 +5~8%（chunked 4096）；再试 CUDA Graph 与 chunked 组合的全档位扫描 | +5% | 2 卡时 |
 | 5 | **vLLM 长上下文** | 16K 只有 SGLang 的 1/5 | **自建镜像**重编 aiter / 找 paged-attn kernel | 可能 3–5× | 8–16 卡时 |
 | 6 | **量化** | 仅 AWQ 探针（慢 5×） | MiMo/Kimi 无官方 AWQ 权重 → 用 `llm-compressor` 自量化；或试 GPTQ | 显存 2–4×↓ | 4–8 卡时 |

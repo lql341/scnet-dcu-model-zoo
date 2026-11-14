@@ -453,3 +453,62 @@ curl -sk "$H/api/v2.0/projects/dcu/repositories?page_size=100&q=name%3D~acizv7iz
 
 **教训**：把"未检索到"写成"不可行"，是最容易犯、代价最大的一类错误 ——
 它会直接让一个条目被标 blocked 并在报告里写成硬约束。
+
+## 30. 申请 `--gres=dcu:4` 只分到 1 张卡：`-c` 太小，分配被静默缩水
+
+**现象**：`#SBATCH --gres=dcu:4` 的作业，`scontrol show job` 的 `ReqTRES` 确实写着 `gres/dcu=4`，
+但容器内 `torch.cuda.device_count()` 恒为 **1**；4 rank 的 `torchrun` 在 `set_device` 处报
+`torch.AcceleratorError: HIP error: invalid device ordinal`（rank 1/2/3 同时挂，rank 0 正常）。
+
+**排查弯路**：先怀疑设备可见性 —— 依次试过 `env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES
+-u ROCR_VISIBLE_DEVICES`、容器内显式 `HIP_VISIBLE_DEVICES=0,1,2,3`、podman 级 `-e`、
+逐个 `--device /dev/dri/renderD12x`、挂 `/sys/class/kfd` 与 `/sys/class/drm`、
+`--group-add keep-groups`、`--userns=keep-id`、换镜像 —— **全部无效**（`hy-smi -L` 在容器里也只列 1 张卡）。
+
+**根因**：不是容器、不是驱动、不是权限（`/dev/dri/renderD*` 是 `crw-rw-rw-`，全可读写）。
+是 **Slurm 实际只分配了 1 张卡**：该分区 `Gres=dcu:Hygon:8(S:0-7)` 按 **socket 绑卡**，
+`enforce-binding` 下 `-c` 不够时调度器把 GRES 请求降级，而且只体现在 `AllocTRES`，`ReqTRES` 仍是原值。
+
+**判据**（一条命令定性，别再复跑探针）：
+```bash
+sacct -j <JOBID> -n -P -o JobID,ReqTRES,AllocTRES
+# 缩水时：ReqTRES 有 gres/dcu=4，AllocTRES 只有 gres/dcu=1
+```
+
+**解法**：每张 DCU 至少给 **8 个 CPU**（`-c 32` 配 4 卡）。改完 `AllocTRES` 即为 `gres/dcu=4`，
+容器内 `device_count()` 立刻变 4。
+
+**代价**：这一条吃掉约 6 卡时的探针（5 次 25 min 作业）+ 大量推理时间，
+且会把人误导到"平台不支持多卡""镜像驱动有问题"这类错误结论上。
+
+## 31. 多卡起不来先看 `AllocTRES`，不要先怀疑容器
+
+紧接第 30 条：`device_count()=1` 在 DCU 上有两个截然不同的原因，且现象几乎一样。
+
+| 原因 | 判据 | 修法 |
+| --- | --- | --- |
+| 少传 `/dev/mkfd`（见第 1 条） | 容器内 `hy-smi` 报 `No device available`，日志有 `Load devices failed` | 加 `--device /dev/mkfd` |
+| **GRES 分配缩水**（第 30 条） | `hy-smi -L` 正常列卡但只有 1 张；`AllocTRES` 的 `gres/dcu=1` | 抬高 `-c` 到每卡 ≥8 CPU |
+
+**规则**：先查宿主的 `AllocTRES`（调度器说了算），再查容器内的 `hy-smi -L`（驱动说了算），
+最后才查 torch 的 `device_count()`。顺序反了就会在容器层反复试参数。
+
+## 32. 多 rank 全量加载编码器 → 宿主 OOM kill（exitcode -9，无 traceback）
+
+**现象**：4 卡 SP 起来后，rank 2 以 `exitcode: -9` 退出，日志里**没有** traceback，
+只有 `torch.distributed.elastic.multiprocessing.errors.ChildFailedError`；
+宿主侧 `slurmstepd: error: Detected 2 oom_kill events`。
+
+**根因**：HY-OmniWeaving 的序列并行只切 DiT 主干，**每个 rank 仍各持一份 VAE + 文本/视觉编码器**
+并做 CPU offload；4 份加起来 ≈200 GB，而 `-c 32` 自动带出的 `--mem` 只有 121 GB。
+
+**解法**：
+```bash
+#SBATCH -c 64
+#SBATCH --mem=240G     # 受 DefMemPerCPU=3888M 约束：mem ≤ c × 3888M
+```
+`--mem` 不能脱离 `-c` 单独抬：超过 `DefMemPerCPU × c` 直接提交失败
+（`too much memory was requested relative to the number of CPUs`）。
+
+**教训**：`exitcode -9` + 无 traceback + `oom_kill events` 是**宿主内存**耗尽，
+不是显存、也不是代码问题；Docker/podman 场景下容易被当成"容器被杀"去查驱动。

@@ -8,7 +8,7 @@
 | 任务 | T03 文生视频：`prompt` → 832×480 / 81 帧 / 16 fps |
 | 权重 | 主检查点 55.3 GB（transformer 32 G + text_encoder ckpt 16 G + vae 4.7 G + upsampler 274 M） |
 | 另有依赖权重 | Qwen2.5-VL-7B（16.6 G）、byt5-small（3.6 G）、Glyph-SDXL-v2（1.9 G）、FLUX.1-Redux siglip（1.1 G） |
-| 卡型 | BW1000 × N（`WORLD_SIZE` 序列并行；N=1 也可跑） |
+| 卡型 | BW1000 × N（`WORLD_SIZE` 序列并行；N=1 已验证、N=4 已验证 2.23×） |
 
 **与官方部署方式的差异**：
 
@@ -27,7 +27,7 @@
 | 镜像 | `image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1`（digest 见 `image.lock`） |
 | torch / torchvision | 2.9.0+das / 镜像自带 |
 | transformers / diffusers / hub | 4.57.1 / 0.32.2 / 0.34.0（隔离装到 `/opt/omni-libs`） |
-| 卡 | BW × 1（`gfx936:sramecc+:xnack-`，64 GiB） |
+| 卡 | BW × 1（`gfx936:sramecc+:xnack-`，64 GiB）；多卡见 `container/submit-4card.slurm` |
 | 权重路径 | 宿主 `~/models/HY-OmniWeaving` → 容器 `/models/Omni` |
 
 ## 3. 适配优化方案
@@ -59,8 +59,9 @@
 ### 3.4 升级步骤
 
 ```bash
-sbatch container/submit.slurm                 # 官方 60 条
+sbatch container/submit.slurm                 # 官方 60 条（单卡，本条目产物即由此产出）
 PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
+sbatch container/submit-4card.slurm           # 4 卡序列并行（11.0 min/条，见 §7）
 ```
 
 ## 4. 服务启动脚本
@@ -110,10 +111,17 @@ PROBE_ONLY=2 sbatch container/submit.slurm    # 只跑 2 条
 
 | 场景 | 实测 |
 | --- | --- |
-| 单条（81 帧 / 480p / 50 步，单卡） | **24.6 min**（含 offloading 搬运） |
+| 单条（81 帧 / 480p / 50 步，单卡） | **24.6 min**（1475 s，含 offloading 搬运） |
 | 60 条全量 | ~24.6 h / 单卡（含一次中断重跑） |
 | 权重加载 | ~6 min（55.3 GB 主检查点 + 4 份依赖权重共 23 GB） |
-| 多卡序列并行 | ⚠️ **4 卡 SP 尚未跑通**：已修掉"上游缺 `init_process_group`"与"设备可见性"两个前置问题（4 个 rank 能起来），但 rank 2 仍退出，且**当前抓不到 rank 级 traceback**。完整排查记录见 [`sweeps/results-omniweaving-sp-2026-11-12.md`](../../../sweeps/results-omniweaving-sp-2026-11-12.md) |
+| 单条（4 卡序列并行） | **11.0 min**（实测 640–698 s，均值 661.5 s，**2.23×**） |
+| 60 条全量（4 卡 SP，外推） | **≈11.1 h**（60 × 661.5 s + 6 min 加载）；未实跑全量，产物仍取单卡 60/60 |
+
+4 卡 SP 的门槛不在模型侧，而在**集群配额语义**：每张 DCU 需 ≥8 CPU（`-c 64` 配 4 卡，
+否则 Slurm 会把 GRES 静默降级到 1 张），且 4 个 rank 各持一份编码器需 `--mem=240G`
+（受分区 `DefMemPerCPU=3888M` 约束，mem ≤ c×3888M）。完整排查与证据见
+[`sweeps/results-omniweaving-sp-2026-11-12.md`](../../../sweeps/results-omniweaving-sp-2026-11-12.md)
+与 `docs/gotchas.md` 第 30–32 条。
 
 ## 8. 注意事项
 

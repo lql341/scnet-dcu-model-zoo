@@ -16,16 +16,33 @@ source "$REPO/env.sh"
 WORK="${WORK:-/public/home/luql/work/omnirun}"   # 2026-11-11 起用 luql 账号
 [ "$WORK" = "$REPO" ] && { echo "[host] WORK 不能等于 REPO"; exit 5; }
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
-mkdir -p "$XDG_RUNTIME_DIR" "$WORK"; chmod 700 "$XDG_RUNTIME_DIR"
+mkdir -p "$XDG_RUNTIME_DIR" "$WORK" /tmp/emptycerts; chmod 700 "$XDG_RUNTIME_DIR"
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
-NCARD=$(scontrol show job -o "$SLURM_JOB_ID" 2>/dev/null | tr ' ' '\n' | grep -m1 -oE 'gres/dcu=[0-9]+' | cut -d= -f2)
-[ -z "${NCARD:-}" ] && NCARD=1
+# 卡数检测（三重兜底）：本集群实测 scontrol 的 gres/dcu 有时给出的是 1（与申请不符），
+# 因此再用 SLURM_JOB_GPUS / HIP_VISIBLE_DEVICES 交叉校验，取三者最大值。
+_n1=$(scontrol show job -o "$SLURM_JOB_ID" 2>/dev/null | tr ' ' '\n' | grep -m1 -oE 'gres/dcu=[0-9]+' | cut -d= -f2)
+_n2=$(echo "${SLURM_JOB_GPUS:-}" | awk -F, '{print NF}')
+_n3=$(echo "${HIP_VISIBLE_DEVICES:-}" | awk -F, '{print NF}')
+NCARD=$(printf '%s\n%s\n%s\n' "${_n1:-0}" "${_n2:-0}" "${_n3:-0}" | sort -n | tail -1)
+# 记录配额与可见性实况（多卡问题的第一手证据，排查时不必再复跑探针）
+scontrol show job -o "$SLURM_JOB_ID" 2>/dev/null | tr ' ' '\n' | grep -E "^(ReqTRES|AllocTRES)=" | sed 's/^/[host] /'
+echo "[host] 可见性: SLURM_JOB_GPUS=${SLURM_JOB_GPUS:-unset} HIP_VISIBLE_DEVICES=${HIP_VISIBLE_DEVICES:-unset} CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset}"
+echo "[host] node=$(hostname) 卡数=$NCARD"
+echo "[host] 卡数检测: scontrol=${_n1:-?} SLURM_JOB_GPUS=${SLURM_JOB_GPUS:-?}(=$_n2) HIP_VISIBLE_DEVICES=${HIP_VISIBLE_DEVICES:-?}(=$_n3) → NCARD=$NCARD"
+[ "${NCARD:-0}" -lt 1 ] && NCARD=1
 echo "[host] node=$(hostname) tmp_free=${FREE}G 卡数=$NCARD"
 # SGLang 镜像解包 32 GB，podman 还要一份临时空间；45 G 实测会 no space（43 G 被拒）
 [ "$FREE" -lt 50 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 
+# 先从归档 tar.gz 加载（离线、可控），失败再退回 Harbor 拉取
+if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then
+  case "$HOST_IMAGE_TAR" in
+    *.gz) gunzip -c "$HOST_IMAGE_TAR" | $PD load >/tmp/load-$JID.log 2>&1 ;;
+    *)    $PD load -i "$HOST_IMAGE_TAR" >/tmp/load-$JID.log 2>&1 ;;
+  esac
+fi
 $PD image exists "$IMAGE" 2>/dev/null || $PD pull -q --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/pull-$JID.log 2>&1
 $PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/pull-$JID.log; exit 1; }
 mkdir -p "$WORK/repo"
@@ -47,6 +64,6 @@ $PD run --rm --ipc=host --privileged --security-opt seccomp=unconfined --entrypo
   -v "$HOST_MODEL_PATH":$MODEL_PATH:ro -v "$WORK":/work \
   -v "$OMNI_SRC_HOST":/omni-src:ro -v "$WHEELS_HOST":/wheels:ro \
   -v "$REPO/container/inner.sh":/inner.sh:ro \
-  -e PROBE_ONLY="${PROBE_ONLY:-0}" -e PROBE_FRESH="${PROBE_FRESH:-0}" -e NPROC="$NCARD" -e MODEL_PATH="$MODEL_PATH" \
+  -e PROBE_ONLY="${PROBE_ONLY:-0}" -e PROBE_FRESH="${PROBE_FRESH:-0}" -e OUTDIR_OVERRIDE="${OUTDIR_OVERRIDE:-}" -e NPROC="$NCARD" -e MODEL_PATH="$MODEL_PATH" \
   "$IMAGE" /inner.sh 2>&1 | grep -viE "subuid|rootless|Network file|level=warning"
 echo "[host] outputs=$(ls "$WORK/repo/official-eval/outputs" 2>/dev/null | wc -l) DONE $(date +%T)"

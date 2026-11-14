@@ -43,28 +43,27 @@ python3 -c 'import hyvideo; print("hyvideo import OK")' || exit 4
 echo '--- 官方条件评测 ---'
 cd /work/repo
 mkdir -p official-eval/outputs logs/shard
-# 【多卡要点】generate.py 用 WORLD_SIZE 做序列并行，torchrun 会设 WORLD_SIZE/RANK/LOCAL_RANK。
-# 但容器里若残留 HIP_VISIBLE_DEVICES/CUDA_VISIBLE_DEVICES（Slurm 只给 1 张卡的可见性），
-# 其余 rank 会越界 → build_mesh 失败。多卡时必须 unset 让 torch 看到 cgroup 允许的全部卡。
-# PROBE_FRESH=1：探针要真的生成（否则 PROBE_ONLY=1 会因为首条已存在而被跳过）
-if [ "${PROBE_FRESH:-0}" = "1" ]; then
-  export OUTDIR_OVERRIDE=official-eval/probe-outs
-  mkdir -p "$OUTDIR_OVERRIDE"
-  echo "[omni] PROBE_FRESH=1 → 输出到 $OUTDIR_OVERRIDE（不影响正式产物）"
-fi
-if [ "${NPROC:-1}" -gt 1 ]; then
-  echo "[omni] 多卡模式：NPROC=$NPROC，unset 可见性变量"
-  OUTDIR="${OUTDIR_OVERRIDE:-official-eval/outputs}" PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="$NPROC" \
-    COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
-    env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
-    python3 run_missing.py 2>&1 | tail -40
-else
-  OUTDIR=official-eval/outputs PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="${NPROC:-1}" \
-    COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
-    env -u HIP_VISIBLE_DEVICES -u CUDA_VISIBLE_DEVICES -u ROCR_VISIBLE_DEVICES \
-    python3 run_missing.py 2>&1 | tail -40
-fi
-
+# 【多卡要点】实测：本集群即使申请 dcu:4，Slurm 也可能只把 1 张卡写进
+# HIP_VISIBLE_DEVICES（本作业实测 host 侧 CUDA_VISIBLE_DEVICES=0 / HIP_VISIBLE_DEVICES=0，
+# 而 SLURM_JOB_GPUS 只给了个数字 4）。此时"unset 可见性变量"仍拿不到 4 张卡，
+# 4 个 rank 会在 set_device 处报 `HIP error: invalid device ordinal`（rank1/2/3 全挂）。
+# 已知可行的做法（Kimi × vLLM TP=4 已验证）：显式写满 0..N-1。
+VIS_LIST=$(seq -s, 0 $(( ${NPROC:-1} - 1 )))
+echo "[omni] 多卡模式：NPROC=$NPROC，显式可见性 HIP_VISIBLE_DEVICES=$VIS_LIST"
+OUTDIR="${OUTDIR_OVERRIDE:-official-eval/outputs}" PROBE_ONLY="${PROBE_ONLY:-0}" NPROC="$NPROC" \
+  COND_FILE=conditions/omniweaving.jsonl OMNI_SRC=/opt/omni-src MODEL_PATH=/models/Omni \
+  HIP_VISIBLE_DEVICES="$VIS_LIST" CUDA_VISIBLE_DEVICES="$VIS_LIST" \
+  python3 - <<'PYCHK' 2>&1 | tail -40
+import os, subprocess, sys
+import torch
+n = torch.cuda.device_count()
+want = int(os.environ.get("NPROC", "1"))
+print(f"[omni] 容器内可见 GPU 数={n}（期望 {want}）", flush=True)
+if n < want:
+    print("[omni] 设备数不足，终止（检查 Slurm 的 HIP_VISIBLE_DEVICES 与 podman --device）", flush=True)
+    sys.exit(9)
+sys.exit(subprocess.call([sys.executable, "run_missing.py"]))
+PYCHK
 echo '--- 产物规格校验（帧数/fps/分辨率）---'
 RUN_TAG="${SLURM_JOB_ID:-x}" python3 - <<'PYEOF'
 import glob, json, os

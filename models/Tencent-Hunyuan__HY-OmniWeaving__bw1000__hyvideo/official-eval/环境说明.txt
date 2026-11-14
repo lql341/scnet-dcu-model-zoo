@@ -5,7 +5,8 @@
 框架及版本：官方 hyvideo 代码（2026-11 clone）+ PyTorch eager
 torch：2.9.0+das（HIP 6.3.26113）　transformers：4.57.1　diffusers：0.32.2（隔离装于 /opt/omni-libs）
 镜像：image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1（digest sha256:db981c46…）
-设备：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡
+设备：BW vram_GB 64.0 arch gfx936:sramecc+:xnack-，单卡（官方 60 条即单卡产出）；
+      多卡验证：4 卡序列并行，--gres=dcu:4 -c 64 --mem=240G，单条 640–698 s（均值 661.5 s，2.23×）
 
 执行范围：official/t03-t04/conditions/omniweaving.jsonl，60 条（20 prompt × seed 42/2026/1234）
 输入：prompt（未使用任何参考答案）
@@ -15,7 +16,8 @@ torch：2.9.0+das（HIP 6.3.26113）　transformers：4.57.1　diffusers：0.32.
   0001 flash_attn 的 unpad_input API 兼容（DCU 版返回 4 项，上游按 5 项解包）
   0002 多卡时补 init_process_group（上游 generate.py 未调用）
 产物：outputs/<id>.mp4
-结果：**60/60 成功，0 失败**；单条约 24.6 min（1475 s），全量约 24.6 h（含一次中断重跑）
+结果：**60/60 成功，0 失败**；单条约 24.6 min（1475 s），全量约 24.6 h（含一次中断重跑）；
+      4 卡 SP 实测 11.0 min/条（四种条件下 640/647/661/698 s），全量外推约 11.1 h
 规格：60 条全部 832×480 / 81 帧 / 16 fps（5.0625 s），mp4 header 逐条校验，spec_violation_count=0
 体积：19.2 MB（不入库，仅存 1 条样例与统计）
 

@@ -9,7 +9,7 @@
 
 | 层 | 位置 | 内容 | 状态 |
 | --- | --- | --- | --- |
-| ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 19 个条目、docs/gotchas（29 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
+| ① 代码与经验（权威） | **GitHub `lql341/scnet-dcu-model-zoo`** + **GitLab `luql/scnet-dcu-model-zoo`** | 19 个条目、docs/gotchas（32 条坑）、REPORT.md、sweeps（调优过程）、official（官方条件清单） | ✅ 双远端同步 |
 | ② 产物与归档（二进制） | **`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（唯一副本，31 GB）** | 产物 + 3 个镜像 + wheel 集 + 源码 | ✅ 已完成（服务端直拷 + sha256 校验） |
 | ③ 原集群（仅历史） | `scnethr2601a10:~/work`、`~/zoo-images`、`~/models` | 同上 + 权重（可重下） | ⚠️ 该账号已失去分区权限，仅作溯源 |
 
