@@ -18,13 +18,13 @@
 | --- | --- |
 | 条目数 | **19 个**（模型 × 卡型 × 框架 × 精度），全部带启动脚本、环境自检、原始日志 |
 | 跑通并出官方条件结果 | **9 个**（T03/T04 官方 8 个模型全部完成 + AuK-Flash 变体） |
-| 有完整 6 档性能基准 | **8 个**（MiMo×SGLang、MiMo×vLLM、Kimi×SGLang） |
+| 有完整 6 档性能基准 | **8 个条目**（MiMo / Kimi / Recon2Reason / RoboBrain 各 × SGLang + vLLM，同模型跨引擎成对可比） |
 | 官方条件产出 | **935 条真实产物（官方 9 份清单 9/9 全覆盖）** |
 | 镜像归档 | **5 个**（55 GB：SGLang / vLLM 0.20 / vLLM 0.21 / Music3 / HY-World），sha256 全核对 + 还原验证 |
 | 依赖归档 | 4 套 cp310 轮子 + 3 份源码（`/public/home/luql/archive/zoo-dcu-2026-11/assets/` 与 `sources/`） |
-| 踩坑清单 | **24 条**（`docs/gotchas.md`，按隐蔽度排序） |
+| 踩坑清单 | **32 条**（`docs/gotchas.md`，按隐蔽度排序） |
 | 已知硬约束（不随框架/参数改变） | **4 条有效 + 1 条已推翻**（见 §4） |
-| 二进制归档 | **31 GB / `luql:/public/home/luql/archive/zoo-dcu-2026-11/`**（镜像 + 产物 + 轮子 + 调优原始数据） |
+| 二进制归档 | **53 GB / `luql:/public/home/luql/archive/zoo-dcu-2026-11/`**（5 镜像 + 产物 + 轮子 + 源码，`SHA256SUMS` 11/11 通过） |
 
 ---
 
@@ -206,7 +206,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | --- | --- |
 | 临时账号 | `scnethr2601a10` **2026-11-07 14:12 被移出 `hx1hdnormal` 的 `AllowAccounts`**（10552 条名单中不含该账号；同批 a05/a07 均在册）→ 提交作业全面被拒，正在跑的 OmniWeaving 被 CANCELLED（53/60 产物完好） |
 | `luql` 账号 | 郑州 SSH **已恢复**（用它完成了全部归档）；但同样不能在 `hx1hdnormal` 提交作业（QOS 不匹配） |
-| 数据保全 | 三层：Git 双远端（代码/经验）→ `luql:archive/zoo-dcu-2026-11/`（31 GB 二进制，sha256 全核对）→ 原集群（即将失效） |
+| 数据保全 | 三层：Git 双远端（代码/经验）→ `luql:archive/zoo-dcu-2026-11/`（53 GB 二进制，`SHA256SUMS` 全核对）→ 原集群（即将失效） |
 | 未完成 | HY-World-2.0（需 ROCm 版 gsplat）；T01/T02 精度（官方 baselines 从未下发） |
 | 2026-11-11 | `luql` 权限开通 → 从归档镜像还原环境、74 GB 权重同机直拷（177 MB/s）、OmniWeaving 剩 7 条续跑中 |
 | 复用前提 | 任何账号只要被加入该分区的 `AllowAccounts` 且绑定 `QoS=partition_hx1hdnormal`，即可按 `docs/repro.md` 用归档镜像重跑全部条目 |
