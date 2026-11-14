@@ -11,4 +11,5 @@
 镜像内 `/tmp/hyworld2-bw-source-update.tgz` 是其完整适配工程（upstream + gsplat HIP 补丁 + harness），
 已单独归档为 `luql:archive/zoo-dcu-2026-11/assets/hyworld2-bw-harness.tar.gz`。
 
-⚠️ **镜像本身尚未归档**（13.7 GB 级），上游删除即不可复现 —— 下次有卡时补 `podman save | gzip`。
+✅ **已归档**（2026-11-14）：`images/hy-world2-bw-sglang_20261103-rc1.tar.gz`，14.4 GB，
+sha256 `3c7ffee63de02080b5cf113bb67f57d59011b974e25da074e8e06257821ee0ab`。

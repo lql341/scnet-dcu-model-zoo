@@ -53,7 +53,7 @@
 | `vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | `dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0` | `sha256:07930260…` | 8.7 GB | `986f95a3e5599f024797e41faa614f72cbd5a6c87e5e97f71c172f730269d45f` |
 | `minimax-music3-bw-sglang_20261031-rc1.tar.gz` | `dcu/acizv7iztz/base/minimax-music3-bw-sglang:20261031-rc1` | `sha256:20f071aa…` | 13.7 GB | `b61b05bd7df45fdfe81885cb898f88572860a37734ececc23018dbfd531d7d87` |
 | `vllm0.21.0-dtk2604-py3.10_20261112.tar.gz` | `dcu/wqxyyt06/base/vllm0.21.0-ubuntu22.04-dtk2604-py3.10:v1` | `sha256:c6a2f554…` | 9.5 GB | `c3b22bccb1e5d9c0af818452da4a5af554013d3cea02547c8c80bd87173728ab` |
-| `hy-world2-bw-sglang_20261103-rc1.tar.gz` | `dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1` | `sha256:3d436d42…` | 12.9 GB（压） | 归档中，见 `MANIFEST.md` |
+| `hy-world2-bw-sglang_20261103-rc1.tar.gz` | `dcu/acizv7iztz/base/hy-world2-bw-sglang:20261103-rc1` | `sha256:3d436d42…` | 14.4 GB | `3c7ffee63de02080b5cf113bb67f57d59011b974e25da074e8e06257821ee0ab` |
 
 （tar sha256 已于 2026-11-03 全量重算写入集群 `zoo-images/sha256-all.txt`；
 完整清单（含 assets/ 与还原命令）见集群 `zoo-images/MANIFEST.md`。）
