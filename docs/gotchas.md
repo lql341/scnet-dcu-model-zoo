@@ -1282,3 +1282,62 @@ grep -lE "exec python3 -m (vllm\.entrypoints|sglang\.launch_server)" models/*/co
 **同类隐患**：`run.sh` 的注释和 CMD 也可能是从别的条目复制来的残留——
 本仓库多个 `__vllm` 条目的 `run.sh` 头部注释写的是"拉起 SGLang"、CMD 是 `sglang.launch_server`，
 真正生效的却是 `submit.slurm` 的内联 vLLM 命令。**注释不可信，只信实际执行路径。**
+
+## 55. `env.sh` 里 export 了参数，但没人读它 —— 三种"看起来配了、其实没生效"
+
+2026-11-15 对 20 个条目做全量参数审计，发现三类**静默失效**，共同点是**没有任何报错**：
+
+### 甲：`EXTRA_ARGS` 从头到尾没人引用
+
+`BAAI__Recon2Reason-*__vllm` 与 `BAAI__RoboBrain2.5-*__vllm`：
+
+```
+env.sh:24  export EXTRA_ARGS="--attention-backend triton --trust-remote-code --enable-multimodal"
+env.sh:33  export EXTRA_ARGS="--trust-remote-code --dtype bfloat16 --max-num-seqs $MAX_NUM_SEQS"
+container/submit.slurm:  grep -c EXTRA_ARGS → 0
+```
+
+三重失效叠在一起：
+
+1. **同一变量 export 两次**，前一行被后一行整个覆盖；
+2. **`submit.slurm` 的内联启动命令压根不引用 `$EXTRA_ARGS`**（它是把参数一条条写死的）；
+3. 于是 `env.sh:25` 那句"必须显式 `--attention-backend triton`，否则首个 decode 请求崩溃"
+   **从未被执行过**——而服务照样正常跑，因为那本来是 0.20 镜像的限制，这两个条目后来换成了 0.21。
+
+**为什么没人发现**：参数失效不会报错，只会让"我以为设了"和"实际没设"长期分叉。
+直到某天要调一个旋钮，才发现调了没反应。
+
+### 乙：`submit.slurm` 内联命令与 `env.sh` 漂移（见 #54）
+
+`MiMo × vLLM` 的 `submit.slurm` 留着 `--enforce-eager`，而 README/env.sh/run.sh/bench 都是"graph 开启"口径。
+
+### 丙：日志写到了仓库外，无法核对生效值
+
+`Recon2Reason/RoboBrain × vLLM` 的 `submit.slurm` 把服务端日志写到 `$WORK/server-$JID.log`（仓库外），
+仓库内 `logs/server.log` 只有一个占位 JSON。结果：**想知道 `max_num_seqs` 实际是多少，没有证据**。
+（SGLang 那两个条目反而有完整 `server.log`，里面能直接读到 `max_running_requests=64`。）
+
+## 判据
+
+**改任何启动参数前，先证明它真的到了命令行上**：
+
+```bash
+# 1) env.sh 里定义了但没人用？
+for f in models/*/env.sh; do
+  n=$(grep -c EXTRA_ARGS "${f%env.sh}container/submit.slurm" 2>/dev/null || echo 0)
+  [ "$n" = 0 ] && echo "未被引用: $f"
+done
+
+# 2) 同一变量是不是 export 了两次？（后者覆盖前者）
+grep -c "^export EXTRA_ARGS" models/*/env.sh | grep -v ':1$'
+
+# 3) 实际生效值从哪看？——只在 logs/server.log 或 $WORK/server-$JID.log 里
+grep -oE "max_num_seqs=[0-9]+|max_running_requests=[0-9]+|enforce_eager=[A-Za-z]+" logs/server.log*
+```
+
+**规则**：`env.sh` 只应作为**单一真值来源**，`submit.slurm` 必须读它（`$EXTRA_ARGS` 或 `bash run.sh`），
+不要内联复制一份参数。内联就必然漂移，这是 #54 的同一个根因。
+
+**附带记录（不是缺陷，是物理上限）**：Recon2Reason/RoboBrain 的 16K/c64 只有 149/141 tok/s，
+是因为单卡 KV cache 只有 331145 / 272807 tokens，而 64×17408 ≈ 1.11M，相差 3.4–4.1 倍，
+单卡最多同时容纳 15–19 条。提高 `MEM_FRAC` 只多约 12%，救不回来。这是硬件限制，别当配置错误修。

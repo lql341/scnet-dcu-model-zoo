@@ -21,9 +21,10 @@ export MAX_NUM_SEQS=128
 export LOAD_TIMEOUT=1800
 export MULTIMODAL=1
 
-export EXTRA_ARGS="--attention-backend triton --trust-remote-code --enable-multimodal"
-# 必须显式 --attention-backend triton：本镜像的 aiter attention backend 不完整
-# （aiter_backend.py 里 paged_attention_ragged 未定义），默认选择会启动后立即崩
+# ⚠️ 2026-11-15 修正：本条目已在 vLLM **0.21** 上跑通，早期写在 0.20 上的
+# 那两个 `--attention-backend triton` / `--enable-multimodal` 已不再需要，
+# 且 submit.slurm 的内联启动命令本来就**不引用 $EXTRA_ARGS**（该参数从未生效）。
+# 见 docs/gotchas.md #55。实际生效的旋钮只有下面这一行。
 # ---------- vLLM 专用 ----------
 export CLI_IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"   # 仅压测客户端
 export HOST_CLI_TAR=""

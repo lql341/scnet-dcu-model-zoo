@@ -45,7 +45,7 @@ done
 echo "[host] 官方评测开始 $(date +%T)"
 $PD exec asr-official bash -lc "
 cd /work/repo
-export MODEL_ID='$MODEL_ID' IMAGE='$IMAGE' PORT=$PORT SERVED_NAME=$SERVED_NAME WORKERS=4
+export MODEL_ID='$MODEL_ID' IMAGE='$IMAGE' PORT=$PORT SERVED_NAME=$SERVED_NAME WORKERS=$WORKERS
 export ASSET_ROOT=/assets
 mkdir -p official
 python3 evaluate_official.py 2>&1 | tail -40

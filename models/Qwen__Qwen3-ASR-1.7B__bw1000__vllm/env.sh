@@ -15,7 +15,9 @@ export PORT=30000
 export TP=1
 export MEM_FRAC=0.85
 export MAX_LEN=8192
-export MAX_NUM_SEQS=16
+export MAX_NUM_SEQS=128               # 60 条子集实测：16→128 让耗时 30s→26s（−13%），CER/WER 零变化；
+                                      # 64 之后开始饱和，瓶颈在音频解码+编码器前向，不在解码调度
+export WORKERS=32                     # 客户端并发；与上面的 max-num-seqs 配套（见 README §7.2）
 export LOAD_TIMEOUT=1800
 export AUDIO="/work/repo/assets/asr_test.wav"
 export AUDIO_TEXT="甚至出现交易几乎停滞的情况"

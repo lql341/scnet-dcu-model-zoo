@@ -120,7 +120,7 @@ def main():
         with open(elog, "w", encoding="utf-8") as fe:
             r = subprocess.run(cmd, cwd=src, text=True, timeout=8 * 3600,
                                stdout=fe, stderr=subprocess.STDOUT)
-        ok = r.returncode == 0 and os.path.exists(out) and os.path.getsize(out) > TOL_BYTES
+        ok = r.returncode == 0 and os.path.exists(out) and os.path.getsize(out) > MIN_BYTES
         if ok:
             rows.append({"id": it["id"], "status": "成功", "path": out,
                          "bytes": os.path.getsize(out), "sec": round(time.time() - t1, 1)})

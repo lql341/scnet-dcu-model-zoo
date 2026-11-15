@@ -21,8 +21,9 @@ export MAX_NUM_SEQS=128
 export LOAD_TIMEOUT=1800
 export MULTIMODAL=1
 
-export EXTRA_ARGS="--attention-backend triton --trust-remote-code --enable-multimodal"
-# --attention-backend triton 必需：本镜像的 aiter attention backend 残缺，默认选择会在首个 decode 请求崩溃
+# ⚠️ 2026-11-15 修正：早期在 vLLM 0.20 上写的 `--attention-backend triton` 已不再需要
+# （本条目实际用 0.21 镜像跑通，smoke 单图/多图均正常）。且 submit.slurm 的内联启动命令
+# 本来就**不引用 $EXTRA_ARGS**，该参数从未生效。见 docs/gotchas.md #55。
 # ---------- vLLM 专用 ----------
 export CLI_IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"   # 仅压测客户端
 export HOST_CLI_TAR=""

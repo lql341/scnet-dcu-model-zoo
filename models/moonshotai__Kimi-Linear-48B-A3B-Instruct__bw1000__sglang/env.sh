@@ -33,9 +33,11 @@ export LOAD_TIMEOUT=1800            # 实测冷启动 360 s（TP=4）
 
 # ---------- 适配参数（本件无 patch、无包升级）----------
 export PATCH_ROOT="$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
-export EXTRA_ARGS="--attention-backend triton"
-# CUDA Graph 保持开启：实测 6 档中 5 档大幅优于 --disable-cuda-graph（见 README §7.1），
-# 仅 16K/c64 档回退 6.3%（长上下文 + 最高并发下 graph replay 显存开销）
+# chunked-prefill 4096：16K 档实测 +5.5%（c64 232.03→244.73）、+8.3%（c8 127.71→138.31）。
+# 切片后 prefill 与 decode 交错，KV 压力平滑；见 sweeps/results-16k-tuning-2026-11-05.md
+export EXTRA_ARGS="--attention-backend triton --chunked-prefill-size 4096"
+# CUDA Graph 保持开启：实测 6 档中 5 档大幅优于 --disable-cuda-graph（见 README §7.1）。
+# 原记「16K/c64 回退 6.3%」为单轮噪声（±7%），2026-11-05 复测已撤销。
 
 export SGLANG_USE_LIGHTOP=1
 export SGLANG_KV_LAYOUT_DCU_FA=0
