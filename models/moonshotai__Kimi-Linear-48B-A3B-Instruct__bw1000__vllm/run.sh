@@ -20,12 +20,15 @@ for p in patches/*.patch; do
 done
 
 # 2) 拼启动命令
-CMD=(python3 -m sglang.launch_server
-     --model-path "$MODEL_PATH" --served-model-name "$SERVED_NAME"
-     --tp-size "$TP" --context-length "$MAX_LEN"
-     --mem-fraction-static "$MEM_FRAC"
-     --max-running-requests "$MAX_RUNNING_REQUESTS"
-     --host 127.0.0.1 --port "$PORT" --trust-remote-code)
+# vLLM 用的参数名与 SGLang 不同：--max-model-len / --gpu-memory-utilization / --max-num-seqs。
+# 早期版本这里是从 SGLang 条目复制来的，引用了本件并未定义的 $MAX_RUNNING_REQUESTS，
+# 在 set -u 下会直接 unbound variable。2026-11-15 修正。
+CMD=(python3 -m vllm.entrypoints.openai.api_server
+     --model "$MODEL_PATH" --served-model-name "$SERVED_NAME"
+     --tensor-parallel-size "$TP" --max-model-len "$MAX_LEN"
+     --gpu-memory-utilization "$MEM_FRAC"
+     --max-num-seqs "$MAX_NUM_SEQS"
+     --host 127.0.0.1 --port "$PORT")
 echo "[run] ${CMD[*]} $EXTRA_ARGS" | tee logs/server.log
 "${CMD[@]}" $EXTRA_ARGS >> logs/server.log 2>&1 &
 SERVER_PID=$!

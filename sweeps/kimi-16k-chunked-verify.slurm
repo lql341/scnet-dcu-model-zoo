@@ -32,7 +32,11 @@ JID="${SLURM_JOB_ID:-$$}"
 export XDG_RUNTIME_DIR=/tmp/xdg-$JID
 mkdir -p "$XDG_RUNTIME_DIR" "$WORK/cache" "$WORK/repo" /tmp/emptycerts
 chmod 700 "$XDG_RUNTIME_DIR"
-PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
+# podman 存储放【共享目录】，不要放节点本地 /tmp：
+# 镜像解压后 20G+，每个作业一份会撑爆节点 /（2026-11-15 实测把登录节点灌到 99%，
+# 另有机次报 no space left on device）。共享盘有 400G+ 余量，且作业结束自动清理。
+PSTORE=/public/home/luql/work/podman-$JID
+PD="podman --root $PSTORE/root --runroot $PSTORE/runroot --storage-driver overlay --storage-opt ignore_chown_errors=true"
 IMGDIR=/public/home/luql/archive/zoo-dcu-2026-11/images
 LIBPATH='/opt/hyhal/lib:/opt/hyhal/lib64:/opt/dtk/.hyhal/hsa/lib:/opt/dtk/.hyhal/hydm/lib:/opt/dtk/.hyhal/rocm_smi/lib:/opt/dtk/lib:/opt/dtk/lib64:/opt/dtk/hip/lib:/opt/dtk/llvm/lib:/opt/dtk/dcc/gcvm/lib:/opt/dtk/dushmem/lib:/opt/dtk/opencl/lib:/usr/local/lib:/usr/local/lib/python3.10/dist-packages/lightop/lib'
 
@@ -64,7 +68,8 @@ cleanup_all() {
   $PD rm -f sgl-srv >/dev/null 2>&1
   $PD rmi -af >/dev/null 2>&1
   $PD system prune -af >/dev/null 2>&1
-  rm -rf "/tmp/pr-$JID" "/tmp/prr-$JID" "$XDG_RUNTIME_DIR" 2>/dev/null
+  $PD rmi -af >/dev/null 2>&1; $PD system prune -af >/dev/null 2>&1
+  rm -rf "$PSTORE" "$XDG_RUNTIME_DIR" 2>/dev/null
 }
 trap cleanup_all EXIT
 

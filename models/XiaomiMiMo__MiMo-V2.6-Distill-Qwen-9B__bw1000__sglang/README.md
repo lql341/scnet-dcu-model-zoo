@@ -218,7 +218,7 @@ export PORT=30000
 export TP=1
 export EP=1
 export PP=1
-export MAX_LEN=17408        # 覆盖 16K 输入 + 1K 输出的压测
+export MAX_LEN=20480        # 覆盖 16K 输入 + 1K 输出 + chat template（17408 不够，实测会 400）
 export MEM_FRAC=0.85
 export MAX_RUNNING_REQUESTS=64
 export LOAD_TIMEOUT=1800    # 实测冷启动 410 s（含 Triton JIT）
@@ -436,7 +436,7 @@ vLLM 件使用 `--enforce-eager`（关闭 CUDA Graph）且沿用默认 `max_num_
 
 - **容器运行时与官方脚本假设的差异**：官方脚本假设裸机环境（`pip install` + `python3 -m sglang.launch_server`）。本件在容器内运行，全部适配集中在 §3.3 的环境变量与 §3.4 的挂载参数；`run.sh` 之后的所有脚本与官方口径一致。
 - **`/dev/mkfd` 必需**：只传 `/dev/kfd` 会得到 `No HIP GPUs are available`，且错误发生在 torch 初始化阶段、无进一步提示，是本次适配中最难定位的一处。
-- **禁用 CUDA Graph**：不传 `--disable-cuda-graph` 时，进程在 CUDA Graph 捕获阶段静默退出，`logs/server.log` 无 traceback，只有 Slurm 记录 `Killed`。
+- **首版误判「必须禁用 CUDA Graph」**：早期在 `max-running-requests=8` 的快速试探下，不开 `--disable-cuda-graph` 会静默退出（只有 Slurm 记 `Killed`、无 traceback）。§7.1 的系统扫描推翻了这个判断——`mrr=64` 时 **CUDA Graph 保持开启**才是最优（4K/c1 +79.5%、16K/c8 +48.6%）。当前配置不用该参数。
 - **宿主 DTK 不可覆盖容器内 `/opt/dtk`**：宿主 DTK 缺 `aillvm/bin/clang`，Triton JIT 会直接 `Exception: ROCm compiler not found`。
 - **`libmsgpackc.so.2` 位置特殊**：在 `/usr/local/lib/python3.10/dist-packages/lightop/lib`，需手动加入 `LD_LIBRARY_PATH`，否则 `import torch` 失败。
 - **容器存储不能放 `/public`**：NFS 不支持 overlay 所需 xattr，`podman load` 报 `lsetxattr /boot: operation not supported`。必须用节点本地盘（`--root /tmp/pr`），因此每个作业需先 `load` 一次镜像（70–290 s 不等，取决于节点缓存）。

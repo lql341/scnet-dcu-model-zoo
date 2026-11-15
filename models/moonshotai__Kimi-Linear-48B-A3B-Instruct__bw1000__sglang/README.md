@@ -17,7 +17,7 @@
 - **SGLang 0.5.10rc0 已内置全部所需实现**：`sglang.srt.models.kimi_linear`、`sglang.srt.configs.kimi_linear`，KDA kernel 以 **vendored** 形式放在 `sglang/srt/layers/attention/fla/{kda,chunk,fused_norm_gate}.py`；
 - 因此**不需要安装外部 `fla-core`**（实测 `import fla` 为 `ModuleNotFoundError`，但服务正常启动），**也不需要任何 patch**。
 
-本件的适配全部通过启动参数完成：`--tp-size 4`（91.5 GB 切成 ~22.9 GB/卡）、`--attention-backend triton`、`--disable-cuda-graph`、`--context-length 20480`、`--max-running-requests 64`。
+本件的适配全部通过启动参数完成：`--tp-size 4`（91.5 GB 切成 ~22.9 GB/卡）、`--attention-backend triton`、`--chunked-prefill-size 4096`、`--context-length 20480`、`--max-running-requests 64`。**CUDA Graph 保持开启**（不加 `--disable-cuda-graph`，见 §7.4）。
 
 相关获取地址：
 
@@ -180,7 +180,7 @@ transformers: 5.3.0
 | `--mem-fraction-static` | `0.85` | 实测 4 卡 VRAM 占用 86%，留余量避免 OOM |
 | `--max-running-requests` | `64` | 与 bench 的 64 并发档对齐。若沿用 8，64 并发请求会在服务端排队，测出的是排队延迟而非框架能力（对照见 §7） |
 | `--attention-backend` | `triton` | gfx936 上默认 flash-attention 路径无可用 kernel |
-| `--disable-cuda-graph` | — | 国产卡 CUDA Graph 捕获阶段进程静默退出 |
+| CUDA Graph | **保持开启**（不加该参数） | §7.4 实测关掉它让 16K/c8 掉 31%；早期"必须关"的结论已被推翻 |
 | `--trust-remote-code` | — | 模型仓库带 `configuration_kimi.py` 自定义代码 |
 
 **容器运行时的三条硬性要求**（不属于代码改动，但不满足则拿不到卡）：
@@ -236,7 +236,7 @@ export MAX_LEN=20480
 export MEM_FRAC=0.85
 export MAX_RUNNING_REQUESTS=64
 export LOAD_TIMEOUT=1800     # 实测冷启动 280–360 s（TP=4）
-export EXTRA_ARGS="--attention-backend triton --disable-cuda-graph"
+export EXTRA_ARGS="--attention-backend triton --chunked-prefill-size 4096"
 ```
 
 启动：
@@ -256,7 +256,7 @@ python3 -m sglang.launch_server \
   --max-running-requests 64 \
   --host 127.0.0.1 --port 30000 \
   --trust-remote-code \
-  --attention-backend triton --disable-cuda-graph
+  --attention-backend triton --chunked-prefill-size 4096
 ```
 
 重点参数说明：
@@ -267,7 +267,7 @@ python3 -m sglang.launch_server \
 | `--context-length` | `20480` | 覆盖 16K + 1K 压测；开到模型最大长度（1M）显存不够 |
 | `--mem-fraction-static` | `0.85` | 实测 VRAM 86%，再高易 OOM |
 | `--max-running-requests` | `64` | 对齐 64 并发档；见 §7 的排队对照 |
-| `--disable-cuda-graph` | — | 国产卡必需 |
+| ~~`--disable-cuda-graph`~~ | — | **不要加**：§7.4 实测关掉 graph 让 16K/c8 掉 31%。首版用了它，是当时误判 |
 
 多机：本件单机 4 卡，未使用多机。
 
@@ -451,7 +451,7 @@ all valid
   不能一概而论。详见 §7.1。
 - **`--context-length` 必须留余量**：`17408`（= 16384 + 1024）不够——客户端 `--random-input-len` 不计 chat template 包装开销，实测被服务端 400 拒绝（`Requested token count exceeds the model's maximum context length`）。更危险的是压测客户端把 400 当「完成」，会打出 `TTFT 0.00 ms` 的假数据。现改为 `20480`，并在 `bench.sh` 里加了两道防护：① 前置长度阶梯探测；② 压测后校验 `mean_ttft_ms != 0` 且吞吐不超物理上限，否则判 INVALID 并拒绝写入报告。
 - **`/dev/mkfd` 必需**：只传 `/dev/kfd` 会得到 `No HIP GPUs are available`，错误发生在 torch 初始化阶段、无进一步提示，是最难定位的一处。
-- **`--disable-cuda-graph` 必需**：否则进程在 CUDA Graph 捕获阶段静默退出，`logs/server.log` 无 traceback。
+- **CUDA Graph 不要关**：首版曾以为"必须 `--disable-cuda-graph`，否则捕获阶段静默退出"，§7.4 的五变体对照推翻了这个判断——关掉反而让 16K/c8 掉 31%。
 - **容器存储不能放 `/public`**：NFS 不支持 overlay 所需 xattr，报 `lsetxattr /boot: operation not supported`。必须用节点本地盘，且**每个作业用独立 `--root`**，否则同节点上一个作业残留的 podman pause/storage 状态会让 `podman load/pull` 直接失败。
 - **节点磁盘水位不稳**：实测同一分区不同节点根盘可用空间从 0 GB 到 278 GB 不等。本件镜像解压后约 32 GB，提交前需 `df` 检查，不足 45 GB 主动 `exit 42` 重投。
 - **冷启动 280–360 s**：TP=4 下含 91.5 GB 权重加载与 Triton kernel JIT。`LOAD_TIMEOUT` 已调为 1800 s。

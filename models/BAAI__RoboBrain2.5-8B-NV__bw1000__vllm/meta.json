@@ -6,7 +6,7 @@
   "cards_used": 1,
   "tp": 1,
   "framework": "vllm",
-  "framework_version": "0.20.0（vllm0.20-qwen_asr1.7_bw 镜像）",
+  "framework_version": "0.21.0（vllm0.21.0-ubuntu22.04-dtk2604-py3.10 镜像）",
   "precision": "bf16",
   "status": "bench",
   "bench": "yes",

@@ -64,7 +64,7 @@ def main():
     lines += ['',
               '| 组合 | 结果 | 原因 |',
               '| --- | --- | --- |',
-              '| Kimi-Linear × BW1000 × vLLM | ❌ 框架不支持 | vLLM 0.20 内置模型无 `kimi_linear`（只有 kimi_k25 / kimi_vl / kimi_audio） | gotchas #2 旁注 |',
+              '| ~~Kimi-Linear × BW1000 × vLLM~~ | ✅ **已推翻** | 该组合已跑通 6 档基准（见 `models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__vllm`）。早期「框架不支持」是因为 vLLM 0.20 的 ModelRegistry 不含 `kimi_linear`，但模型仓库自带 `configuration_kimi.py`，加 `--trust-remote-code` 后可加载 |',
               '| Kimi-Linear × BW1000 × SGLang × CUDA Graph | 🟡 未完成 | TP=4 报 `HIP error: invalid device ordinal` | gotchas #14 |',
               '| MiMo × K100-AI × vLLM | 🟡 仅 smoke | Notebook 内跑通，6 档基准未跑 | 见 README 附注 |',
               '| MiMo × K100-AI × SGLang | ❌ 镜像缺陷 | `jupyter-sglang` 镜像 aiter 缺 `ops.triton.gemm` | gotchas #2 |',
