@@ -1418,9 +1418,12 @@ Triton 没找到工具链就放弃了 JIT，回落到一条不编译的路径，
 → 所以**当年那批 6 档数据是在「JIT 编译失败」的降级状态下产出的**。
 复现它要么恢复同样的降级，要么让 Triton 正确指向 DTK 的编译器（`hipcc`）。
 
-**未决**：归档镜像实测 manifest digest `sha256:9d16c7f3…`
-与 `image.lock` 记录的 `sha256:db981c46…` 不一致。但 podman `load` 后计算的 digest
-与 registry 的 digest 算法可能不同，**尚不能断定镜像被替换**，需进一步核对。
+**已核实：镜像未被替换**（2026-11-15 复核，推翻了本条早期的"未决"表述）。
+归档 tar 的 config blob sha256 = `363c665d…`，恰好等于 Harbor manifest 中 `tag=1.1.1`
+所引用的 config digest；Harbor 首层 gzip blob 流式解压后与归档首层逐字节相同。
+`9d16c7f3…` 是 **podman 本地 image-config digest**，与 registry 的 manifest digest
+本来就不相等——这一点 `docs/image-archive.md:73-84` 早有记录，本条早期误当成异常。
+→ 归档镜像 == registry 镜像 == `image.lock` 记录的那个镜像。**镜像可复现性没有问题。**
 
 **影响**：这两个条目当前**无法产出任何新数据**，包括本想做的 chunked-prefill 扫描。
 历史数据与产物仍然有效（它们是当年在可用状态下产出的）。
