@@ -1216,3 +1216,39 @@ R2–R4 极差仅 **1.2%**，这才是可引用的稳态区间（283.53–286.84
 
 **影响**：`docs/entry-spec.md` §6 红线 1 已补注这条政策；各条目 §6/MISSING 已改为
 「待取得」而非「等下发」。`verify.py` 的读取路径不变，取到官方数值按原格式落盘即可跑通。
+
+## 53. 「官方有公开分数」≠「可以拿来当验收基线」——三方口径不同，相减就是伪造
+
+**现象**：官方澄清「T01–T02 用官方公开基线即可，不再单独下发配置文件」后，
+本仓库第一反应是"去查分数填进 `baselines/` 就能跑通"。查证后发现这条路**走不通**。
+
+**三个口径互不相同**：
+
+| | shot | 模型 | 指标 |
+| --- | --- | --- | --- |
+| 我们 `verify.py` | **0-shot** greedy | Instruct（我们部署的这个） | GSM8K / plain MMLU |
+| Kimi 官方 Table 9 | 未标 shot | Instruct | **只有** MMLU-Redux 86.9 / MMLU-Pro 72.7 |
+| Kimi 官方 Table 8 | **8-shot** | **Base** | GSM8K 86.3 |
+| MiMo 官方 | avg@1/avg@3 | Distill | **完全没有 MMLU/GSM8K**，全是 SWE/Terminal/Tool |
+
+**为什么必须停下**：0-shot instruct 的成绩去比 8-shot base 的分数，差出来的每一分
+都可能是 shot 数或模型版本造成的。减出来的"劣化"不是硬件/框架的锅，
+**但它会以"劣化 ≤2pt → 通过"的形式写进 README**——这正是红线 1 要防的
+"看起来通过了验收、实际不可比"。**这比不填数字更糟。**
+
+**判据（以后遇到"用公开基线"的说法，先问三句）**：
+1. 官方这个分数是**哪个 checkpoint**（base / instruct / 某个中间版）？
+2. **几 shot、什么解码**？和我们的评测脚本一致吗？
+3. 官方榜单里有**我们要评的那个指标**吗？（Kimi Instruct 表里根本没有 GSM8K，
+   MiMo 一个 MMLU/GSM8K 都没有——不是"没找到"，是**没发布**。）
+
+**附带发现**：`verify.py` 里"从 `baselines/<模型>.json` 读取子集/题数/max_tokens"这套设计，
+是 2026-11-01 建库时在**假设官方会下发该文件**的前提下写的（commit `f7e1806`），
+**该文件从未存在**。所以"取到数值按原格式落盘即可跑通"这句话本身也不成立——
+`n` 填多少、`subset` 指哪个文件，仍无官方依据。
+
+**数据通道也不通**：本集群 `huggingface.co` / `github.com` 均 `Connection timed out`；
+`modelscope/gsm8k` 仓库只有 `gsm8k.py` 加载脚本，数据要回源到 OpenAI CDN，同样不可达。
+
+→ 结论：§6 保持 `[BLOCKED]`，理由从"等官方发"改为"口径不可比 + 数据不可得"。
+详见 `docs/t01-t02-baseline-investigation.md`。

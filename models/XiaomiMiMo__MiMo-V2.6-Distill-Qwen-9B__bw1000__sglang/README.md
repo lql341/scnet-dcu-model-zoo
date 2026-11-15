@@ -298,9 +298,17 @@ finish_reason: stop    usage: {prompt_tokens: 41, completion_tokens: 81}
 
 原因：`verify.py` 按官方基线里的 `子集路径 / 题数 / max_tokens / 思考开关 / 官方 GPU 基线分数` 执行评测，这些数值属于官方口径，赛题规则明确「不允许修改」；反作弊条款将「伪造日志」列为取消资格。因此未取得官方基线数值前，本仓库不产出任何精度分数。
 
-**2026-11-15 官方澄清**：T01–T02 的验收标准**直接采用官方公开基线，不再单独下发** `baselines/<模型>.json`。
-所以本节不再是"等材料"状态，而是"待从官方文档取到基线数值"——
-`verify.py` 的读取路径（`baselines/<MODEL_ID 中 / 换成 __>.json`）不变，取到后按原格式落盘即可跑通，无需改代码。
+**2026-11-15 复核结论（官方澄清已核实）**：T01–T02 验收确实改用官方公开基线、不再下发配置文件。
+但查证后发现**不能直接填进 `baselines/`**：
+
+- 官方公开分数是 **8-shot / 5-shot、base 或 EM 口径**，而 `verify.py` 是 **0-shot greedy**；
+  两者相减得出的"劣化"没有意义，+2pt 容差也就失去意义；
+- MiMo 官方披露的指标里**完全没有 MMLU / GSM8K**；Kimi 的 GSM8K 86.3 是 **base 模型 8-shot**，
+  Instruct 表只有 MMLU-Redux 86.9 / MMLU-Pro 72.7，且未标 shot 数；
+- GSM8K / MMLU 数据集在本集群不可得（HF/GitHub 超时，modelscope 镜像无数据文件）。
+
+因此在口径与数据两项都解决前，本节保持 `[BLOCKED]`。
+完整调查见 `docs/t01-t02-baseline-investigation.md`。
 
 `verify.py` 的判分逻辑本身已就绪并通过自检：
 
@@ -308,20 +316,20 @@ finish_reason: stop    usage: {prompt_tokens: 41, completion_tokens: 81}
 python verify.py --selfcheck     # → selfcheck OK
 ```
 
-评测配置（**待官方下发后按 `baselines/<模型>.json` 原样填入**）：
+评测配置（**当前无官方出处**——`verify.py` 这组配置是建库时假设「官方会下发配置文件」写的，该文件从未存在；见 `docs/t01-t02-baseline-investigation.md`）：
 
 | 数据集 | 子集题数 | max_tokens | 解码 | 思考开关 | 判分方式 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| GSM8K | — | — | greedy（temperature=0） | — | 取 `\boxed{}` 或末尾数字，与答案数值相等 | **[BLOCKED]** 官方未下发 `baselines/MiMo-V2.6-Distill-Qwen-9B.json` |
+| GSM8K | — | — | greedy（temperature=0） | — | 取 `\boxed{}` 或末尾数字，与答案数值相等 | **[BLOCKED]** 官方公开指标无 MMLU/GSM8K，且口径不可比 |
 | MMLU | — | — | greedy（temperature=0） | — | 取首个 A–D 选项字母 | **[BLOCKED]** 同上 |
 
-> 这里刻意留空而不是填估算值：**子集、max_tokens、思考开关都由官方 `baselines/<模型>.json` 写死**，
-> 自行猜测出来的分数与官方不可比，按本仓库红线（`docs/entry-spec.md` §6）不得入库。
+> 这里刻意留空而不是填估算值：**评测口径（子集、题数、max_tokens、shot 数）从未由官方定义**，
+> 自行编一套跑出来的分数与任何官方数字都不可比，按本仓库红线（`docs/entry-spec.md` §6）不得入库。
 
 结果（`verify_result.json` 原文）：
 
 ```json
-【待官方基线文件下发后填入】
+【无官方口径，不填】
 ```
 
 | 数据集 | 官方 GPU 基线 | 本次提交 | 劣化 | 容差 | 判定 |
@@ -329,7 +337,8 @@ python verify.py --selfcheck     # → selfcheck OK
 | GSM8K | 【】 | 【】 | 【】 pt | ≤2 pt | 【】 |
 | MMLU | 【】 | 【】 | 【】 pt | ≤2 pt | 【】 |
 
-结论：**待官方下发 `baselines/` 与 `data/` 后补齐**。
+结论：**不补齐**。官方公开分数与本节口径不可比，且数据集本集群不可得；
+详见 `docs/t01-t02-baseline-investigation.md`。空白是如实记录，不是待办。
 
 > 备注：本模型不在赛题 §五 明确列出的「无官方精度数据、可不做精度」豁免名单内（豁免的是 `Recon2Reason-Reasoning-4B`、`RoboBrain2.5-8B-NV`），因此必须按官方基线验收。
 

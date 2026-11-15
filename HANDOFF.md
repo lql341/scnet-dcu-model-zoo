@@ -41,7 +41,7 @@
 | 1 | **投入 kernel 主线** | 见 §3（P0），这是唯一能同时解锁"vLLM 长上下文"和"量化"的路径 |
 | 2 | 量化暂不做 | 见 `docs/quantization-branch.md`：AWQ 慢 5×、fp8 无 kernel，先补 kernel 才有意义 |
 | 3 | T01/T02 官方材料不管了 | 精度自评保持 `[BLOCKED]`，不填估算值；Recon2Reason/RoboBrain 维持"链路 + 基准"口径 |
-| 3b | **官方澄清（2026-11-15 用户转述）**：T01–T02 的验收标准**以官方基线为准，不再单独下发** | 阻塞性质从"等材料"变为"自行取用公开基线"。仍需确认官方基线从哪取（赛题原文 / 平台附件），取得后 `verify.py` 可直接跑通，无需再等 `baselines/<模型>.json` 下发。见 §6 |
+| 3b | **官方澄清（2026-11-15）**：T01–T02 验收以官方公开基线为准，不再单独下发配置文件 | **已查证，结论是解不了**：① 官方公开分数是 8-shot/5-shot、base/EM 口径，`verify.py` 是 0-shot greedy，**相减无意义**；② MiMo 官方指标里**没有** MMLU/GSM8K，Kimi 的 GSM8K 86.3 是 **base 8-shot**；③ GSM8K/MMLU 数据集本集群**取不到**（HF/GitHub 超时，modelscope 镜像无数据文件）。→ §6 保持 `[BLOCKED]`，理由改为"口径不可比+数据不可得"。详见 `docs/t01-t02-baseline-investigation.md` |
 | 4 | Harbor 不手动操作，镜像就放 `luql` 家目录 | 已有 tar.gz + `SHA256SUMS` 兜底；风险（平台清账号）记在 §6 |
 | 5 | **目的不是比赛**，重点是文档与交付物 | 不再做"提交格式"对齐；把每条经验写进 `docs/gotchas.md` 与条目 README |
 | 6 | **能做的都做**：Kimi / Qwen-VL / Trident 等阻塞逐个解除 | 见 §4（P1）与 §5（P2） |
@@ -309,7 +309,7 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | Trident × 两引擎 | blocked，已自建 serving 绕过 | §4-1/§4-2 的注册插件 |
 | Kimi 16K/c64 | 崩溃（GPU VMFault），有原始日志 | §3.2 A |
 | fp8 / 量化 | 无 kernel | §3.2 B |
-| T01/T02 精度 | **官方已澄清**：验收以官方基线为准，不再单独下发 | 原先的"等下发"前提不成立。现在缺的是**基线文件在哪取**，不是官方不发。取到即可跑 `verify.py`（§1-3b） |
+| T01/T02 精度 | **已查证：官方口径与我们的不可比，数据也取不到** | 不是"等材料"，也不是"取来就能跑"：官方分数是 8-shot/5-shot，我们是 0-shot；MiMo 根本没披露 MMLU/GSM8K；数据集本集群不可得。**建议不再投入**（§1-3b，`docs/t01-t02-baseline-investigation.md`） |
 | Harbor 推送 | 平台无自助凭据 | 已决定不推，镜像留在 `luql` 家目录（tar.gz + sha256 兜底） |
 | 平台清账号风险 | 3 个镜像源出第三方账号（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`），上游可随时删 | tar.gz 归档是唯一保障；不要删 `archive/images/` |
 | 多卡配额语义 | 每卡需 ≥8 CPU，否则 GRES 静默降级；`--mem ≤ -c × 3888M` | 已固化进各条目 `submit*.slurm` 注释 |

@@ -102,10 +102,11 @@ models/<org>__<model>__<card>__<framework>[__<precision>]/
 
 1. **不得编造任何数字**。精度分数必须有**官方基线**支撑；取不到就写 `[BLOCKED]`
    - **2026-11-15 官方澄清**：T01–T02 的验收标准**直接采用官方公开基线，不再单独下发**
-     `baselines/<模型>.json`。因此本仓库不再以"等官方下发"为由挂起该档，
-     但也不得自行编造基线分——须从官方文档/平台附件取得原始数值并记录出处（`docs/` 注明来源与获取日期）。
-     `verify.py` 的读取路径仍是 `baselines/<MODEL_ID>.json`，取到官方数据后按原格式落盘即可，
-     无需改代码。
+     `baselines/<模型>.json`。本仓库不再以"等官方下发"为由挂起该档。
+   - **但「取到公开分数就能填」是错的**（同日查证）：官方公开分数是 8-shot/5-shot、base/EM 口径，
+     而本仓库 `verify.py` 是 0-shot greedy；两者相减得的"劣化"不可比。且 MiMo 官方从未披露
+     MMLU/GSM8K，Kimi 的 GSM8K 86.3 是 base 模型 8-shot。→ **口径不一致时不得相减求劣化**。
+     完整调查：`docs/t01-t02-baseline-investigation.md`。
 2. **作废数据必须留痕**，放在 `bench/<vN>-discarded/` 并写明作废判据（例：`bench/failed-ctx17408/`）
 3. **压测结果必须过有效性校验**（`TTFT != 0` 且吞吐不超物理上限），否则不得写入 README §7
 4. **性能数字必须与 `bench/summary.md` 逐字一致**，`lint` 会比对
