@@ -65,7 +65,8 @@ source ./env.sh
 exec python3 -m vllm.entrypoints.openai.api_server \
   --model \$MODEL_PATH --served-model-name \$SERVED_NAME \
   --host 127.0.0.1 --port \$PORT --trust-remote-code --dtype bfloat16 \
-  --max-model-len \$MAX_LEN --gpu-memory-utilization \$MEM_FRAC --enforce-eager
+  --max-model-len \$MAX_LEN --gpu-memory-utilization \$MEM_FRAC \
+  --max-num-seqs \$MAX_NUM_SEQS
 " > /dev/null 2>&1
 
 OK=0

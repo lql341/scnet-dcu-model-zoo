@@ -1252,3 +1252,33 @@ R2–R4 极差仅 **1.2%**，这才是可引用的稳态区间（283.53–286.84
 
 → 结论：§6 保持 `[BLOCKED]`，理由从"等官方发"改为"口径不可比 + 数据不可得"。
 详见 `docs/t01-t02-baseline-investigation.md`。
+
+## 54. 启动参数有两份来源时，`submit.slurm` 里的内联命令会盖掉 `env.sh` 声明的配置
+
+**现象**（2026-11-15 排查发现）：`XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm` 条目里，
+
+- `env.sh` 写着 `EXTRA_ARGS="...--max-num-seqs 128"`，注释称「CUDA Graph 保持开启（比 `--enforce-eager` 快 3%~32%）」；
+- `run.sh` 用的是 `${CMD[@]} $EXTRA_ARGS` —— 正确，无 `--enforce-eager`；
+- **`container/submit.slurm` 却内联了一整条 `vllm ... --enforce-eager` 命令，且根本不调用 `run.sh`。**
+
+也就是说：**README、`env.sh`、`run.sh`、bench 数据全都是"graph 开启"口径，
+唯独"一键复现"入口 `submit.slurm` 实际跑的是关闭 graph 的首版配置。**
+复现者按 README 说的 `sbatch container/submit.slurm` 跑，会拿到比文档低 3%~32% 的数字，
+而且会以为是自己环境的问题。
+
+**判据**：`submit.slurm` 里只要出现 `exec python3 -m ...api_server` 或 `sglang.launch_server`
+这类**内联启动命令**，它就和 `run.sh` 构成了两份真值来源，必然漂移。二选一：
+
+1. **推荐**：`submit.slurm` 只负责起容器，服务由 `bash run.sh` 拉起（Kimi SGLang 条目就是这么做的，没有这个坑）；
+2. 保留内联命令，但**必须与 `env.sh` 的 `EXTRA_ARGS` 手工保持一致**，且改一处就要改另一处。
+
+**自查命令**（一眼看出有没有漂移）：
+
+```bash
+grep -lE "exec python3 -m (vllm\.entrypoints|sglang\.launch_server)" models/*/container/submit.slurm
+# 命中的条目逐个核对：内联命令的参数是否等于 env.sh 的 CMD+EXTRA_ARGS
+```
+
+**同类隐患**：`run.sh` 的注释和 CMD 也可能是从别的条目复制来的残留——
+本仓库多个 `__vllm` 条目的 `run.sh` 头部注释写的是"拉起 SGLang"、CMD 是 `sglang.launch_server`，
+真正生效的却是 `submit.slurm` 的内联 vLLM 命令。**注释不可信，只信实际执行路径。**

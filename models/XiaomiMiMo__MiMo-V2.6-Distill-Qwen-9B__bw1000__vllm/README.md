@@ -199,7 +199,12 @@ export EXTRA_ARGS="--trust-remote-code --dtype bfloat16 --max-num-seqs $MAX_NUM_
 bash run.sh
 ```
 
-`run.sh` 展开后实际执行的完整命令（取自 `logs/server.log`）：
+`run.sh` 展开后实际执行的完整命令：
+
+> ⚠️ **`logs/server.log` 是 10-30 首版（W1）的日志**，里面是 `enforce_eager=True` 的配置，
+> 与本节最终采用的 W3 不同。`bench/` 下的 6 档数据是 W3 跑出来的（与 §7.1 的 W3 数值吻合）。
+> 归档的日志保留首版原样，未替换——见 `docs/gotchas.md` #54。
+
 
 ```bash
 python3 -m vllm.entrypoints.openai.api_server \
