@@ -100,10 +100,11 @@ python3 -m sglang.launch_server \
 **未完成，但本模型可能不需要。**
 
 赛题 §五 原文明确：部分模型没有官方精度数据「**可以不做**」，列举的正是
-`RoboBrain2.5-8B-NV` 与 `RoboBrain2.5-8B-NV`。
+`Recon2Reason-Reasoning-4B` 与 `RoboBrain2.5-8B-NV`。
 
-但 T02 的 OCRBench / MMMU 子集评测器与 `data/` 均随分题材料下发，目前未获取，
-因此 §6 不做任何数值声明。见 `MISSING.md`。
+**2026-11-15 官方澄清**：T01–T02 的验收标准**直接采用官方公开基线，不再单独下发**评测器与
+`baselines/<模型>.json`。本模型本身在豁免名单内，因此 §6 不做任何数值声明，
+以已完成的**多模态链路 smoke**（单图 / 多图，见 `logs/smoke.log`）作为证据。
 
 ## 7. 性能参考
 

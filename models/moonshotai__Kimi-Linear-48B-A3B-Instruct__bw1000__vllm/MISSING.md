@@ -1,9 +1,18 @@
 # 材料状态
 
-## ⬜ 官方未下发（T01）
+## 🔄 官方已澄清（2026-11-15）
 
-- `baselines/Kimi-Linear-48B-A3B-Instruct__*.json`（官方子集、max_tokens、思考开关、GPU 参考分）
-  → 精度一栏保持 `[BLOCKED]`，不填估算值
+T01–T02 的验收标准**直接采用官方公开基线，不再单独下发** `baselines/<模型>.json` 与评测器。
+因此本文件的阻塞性质从「等官方发」变成「从官方文档取用公开基线」：
+
+- `verify.py` 读取路径不变（`baselines/<MODEL_ID 中 / 换成 __>.json`），
+  取到官方基线数值后按原格式落盘即可跑通，**无需改代码**；
+- 在取到之前，精度一栏仍保持 `[BLOCKED]`，**不填估算值**（红线 §6-1）。
+
+## ⬜ 待取得（T01）
+
+- 官方公开基线中的子集、max_tokens、思考开关、GPU 参考分
+  → 取得后填入 `baselines/moonshotai__Kimi-Linear-48B-A3B-Instruct.json`
 
 ## ✅ 已有
 
