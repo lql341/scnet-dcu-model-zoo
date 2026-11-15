@@ -1424,3 +1424,49 @@ Triton 没找到工具链就放弃了 JIT，回落到一条不编译的路径，
 
 **影响**：这两个条目当前**无法产出任何新数据**，包括本想做的 chunked-prefill 扫描。
 历史数据与产物仍然有效（它们是当年在可用状态下产出的）。
+
+## 58. Recon/RoboBrain × SGLang 封存结论：环境回归，非硬件极限，不再投卡时
+
+**处置**（2026-11-15 用户决策）：**封存**。这两个条目的 SGLang 侧不再排查。
+
+## 封存前已确证的排除项
+
+| 假设 | 反证 | 证据来源 |
+| --- | --- | --- |
+| 节点故障 | 三个不同节点表现一致（f11r1n15 / f11r2n02 / f11r2n03） | 作业 1126056 / 1126225 |
+| cuda graph 捕获 | `--disable-cuda-graph` **同样崩** | 作业 1126456 探针 |
+| 启动参数 | 与 2026-11-02 成功日志逐行一致：KV tokens 331145、avail mem 9.44/9.30 GB、捕获 bs 列表全同 | `models/BAAI__*/logs/server.log:43-52` |
+| 显存不足 | KV cache 分配成功，剩余 9.44 GB | 同上 |
+| 磁盘 | 该失败（`no space left`）属另一条独立问题，与 VMFault 无关 | 作业 1126552 |
+| Triton 后端选错 | 走的是 **amd** 后端，缓存里有 `.amdgcn`/`.hsaco`，目标架构 **gfx936** 正确 | 作业 1127698 / 1127816 |
+| wave 尺寸不匹配 | `HIPOptions` 从 gfx936 推出 warp_size=64，与运行时一致 | Triton 源码 `backends/amd/compiler_hpy` |
+| 镜像整体损坏 | **Kimi-Linear-48B 用同一镜像当日跑通**（16K/c64 228.40 tok/s，128/128） | 作业 1126055 |
+| Kimi 可作为对照组 | ❌ **不成立**：Kimi 走 `TRITON_MLA` + fla KDA，**从不调用** `decode_attention_fwd_grouped` | `logs/server.log.gz` 有 `MLA optimization is turned on` |
+
+## 最可能的根因（未最终验证）
+
+`tvm-ffi` 的 JIT KV-cache 路径（`store_kvcache`）：
+
+- **11-02**：`_find_rocm_home()` 未识别到 HIP 工具链 → 抛 `Could not find CUDA installation`（日志里逐字存在）→ `can_use_store_cache=False` → **回落** `k_cache[indices] = k` → 正常
+- **现在**：`ROCM_PATH=/opt/dtk` 被新版 tvm-ffi 识别 → JIT 编成 → 走进新路径 → 产出在 gfx936 上越界的 kernel
+
+崩溃点固定在 `Capture cuda graph begin` 之后、捕获第一个 batch（bs=64）时，
+崩掉的 kernel 为 `_fwd_grouped_kernel_stage1`，grid `x:16384, y:8, z:16`。
+
+**注意 x:16384 这个值可疑**：y=8 对应 head_tiles、z=16 对应 `triton_attention_num_kv_splits` 都对得上，
+但 x 是 decode token 数，本配置下应 ≤256；16384 只与 `max_prefill_tokens` 吻合。
+→ 若属实，崩的是 **prefill 尺寸的 batch**，指向 SGLang 版本/形状漂移而非 Triton 码选。此项未验证。
+
+## 为什么不再投入
+
+1. **交付不依赖这条路**：两个条目的 vLLM 兄弟条目已在 2026-11-12 产出完整 6 档数据
+2. **成本失控**：每轮诊断需重新加载 8.5 GB 镜像，而节点根盘水位在 0~278 GB 间波动，多次因 `no space left` 失败
+3. **收益为零**：本想做的 chunked-prefill 扫描预期只有几个百分点，且这两个条目受单卡 KV 上限压制（33 万 tokens vs 64×17K 需 111 万）
+
+## 若将来要重新打开
+
+优先试这两个（agent 分析给出，未验证）：
+- `export TVM_FFI_GPU_BACKEND=cuda`（务必无 `CUDA_HOME`）→ 强制复刻 11-02 的"JIT 失败、回落"状态，成功率估 60-70%
+- `rm -rf ~/.triton/cache` + `TRITON_CACHE_DIR` 指向本地 + `TRITON_ALWAYS_COMPILE=1` → 排除陈旧 hsaco，估 35-45%
+
+历史数据与产物仍然有效（当年在可用状态下产出）。

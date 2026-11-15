@@ -8,9 +8,9 @@
   "framework": "sglang",
   "framework_version": "0.5.10rc0+das.opt2.alpha.dtk2604",
   "precision": "bf16",
-  "status": "bench",
+  "status": "blocked",
   "bench": "yes",
-  "bench_note": "T02 评测器未下发（无精度口径）；6 档吞吐为跨引擎证据，非官方评分",
+  "bench_note": "2026-11-15 封存：SGLang 侧服务可启动但 warmup 时 Triton decode kernel 触发 KERNEL VMFault，无法产出新数据。已排除节点/参数/显存/cuda-graph/架构/镜像整体损坏；根因指向 tvm-ffi JIT KV-cache 路径的环境回归。见 docs/gotchas.md #58。既有 6 档数据（2026-11-02 产出）仍然有效。",
   "cold_start_s": [
     200,
     260
