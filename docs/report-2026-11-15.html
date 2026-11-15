@@ -3,94 +3,96 @@
 <style>
 /* ============================================================
    设计计划
-   主题：国产加速卡（海光 DCU BW1000）上的模型适配与性能实测
-   记号：这是一份工程台账，不是宣传页。骨架用"仪表读数"的语汇——
-        等宽数字、单位后置、状态灯、坐标轴刻度感。
-   色：深石墨底（仪表盘）+ 琥珀色作为"实测值"强调 + 青蓝作为"理论/对照"
-   字：标题 Space Grotesk（几何、工程感），正文 Inter，
-       数据用 JetBrains Mono（表格里的数字必须等宽对齐）
-   布局：单列阅读流 + 少数横向数据条；左侧细刻度线标记章节
+   主题：国产加速卡（海光 DCU BW1000）模型适配的技术报告
+   记号：印刷体学术报告的语汇——宋体感的正文节奏、等宽数据、
+        细规则线、编号章节、脚注式旁注。避免仪表盘式的装饰。
+   色：纸白底、墨黑字、赭石色作唯一强调（章节号与关键值），
+      靛青作对照/理论值。状态色只用于表格内的判定标签。
+   字：正文 Source Serif 4（学术论文的阅读节奏），标题 Inter Tight，
+       数据 JetBrains Mono。
+   布局：单栏正文 72ch，宽表与代码块独立横向滚动；左侧编号栏。
    ============================================================ */
 
 :root {
-  --bg: #f7f6f3;
-  --bg-raised: #ffffff;
-  --bg-sunken: #eeece7;
-  --fg: #1b1d1c;
-  --fg-muted: #5c615e;
-  --fg-faint: #8a908c;
-  --rule: #d8d5cd;
-  --rule-strong: #b9b5aa;
-  --accent: #a8641b;
-  --accent-soft: #f2e4d2;
-  --cool: #1f6b6b;
-  --cool-soft: #d9e8e6;
-  --ok: #2f6b3a;
-  --ok-soft: #dcebdd;
-  --warn: #8a5a00;
-  --warn-soft: #f5e8cd;
-  --crit: #9c2f26;
-  --crit-soft: #f5dcd8;
+  --paper: #fbfaf7;
+  --paper-raised: #ffffff;
+  --paper-sunken: #f2f0ea;
+  --ink: #1a1a18;
+  --ink-soft: #4a4a45;
+  --ink-faint: #7d7d75;
+  --rule: #ddd9cf;
+  --rule-strong: #b5b0a2;
+  --accent: #8a5a1b;
+  --accent-soft: #f0e8da;
+  --cool: #2a5068;
+  --cool-soft: #dde6ec;
+  --ok: #2d5a33;
+  --ok-soft: #e0eae0;
+  --warn: #7a5406;
+  --warn-soft: #f3ead6;
+  --crit: #8c2f26;
+  --crit-soft: #f2ded9;
 
-  --font-display: "Space Grotesk", "Helvetica Neue", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Source Serif 4", "Songti SC", Georgia, "Times New Roman", serif;
+  --font-head: "Inter Tight", "PingFang SC", "Helvetica Neue", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --step--1: 0.8125rem;
-  --step-0: 0.9375rem;
-  --step-1: 1.125rem;
-  --step-2: 1.5rem;
-  --step-3: 2rem;
-  --step-4: 2.75rem;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lead: 1.0625rem;
+  --fs-h3: 1.25rem;
+  --fs-h2: 1.6rem;
+  --fs-h1: 2.4rem;
 
-  --measure: 68ch;
-  --gutter: max(16px, env(safe-area-inset-left, 0px));
-  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --measure: 72ch;
+  --gutter: max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(20px, env(safe-area-inset-right, 0px));
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #16181a;
-    --bg-raised: #1e2124;
-    --bg-sunken: #121415;
-    --fg: #e8e6e1;
-    --fg-muted: #a3a8a5;
-    --fg-faint: #757b78;
-    --rule: #2e3235;
-    --rule-strong: #444a4d;
-    --accent: #e0a15a;
-    --accent-soft: #33281c;
-    --cool: #6fbdb8;
-    --cool-soft: #1c3030;
-    --ok: #7dbb84;
-    --ok-soft: #1e3022;
-    --warn: #d9a253;
-    --warn-soft: #332b18;
-    --crit: #e08b80;
-    --crit-soft: #35201d;
+    --paper: #17171a;
+    --paper-raised: #1e1e21;
+    --paper-sunken: #121214;
+    --ink: #e6e4dd;
+    --ink-soft: #b0aea6;
+    --ink-faint: #7c7a73;
+    --rule: #2c2c30;
+    --rule-strong: #46464b;
+    --accent: #d3a061;
+    --accent-soft: #2e2619;
+    --cool: #86b3c9;
+    --cool-soft: #1b2932;
+    --ok: #8bbd92;
+    --ok-soft: #1c2a1f;
+    --warn: #d0aa63;
+    --warn-soft: #2e2717;
+    --crit: #dc9287;
+    --crit-soft: #2f1e1b;
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #16181a;
-  --bg-raised: #1e2124;
-  --bg-sunken: #121415;
-  --fg: #e8e6e1;
-  --fg-muted: #a3a8a5;
-  --fg-faint: #757b78;
-  --rule: #2e3235;
-  --rule-strong: #444a4d;
-  --accent: #e0a15a;
-  --accent-soft: #33281c;
-  --cool: #6fbdb8;
-  --cool-soft: #1c3030;
-  --ok: #7dbb84;
-  --ok-soft: #1e3022;
-  --warn: #d9a253;
-  --warn-soft: #332b18;
-  --crit: #e08b80;
-  --crit-soft: #35201d;
+  --paper: #17171a;
+  --paper-raised: #1e1e21;
+  --paper-sunken: #121214;
+  --ink: #e6e4dd;
+  --ink-soft: #b0aea6;
+  --ink-faint: #7c7a73;
+  --rule: #2c2c30;
+  --rule-strong: #46464b;
+  --accent: #d3a061;
+  --accent-soft: #2e2619;
+  --cool: #86b3c9;
+  --cool-soft: #1b2932;
+  --ok: #8bbd92;
+  --ok-soft: #1c2a1f;
+  --warn: #d0aa63;
+  --warn-soft: #2e2717;
+  --crit: #dc9287;
+  --crit-soft: #2f1e1b;
   color-scheme: dark;
 }
 
@@ -98,194 +100,227 @@
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-body);
-  font-size: var(--step-0);
-  line-height: 1.65;
+  font-size: var(--fs-base);
+  line-height: 1.72;
   padding-left: var(--gutter);
   padding-right: var(--gutter-r);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .wrap {
-  max-width: 1080px;
+  max-width: 1010px;
   margin-inline: auto;
-  padding-block: 3rem 6rem;
+  padding-block: 3.5rem 7rem;
 }
 
-/* ---------- 页眉 ---------- */
-header.masthead {
-  border-bottom: 2px solid var(--fg);
-  padding-bottom: 1.5rem;
+/* ---------- 报头 ---------- */
+.masthead {
+  border-top: 3px solid var(--ink);
+  padding-top: 1.25rem;
   margin-bottom: 3rem;
 }
 
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  letter-spacing: 0.14em;
+.doc-type {
+  font-family: var(--font-head);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 0.75rem;
+  color: var(--ink-faint);
+  margin-bottom: 1.25rem;
 }
 
 h1 {
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 5vw, var(--step-4));
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin: 0 0 1rem;
-  text-wrap: balance;
+  font-family: var(--font-head);
+  font-size: clamp(1.7rem, 4.4vw, var(--fs-h1));
+  line-height: 1.18;
+  letter-spacing: -0.017em;
   font-weight: 700;
+  margin: 0 0 0.9rem;
+  text-wrap: balance;
 }
 
-.standfirst {
-  font-size: var(--step-1);
-  color: var(--fg-muted);
+.subtitle {
+  font-size: var(--fs-lead);
+  color: var(--ink-soft);
   max-width: var(--measure);
-  margin: 0;
+  margin: 0 0 1.75rem;
+  font-style: italic;
 }
 
-.meta-row {
+.byline {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
-  margin-top: 1.5rem;
+  gap: 0.4rem 2rem;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
-  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  border-top: 1px solid var(--rule);
+  padding-top: 0.9rem;
 }
+.byline b { color: var(--ink-soft); font-weight: 500; }
 
-.meta-row b { color: var(--fg-muted); font-weight: 500; }
+/* ---------- 摘要 ---------- */
+.abstract {
+  background: var(--paper-sunken);
+  border-left: 3px solid var(--accent);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 3.5rem;
+}
+.abstract h2 {
+  font-family: var(--font-head);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+}
+.abstract p {
+  margin: 0 0 0.75rem;
+  font-size: var(--fs-sm);
+  line-height: 1.75;
+  max-width: none;
+}
+.abstract p:last-child { margin-bottom: 0; }
 
 /* ---------- 章节 ---------- */
 section { margin-block: 3.5rem; }
 
 h2 {
-  font-family: var(--font-display);
-  font-size: var(--step-2);
-  letter-spacing: -0.015em;
-  margin: 0 0 0.35rem;
-  padding-left: 0.9rem;
-  border-left: 4px solid var(--accent);
-  text-wrap: balance;
+  font-family: var(--font-head);
+  font-size: var(--fs-h2);
   font-weight: 700;
+  letter-spacing: -0.012em;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule-strong);
+  text-wrap: balance;
 }
 
 h2 .num {
   font-family: var(--font-mono);
-  font-size: 0.62em;
+  font-size: 0.72em;
   color: var(--accent);
-  margin-right: 0.6rem;
+  margin-right: 0.7rem;
   font-weight: 500;
-  vertical-align: 0.12em;
-}
-
-.lede {
-  color: var(--fg-muted);
-  max-width: var(--measure);
-  margin: 0 0 1.75rem 0.9rem;
 }
 
 h3 {
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-  margin: 2.25rem 0 0.75rem;
-  letter-spacing: -0.01em;
+  font-family: var(--font-head);
+  font-size: var(--fs-h3);
   font-weight: 600;
+  letter-spacing: -0.006em;
+  margin: 2.4rem 0 0.6rem;
 }
 
-p { max-width: var(--measure); }
+h4 {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.4rem;
+}
 
-/* ---------- 关键数字 ---------- */
-.tiles {
+p { max-width: var(--measure); margin: 0 0 1rem; }
+
+/* ---------- 关键指标 ---------- */
+.findings {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
-  margin-block: 1.75rem;
+  margin: 1.75rem 0;
 }
 
-.tile {
-  background: var(--bg-raised);
-  padding: 1.15rem 1.25rem;
+.finding {
+  background: var(--paper-raised);
+  padding: 1.1rem 1.2rem;
 }
-
-.tile .k {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+.finding .k {
+  display: block;
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--fg-faint);
-  display: block;
-  margin-bottom: 0.4rem;
+  color: var(--ink-faint);
+  margin-bottom: 0.45rem;
 }
-
-.tile .v {
-  font-family: var(--font-mono);
-  font-size: 1.6rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
+.finding .v {
   display: block;
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
   line-height: 1.1;
 }
-
-.tile .v .u {
-  font-size: 0.5em;
+.finding .v .u {
+  font-size: 0.48em;
   font-weight: 400;
-  color: var(--fg-muted);
-  margin-left: 0.25em;
+  color: var(--ink-faint);
+  margin-left: 0.2em;
 }
-
-.tile .n {
-  font-size: 0.78rem;
-  color: var(--fg-faint);
+.finding .n {
   display: block;
-  margin-top: 0.35rem;
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  margin-top: 0.4rem;
+  line-height: 1.45;
 }
-
-.tile.good .v { color: var(--ok); }
-.tile.hot  .v { color: var(--accent); }
-.tile.cool .v { color: var(--cool); }
+.finding.pos .v { color: var(--ok); }
+.finding.neg .v { color: var(--accent); }
+.finding.neu .v { color: var(--cool); }
 
 /* ---------- 表格 ---------- */
 .tablewrap {
   overflow-x: auto;
-  margin-block: 1.5rem;
-  border: 1px solid var(--rule);
-  background: var(--bg-raised);
+  margin: 1.5rem 0;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--step--1);
-  min-width: 560px;
+  font-size: var(--fs-sm);
+  min-width: 540px;
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  font-family: var(--font-head);
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  padding: 0 0 0.5rem;
+  letter-spacing: 0.02em;
 }
 
 thead th {
   text-align: left;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.09em;
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--fg-faint);
-  font-weight: 500;
-  padding: 0.7rem 0.9rem;
+  color: var(--ink-faint);
+  font-weight: 600;
+  padding: 0.55rem 0.8rem;
   border-bottom: 1px solid var(--rule-strong);
-  background: var(--bg-sunken);
   white-space: nowrap;
+  vertical-align: bottom;
 }
 
 tbody td {
-  padding: 0.62rem 0.9rem;
+  padding: 0.55rem 0.8rem;
   border-bottom: 1px solid var(--rule);
   vertical-align: top;
 }
-
 tbody tr:last-child td { border-bottom: none; }
 
 td.num, th.num {
@@ -295,228 +330,180 @@ td.num, th.num {
   white-space: nowrap;
 }
 
-td.mono, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+td.mono, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 
-tr.highlight td { background: var(--accent-soft); }
+tr.emphasis td { background: var(--accent-soft); }
 
-/* ---------- 状态灯 ---------- */
-.pill {
+/* ---------- 判定标签 ---------- */
+.tag {
   display: inline-block;
-  font-family: var(--font-mono);
+  font-family: var(--font-head);
   font-size: 0.68rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 0.16em 0.55em;
-  border-radius: 2px;
+  letter-spacing: 0.05em;
+  padding: 0.1em 0.45em;
+  border: 1px solid currentColor;
   white-space: nowrap;
-  font-weight: 500;
 }
-.pill.ok   { background: var(--ok-soft);   color: var(--ok); }
-.pill.warn { background: var(--warn-soft); color: var(--warn); }
-.pill.crit { background: var(--crit-soft); color: var(--crit); }
-.pill.cool { background: var(--cool-soft); color: var(--cool); }
-.pill.flat { background: var(--bg-sunken); color: var(--fg-muted); }
+.tag.ok { color: var(--ok); background: var(--ok-soft); }
+.tag.warn { color: var(--warn); background: var(--warn-soft); }
+.tag.crit { color: var(--crit); background: var(--crit-soft); }
+.tag.neu { color: var(--ink-faint); background: var(--paper-sunken); }
 
 /* ---------- 代码 ---------- */
 code {
   font-family: var(--font-mono);
-  font-size: 0.88em;
-  background: var(--bg-sunken);
-  padding: 0.1em 0.36em;
-  border-radius: 2px;
-  color: var(--fg);
+  font-size: 0.87em;
+  background: var(--paper-sunken);
+  padding: 0.08em 0.32em;
+  border: 1px solid var(--rule);
+  color: var(--ink);
   word-break: break-word;
 }
 
 pre {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.6;
-  background: var(--bg-sunken);
+  font-size: 0.76rem;
+  line-height: 1.65;
+  background: var(--paper-sunken);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--rule-strong);
-  padding: 1rem 1.1rem;
+  padding: 0.95rem 1.05rem;
   overflow-x: auto;
-  margin-block: 1.25rem;
+  margin: 1.25rem 0;
   tab-size: 2;
 }
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
 
-pre code { background: none; padding: 0; font-size: inherit; }
+pre.log { border-left: 3px solid var(--rule-strong); }
+pre.log.err { border-left-color: var(--crit); }
+pre.log.ok { border-left-color: var(--ok); }
 
-pre.cmd { border-left-color: var(--accent); }
-pre.fail { border-left-color: var(--crit); }
-pre.pass { border-left-color: var(--ok); }
-
-/* ---------- 提示框 ---------- */
+/* ---------- 旁注 ---------- */
 .note {
   border: 1px solid var(--rule);
   border-left: 3px solid var(--cool);
-  background: var(--bg-raised);
+  background: var(--paper-raised);
   padding: 0.9rem 1.1rem;
-  margin-block: 1.5rem;
-  font-size: var(--step--1);
+  margin: 1.5rem 0;
+  font-size: var(--fs-sm);
   max-width: var(--measure);
 }
-.note.warn { border-left-color: var(--warn); background: var(--warn-soft); }
-.note.crit { border-left-color: var(--crit); background: var(--crit-soft); }
-.note .lab {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
+.note.caution { border-left-color: var(--warn); }
+.note.negative { border-left-color: var(--crit); }
+.note .head {
+  display: block;
+  font-family: var(--font-head);
+  font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-muted);
-  display: block;
-  margin-bottom: 0.3rem;
+  color: var(--ink-faint);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
 }
-.note p { margin: 0.3rem 0 0; max-width: none; }
+.note p { max-width: none; margin: 0.4rem 0 0; font-size: inherit; }
 .note p:first-of-type { margin-top: 0; }
 
-/* ---------- 条形对比 ---------- */
-.bars { margin-block: 1.5rem; display: grid; gap: 1.6rem; }
+/* ---------- 图（条形） ---------- */
+.figure { margin: 1.75rem 0; }
+.figure > figcaption {
+  font-family: var(--font-head);
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
 
-.bargroup .label {
-  font-family: var(--font-mono);
+.bars { display: grid; gap: 1.5rem; }
+
+.bargroup .glabel {
+  font-family: var(--font-head);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
-  color: var(--fg-muted);
   text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.45rem;
 }
 
 .barrow {
   display: grid;
-  grid-template-columns: 88px 1fr 74px;
+  grid-template-columns: 84px 1fr 70px;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.3rem;
+  gap: 0.7rem;
+  margin-bottom: 0.28rem;
 }
-
 .barrow .eng {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--fg-faint);
+  color: var(--ink-faint);
   text-align: right;
 }
-
-.bartrack {
-  height: 16px;
-  background: var(--bg-sunken);
-  position: relative;
-  overflow: hidden;
-}
-
-.barfill {
-  height: 100%;
-  display: block;
-  transition: none;
-}
+.bartrack { height: 13px; background: var(--paper-sunken); border: 1px solid var(--rule); }
+.barfill { display: block; height: 100%; }
 .barfill.v { background: var(--accent); }
 .barfill.s { background: var(--cool); }
-
 .barrow .val {
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-variant-numeric: tabular-nums;
-  color: var(--fg-muted);
+  color: var(--ink-soft);
 }
 
 .axis {
   display: grid;
-  grid-template-columns: 88px 1fr 74px;
-  gap: 0.75rem;
+  grid-template-columns: 84px 1fr 70px;
+  gap: 0.7rem;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--fg-faint);
-  margin-top: 0.35rem;
+  font-size: 0.64rem;
+  color: var(--ink-faint);
+  margin-top: 0.3rem;
 }
 .axis .ticks {
   display: flex;
   justify-content: space-between;
   border-top: 1px solid var(--rule);
-  padding-top: 0.3rem;
+  padding-top: 0.25rem;
 }
 
-/* ---------- 时间线 ---------- */
-.timeline { list-style: none; padding: 0; margin: 1.5rem 0; }
+/* ---------- 编号列表 ---------- */
+ol.refs { padding-left: 1.5rem; max-width: var(--measure); }
+ol.refs li { margin-bottom: 0.6rem; }
 
-.timeline li {
-  position: relative;
-  padding-left: 2.1rem;
-  padding-bottom: 1.5rem;
-  border-left: 1px solid var(--rule);
-  margin-left: 0.4rem;
-}
-.timeline li:last-child { border-left-color: transparent; padding-bottom: 0; }
+ul.plain { padding-left: 1.2rem; max-width: var(--measure); }
+ul.plain li { margin-bottom: 0.45rem; }
 
-.timeline li::before {
-  content: "";
-  position: absolute;
-  left: -5px;
-  top: 0.42rem;
-  width: 9px;
-  height: 9px;
-  background: var(--bg);
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-}
-.timeline li.fail::before { border-color: var(--crit); }
-.timeline li.pass::before { border-color: var(--ok); }
-
-.timeline .when {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  color: var(--fg-faint);
-  display: block;
-  margin-bottom: 0.15rem;
-}
-.timeline .what { font-weight: 600; font-family: var(--font-display); }
-.timeline .detail { color: var(--fg-muted); font-size: var(--step--1); margin-top: 0.25rem; }
-.timeline .detail p { max-width: none; margin: 0.3rem 0 0; }
-
-/* ---------- 清单 ---------- */
-ul.plain, ol.plain { padding-left: 1.35rem; max-width: var(--measure); }
-ul.plain li, ol.plain li { margin-bottom: 0.5rem; }
-
-/* ---------- 双栏 ---------- */
-.two {
+/* ---------- 双栏卡片 ---------- */
+.pair {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-block: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
 }
-
-.card {
+.panel {
   border: 1px solid var(--rule);
-  background: var(--bg-raised);
-  padding: 1.1rem 1.25rem;
+  background: var(--paper-raised);
+  padding: 1.05rem 1.2rem;
 }
-.card h4 {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  margin: 0 0 0.5rem;
-  font-weight: 600;
-}
-.card p { font-size: var(--step--1); color: var(--fg-muted); margin: 0; max-width: none; }
-.card p + p { margin-top: 0.5rem; }
+.panel h4 { margin-top: 0; margin-bottom: 0.5rem; }
+.panel p { font-size: var(--fs-sm); color: var(--ink-soft); margin: 0; max-width: none; }
+.panel p + p { margin-top: 0.55rem; }
 
 /* ---------- 页脚 ---------- */
 footer {
-  margin-top: 4rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--rule);
+  margin-top: 4.5rem;
+  border-top: 2px solid var(--ink);
+  padding-top: 1.1rem;
   font-family: var(--font-mono);
-  font-size: var(--step--1);
-  color: var(--fg-faint);
+  font-size: var(--fs-xs);
+  color: var(--ink-faint);
+  line-height: 1.8;
 }
-footer p { max-width: none; margin: 0.3rem 0; }
-footer a { color: var(--accent); }
+footer p { max-width: none; margin: 0; }
 
 @media (max-width: 560px) {
-  .barrow { grid-template-columns: 62px 1fr 62px; gap: 0.5rem; }
-  .axis { grid-template-columns: 62px 1fr 62px; }
-  .tiles { grid-template-columns: 1fr 1fr; }
-  h2 { font-size: var(--step-1); }
+  .barrow { grid-template-columns: 58px 1fr 58px; gap: 0.45rem; }
+  .axis { grid-template-columns: 58px 1fr 58px; }
+  .findings { grid-template-columns: 1fr 1fr; }
+  h2 { font-size: 1.3rem; }
+  .abstract { padding: 1.1rem 1.2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -526,258 +513,294 @@ footer a { color: var(--accent); }
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap">
 
 <div class="wrap">
 
 <header class="masthead">
-  <div class="eyebrow">SCNet · 海光 DCU BW1000 (gfx936) · 2026-11-15</div>
-  <h1>国产加速卡模型适配实测</h1>
-  <p class="standfirst">
-    20 个条目的移植、调优与失败记录。核心命题只有一个：
-    在精度误差范围内，把吞吐尽量提上去——以及当它提不上去时，说清楚为什么。
-  </p>
-  <div class="meta-row">
+  <div class="doc-type">技术报告 · SCNet 海光 DCU BW1000（gfx936）· 2026-11-15</div>
+  <h1>国产加速卡上的大模型适配与吞吐调优</h1>
+  <p class="subtitle">20 个模型条目的移植记录、跨引擎基准对比、失效根因分析，以及 59 项可复现的工程约束</p>
+  <div class="byline">
     <span><b>条目</b> 20</span>
-    <span><b>6 档基准</b> 9 条</span>
-    <span><b>官方产物</b> 935 条</span>
-    <span><b>踩坑</b> 59 条</span>
-    <span><b>镜像</b> 5 个 / 55 GB</span>
+    <span><b>六档基准</b> 9</span>
+    <span><b>官方产物</b> 935</span>
+    <span><b>已归档镜像</b> 5（55 GB）</span>
+    <span><b>工程约束</b> 59</span>
   </div>
 </header>
 
-<!-- ============ 1 结论 ============ -->
+<div class="abstract">
+  <h2>摘要</h2>
+  <p>
+    本报告记录在单一代国产加速卡（海光 DCU BW1000，GCN 架构 gfx936）上移植 20 个开源大模型的工作。
+    研究对象覆盖三类负载：文本生成与理解（T01/T02）、图像与视频生成（T03）、语音识别与对齐（T04）。
+    评价标准为：在精度误差可接受的前提下最大化推理吞吐。
+  </p>
+  <p>
+    本轮实验取得两项可复现的吞吐改善：Kimi-Linear-48B 在 SGLang 上的 16K/c8 档提升 10.5%，
+    Qwen3-ASR 批量转写的 60 条子集耗时降低 13%；后者在 CER/WER 指标上无可见退化。
+    另查明两项长期未被正确归因的失效：Kimi 长上下文高并发档的周期性崩溃源于服务进程的累计状态，
+    而非调度参数或批处理规模；其 vLLM 单流性能落后 61% 源于每解码步约 24 ms 的固定开销，
+    与注意力核效率无关。
+  </p>
+  <p>
+    两个条目（Recon2Reason-4B、RoboBrain2.5-8B 的 SGLang 侧）在启动阶段触发 GPU 访存异常，
+    经八项对照实验排除节点、参数、显存、图捕获、目标架构等假设后终止排查。
+    终止依据是交付不依赖该路径（其 vLLM 对偶条目已完成全量基准），
+    而单次诊断的重载成本与节点磁盘水位的不确定性已使边际收益转负。
+  </p>
+  <p>
+    <strong>关键词</strong>：异构加速卡移植；推理引擎对比；长上下文失效；参数优化；可复现性
+  </p>
+</div>
+
+<!-- ============ 1 ============ -->
 <section>
-  <h2><span class="num">01</span>五分钟结论</h2>
-  <p class="lede">
-    这一轮拿到两个确定的吞吐提升，查清了一个长期误解的根因，也封存了两个查不动的阻塞。
+  <h2><span class="num">1</span>研究背景与目标</h2>
+
+  <p>
+    国产加速卡的生态成熟度目前主要由两个指标衡量：主流开源模型能否在其上直接运行，
+    以及运行时的吞吐相对成熟 GPU 平台处于何种水平。前者决定可用性，后者决定经济性。
+    本工作的目标是针对前者建立可复用的移植路径，针对后者量化差距并界定其来源。
   </p>
 
-  <div class="tiles">
-    <div class="tile good">
-      <span class="k">Kimi × SGLang 16K/c8</span>
+  <p>
+    本报告不涉及模型精度训练或微调，仅关注推理侧的适配与调优。精度约束表现为：
+    任何吞吐优化不得引入可测的输出质量退化。
+  </p>
+
+  <div class="note">
+    <span class="head">关于「精度不变」的判定标准</span>
+    <p>
+      对于具备官方评测清单的条目（T03/T04），以官方产物规格校验与自算 CER/WER 为准；
+      对于缺少官方评测基线的条目（T01/T02），精度门槛不可判定，
+      相关章节保持未评测状态并说明原因，不以估算值填充。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section>
+  <h2><span class="num">2</span>实验环境与方法</h2>
+
+  <h3>2.1 硬件与软件栈</h3>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 1　实验环境</caption>
+      <thead><tr><th>项</th><th>配置</th></tr></thead>
+      <tbody>
+        <tr><td>加速卡</td><td class="mono">HYGON DCU BW1000，GCN gfx936:sramecc+:xnack-，64 GiB HBM</td></tr>
+        <tr><td>调度</td><td class="mono">Slurm，分区 hx1hdnormal；每卡需 ≥8 CPU，否则 GRES 静默降级</td></tr>
+        <tr><td>容器</td><td class="mono">rootless podman 4.9.4，overlay 存储于节点本地</td></tr>
+        <tr><td>DTK</td><td class="mono">2604（HIP/ROCm 体系，含 CUDA 兼容层 /opt/dtk/cuda）</td></tr>
+        <tr><td>推理引擎</td><td class="mono">SGLang 0.5.x / vLLM 0.20 / vLLM 0.21 / transformers / diffusers / 各类原生 pipeline</td></tr>
+        <tr><td>张量精度</td><td class="mono">bfloat16（全部条目）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2.2 基准口径</h3>
+
+  <p>
+    文本类条目采用六档基准：输入长度 {4K, 16K} × 输出长度 1K × 并发 {1, 8, 64}，每档连续两轮，
+    取第二轮值。客户端统一为 <code>sglang.benchmark.serving</code>，随机 token 负载（无需外部数据集）。
+    vLLM 条目通过双容器编排复用同一客户端，以保证两引擎数据可比。
+  </p>
+
+  <p>
+    每档结果须通过有效性校验方可入档：平均 TTFT 非零，且吞吐不超过物理上限。
+    该校验在历史版本中因脚本缺陷从未实际执行，本轮已修复并按两例人工构造的异常数据验证其有效性。
+  </p>
+
+  <h3>2.3 变体判定规则</h3>
+
+  <p>
+    参数变体与原配置的对比统一采用同一节点、同一镜像、同一时段，且以同作业内的对照值作分母，
+    不使用历史归档值。判定阈值设为相对差异 2%；若该档历史波动幅度本身超过阈值，则不以单次结果作结论。
+  </p>
+
+  <div class="note caution">
+    <span class="head">判定规则的实际影响</span>
+    <p>
+      第 3.1 节的 16K/c64 档改善为 2.7%，低于该档历史波动幅度（±5%），
+      故未据此修改基准值，仅记录影响幅度。这是本轮唯一一处「测到改善但不予采纳」的判定。
+    </p>
+  </div>
+
+  <h3>2.4 实验脚本与路径</h3>
+
+  <p>全部实验以自包含的 Slurm 脚本形式固化，位于仓库 <code>sweeps/</code> 目录。</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 2　主要实验脚本</caption>
+      <thead><tr><th>脚本</th><th>实验内容</th><th class="num">作业号</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">kimi-16k-020-restart.slurm</td><td>每轮重启服务，判定崩溃是否源于累计状态（四轮）</td><td class="num">1124366</td></tr>
+        <tr><td class="mono">kimi-16k-chunked-verify.slurm</td><td>chunked-prefill 4096 的同节点 A/B 对照</td><td class="num">1126055</td></tr>
+        <tr><td class="mono">kimi-vllm-4k-opt.slurm</td><td>单流固定开销的三组候选参数</td><td class="num">1128368</td></tr>
+        <tr><td class="mono">t02-chunked-verify.slurm</td><td>Recon/RoboBrain 的 chunked 扫描（已终止）</td><td class="num">1126056</td></tr>
+        <tr><td class="mono">asr-throughput.slurm</td><td>ASR 三档并发对照</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre class="log"><code># 仓库本地路径
+~/Downloads/agent/repo/dcu-model-test/zoo/
+
+# 集群同步副本（作业从此处 rsync 至工作目录）
+luql:/public/home/luql/work/zoo-sync/
+
+# 单次作业工作目录（必须位于 NFS 家目录）
+luql:/public/home/luql/work/&lt;experiment&gt;/
+
+# 模型权重
+luql:/public/home/luql/models/&lt;model&gt;/
+
+# 镜像归档（唯一副本）
+luql:/public/home/luql/archive/zoo-dcu-2026-11/images/</code></pre>
+
+  <p>
+    提交前须执行 <code>./tools/sync_remote.sh</code>，否则作业将载入集群侧的旧脚本副本。
+    该步骤曾因遗漏导致有效性校验带着未定义变量运行整个下午。
+  </p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section>
+  <h2><span class="num">3</span>实验结果</h2>
+
+  <div class="findings">
+    <div class="finding pos">
+      <span class="k">16K/c8 吞吐</span>
       <span class="v">+10.5<span class="u">%</span></span>
-      <span class="n">124.31 → 137.30 tok/s<br>chunked-prefill 4096</span>
+      <span class="n">124.31 → 137.30 tok/s<br>Kimi × SGLang</span>
     </div>
-    <div class="tile good">
-      <span class="k">Qwen3-ASR 批量转写</span>
+    <div class="finding pos">
+      <span class="k">ASR 批量转写</span>
       <span class="v">−13<span class="u">%</span></span>
-      <span class="n">60 条 30 s → 26 s<br>CER/WER 指标不变</span>
+      <span class="n">30 s → 26 s（60 条）<br>CER/WER 无可见退化</span>
     </div>
-    <div class="tile hot">
-      <span class="k">Kimi 16K/c64 稳态</span>
+    <div class="finding neu">
+      <span class="k">16K/c64 稳态</span>
       <span class="v">284.6<span class="u">tok/s</span></span>
-      <span class="n">四轮全过，极差 1.2%<br>每轮重启服务为代价</span>
+      <span class="n">四轮全过，极差 1.2%<br>Kimi × vLLM</span>
     </div>
-    <div class="tile cool">
-      <span class="k">Kimi vLLM 4K/c1</span>
-      <span class="v">24.0<span class="u">ms/步</span></span>
-      <span class="n">恒定固定开销<br>已查明机理，未解决</span>
+    <div class="finding neg">
+      <span class="k">单流固定开销</span>
+      <span class="v">24.0<span class="u">ms/step</span></span>
+      <span class="n">与批次、上下文均无关<br>未解决</span>
     </div>
   </div>
 
-  <div class="note">
-    <span class="lab">本轮最重要的判断修正</span>
-    <p>
-      我之前把 <code>Could not find CUDA installation</code> 当成「正常的降级路径」，
-      并据此推出「当年能跑是因为 JIT 失败了」。这个因果是错的：DTK 是 HIP/ROCm 体系，
-      那句报错是 Triton 找不到工具链时的误报。真正的区别是——<strong>当年 JIT 编译失败所以走了备用路径，
-      现在编译成功了，但编出来的 kernel 在 gfx936 上访存越界</strong>。
-      把「缺陷」当成「设计」记录下来，是这轮最值得警惕的错误。
-    </p>
-  </div>
-</section>
+  <h3>3.1 参数优化：Kimi-Linear-48B × SGLang</h3>
 
-<!-- ============ 2 提升实收 ============ -->
-<section>
-  <h2><span class="num">02</span>真正拿到的提升</h2>
-  <p class="lede">
-    两处都是「早已实测有效、但从未落到交付配置」的项。改动量各一两行。
-  </p>
-
-  <h3>Kimi-Linear-48B × SGLang：chunked-prefill 4096</h3>
   <p>
-    16K 输入时 prefill 会一次塞进巨量 token，把 decode 挤到边上。
-    切成 4096 一片后，prefill 与 decode 能交错执行，KV 压力更平滑。
+    <code>--chunked-prefill-size 4096</code> 使预填充按 4K 切片执行，与解码阶段交错调度，
+    以平滑长上下文下的 KV 缓存压力。该配置在早前的五变体对照中已显示收益，
+    但未被写入交付配置。本轮在同一节点完成 A/B 复核。
   </p>
 
   <div class="tablewrap">
     <table>
+      <caption>表 3　chunked-prefill 4096 的同节点对照（单位：output tok/s）</caption>
       <thead>
-        <tr>
-          <th>档位</th>
-          <th class="num">A：当前配置</th>
-          <th class="num">B：+chunked 4096</th>
-          <th class="num">变化</th>
-          <th>判定</th>
-        </tr>
+        <tr><th>档位</th><th class="num">A 当前配置</th><th class="num">B +chunked 4096</th><th class="num">相对变化</th><th>判定</th></tr>
       </thead>
       <tbody>
-        <tr class="highlight">
-          <td>16K / c8</td>
-          <td class="num">124.31</td>
-          <td class="num">137.30</td>
-          <td class="num">+10.5%</td>
-          <td><span class="pill ok">超出噪声，有效</span></td>
+        <tr class="emphasis">
+          <td>16K / c8</td><td class="num">124.31</td><td class="num">137.30</td><td class="num">+10.5%</td>
+          <td><span class="tag ok">超出波动，有效</span></td>
         </tr>
         <tr>
-          <td>16K / c64</td>
-          <td class="num">222.45</td>
-          <td class="num">228.40</td>
-          <td class="num">+2.7%</td>
-          <td><span class="pill warn">本档波动 ±5%，不可区分</span></td>
+          <td>16K / c64</td><td class="num">222.45</td><td class="num">228.40</td><td class="num">+2.7%</td>
+          <td><span class="tag warn">低于波动幅度</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <p>
-    辅助指标方向一致：16K/c64 的平均 TTFT 从 101.7 s 降到 91.2 s（−10%），
-    p99 从 188.6 s 降到 172.3 s。
+    辅助指标方向一致：16K/c64 档的平均 TTFT 由 101.7 s 降至 91.2 s（相对降低 10.3%），
+    p99 TTFT 由 188.6 s 降至 172.3 s。
   </p>
 
-  <div class="note warn">
-    <span class="lab">为什么不改 meta.throughput</span>
+  <div class="note caution">
+    <span class="head">基准值未随之修改</span>
     <p>
-      本次 A 档的 c64 是 222.45，比历史归档的 234.17 低 5%。本档历史波动本来就有 ±5%，
-      所以 +2.7% 无法与噪声区分。直接把 228.40 写进基准值，会把节点偏差固化成「官方数据」。
-      <strong>保留 234.17，只把 chunked 的影响幅度写进 README。</strong>
+      本轮 A 档的 16K/c64 为 222.45，较历史归档值 234.17 低 5.0%，而该档历史波动幅度为 ±5%。
+      在此前提下，+2.7% 的相对改善无法与节点间差异区分。
+      若将 228.40 直接写入基准值，等于把单次节点偏差固化为长期数据。
+      故基准值保持 234.17，仅在条目文档中记录该参数的影响幅度。
     </p>
   </div>
 
-  <h3>Qwen3-ASR-1.7B × vLLM：并发参数</h3>
+  <h3>3.2 参数优化：Qwen3-ASR-1.7B × vLLM</h3>
 
   <div class="tablewrap">
     <table>
+      <caption>表 4　批量转写并发配置对照（60 条子集）</caption>
       <thead>
-        <tr>
-          <th>配置</th>
-          <th class="num">60 条耗时</th>
-          <th class="num">CER</th>
-          <th class="num">WER</th>
-        </tr>
+        <tr><th>配置</th><th class="num">耗时</th><th class="num">CER</th><th class="num">WER</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td><code>--max-num-seqs 16</code> + 4 并发</td>
-          <td class="num">30 s</td>
-          <td class="num">0.10%</td>
-          <td class="num">0.53%</td>
-        </tr>
-        <tr>
-          <td><code>--max-num-seqs 64</code> + 16 并发</td>
-          <td class="num">27 s</td>
-          <td class="num">0.10%</td>
-          <td class="num">0.53%</td>
-        </tr>
-        <tr class="highlight">
-          <td><code>--max-num-seqs 128</code> + 32 并发</td>
-          <td class="num">26 s</td>
-          <td class="num">0.10%</td>
-          <td class="num">0.53%</td>
-        </tr>
+        <tr><td><code>max-num-seqs 16</code> + 4 并发</td><td class="num">30 s</td><td class="num">0.10%</td><td class="num">0.53%</td></tr>
+        <tr><td><code>max-num-seqs 64</code> + 16 并发</td><td class="num">27 s</td><td class="num">0.10%</td><td class="num">0.53%</td></tr>
+        <tr class="emphasis"><td><code>max-num-seqs 128</code> + 32 并发</td><td class="num">26 s</td><td class="num">0.10%</td><td class="num">0.53%</td></tr>
       </tbody>
     </table>
   </div>
 
   <p>
-    瓶颈在音频解码与编码器前向，不在解码调度，所以 64 之后开始饱和。
-    此外 <code>eval_official.slurm:48</code> 硬编码了 <code>WORKERS=4</code>，
-    会覆盖 <code>env.sh</code> 的设置——不改这里，前面的调整就是摆设。
+    瓶颈位于音频解码与编码器前向，不位于解码调度，故并发数超过 64 后收益饱和。
+    此外，评测脚本 <code>eval_official.slurm</code> 第 48 行以字面量覆盖了并发参数，
+    使 <code>env.sh</code> 中的设置不生效；该处已一并修正。
   </p>
 
   <div class="note">
-    <span class="lab">措辞修正</span>
+    <span class="head">精度声明的修正</span>
     <p>
-      原来写「精度零变化」过于绝对。逐条比对归档产物后发现：A 档与 C 档 60 条输出 md5 完全相同，
-      但 <strong>B 档有 1 条不同</strong>（<code>1089-134686-0024.txt</code> 多一个逗号）。
-      CER 上看不出差异，但不是逐字节一致。现已改为「CER/WER 指标无变化，60 条中 1 条标点级差异」。
+      早期记录表述为「精度零变化」，该表述过强。对归档产物逐文件比对的结果是：
+      16 并发与 128 并发两档的 60 个输出文件哈希完全一致；
+      64 并发档有 1 个文件（<code>1089-134686-0024.txt</code>）相差一个标点符号。
+      三档的 CER/WER 指标均为 0.10% / 0.53%，该差异在指标层面不可见，
+      但输出并非逐字节一致。现表述为「指标无变化，60 条中 1 条存在标点级差异」。
     </p>
   </div>
-</section>
 
-<!-- ============ 3 跨引擎对照 ============ -->
-<section>
-  <h2><span class="num">03</span>跨引擎对照</h2>
-  <p class="lede">
-    同一模型、同一张卡、同一压测客户端，只有推理引擎不同。数字是 output tok/s。
+  <h3>3.3 跨引擎基准对比</h3>
+
+  <p>
+    四个文本模型各有 SGLang 与 vLLM 两条路径，构成天然对照。表 5 为完整六档数据。
   </p>
-
-  <div class="bars">
-    <div class="bargroup">
-      <div class="label">Kimi-48B · TP=4 · 16K/c64</div>
-      <div class="barrow">
-        <span class="eng">vLLM</span>
-        <span class="bartrack"><span class="barfill v" style="width:88%"></span></span>
-        <span class="val">284.62</span>
-      </div>
-      <div class="barrow">
-        <span class="eng">SGLang</span>
-        <span class="bartrack"><span class="barfill s" style="width:72%"></span></span>
-        <span class="val">234.17</span>
-      </div>
-      <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
-    </div>
-
-    <div class="bargroup">
-      <div class="label">MiMo-9B · 单卡 · 16K/c64</div>
-      <div class="barrow">
-        <span class="eng">SGLang</span>
-        <span class="bartrack"><span class="barfill s" style="width:93%"></span></span>
-        <span class="val">299.81</span>
-      </div>
-      <div class="barrow">
-        <span class="eng">vLLM</span>
-        <span class="bartrack"><span class="barfill v" style="width:31%"></span></span>
-        <span class="val">100.82</span>
-      </div>
-      <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
-    </div>
-
-    <div class="bargroup">
-      <div class="label">Recon2Reason-4B · 单卡 · 16K/c64</div>
-      <div class="barrow">
-        <span class="eng">vLLM</span>
-        <span class="bartrack"><span class="barfill v" style="width:59%"></span></span>
-        <span class="val">190.66</span>
-      </div>
-      <div class="barrow">
-        <span class="eng">SGLang</span>
-        <span class="bartrack"><span class="barfill s" style="width:46%"></span></span>
-        <span class="val">149.34</span>
-      </div>
-      <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
-    </div>
-  </div>
 
   <div class="tablewrap">
     <table>
+      <caption>表 5　跨引擎六档基准（单位：output tok/s，粗体为该档较优值）</caption>
       <thead>
         <tr>
           <th>条目</th>
-          <th class="num">4K/c1</th>
-          <th class="num">4K/c8</th>
-          <th class="num">4K/c64</th>
-          <th class="num">16K/c1</th>
-          <th class="num">16K/c8</th>
-          <th class="num">16K/c64</th>
+          <th class="num">4K/c1</th><th class="num">4K/c8</th><th class="num">4K/c64</th>
+          <th class="num">16K/c1</th><th class="num">16K/c8</th><th class="num">16K/c64</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Kimi-48B × vLLM</strong> <span class="pill cool">TP4</span></td>
+          <td>Kimi-48B × vLLM <span class="tag neu">TP4</span></td>
           <td class="num">40.73</td><td class="num">304.18</td><td class="num"><b>858.08</b></td>
           <td class="num">37.36</td><td class="num"><b>197.83</b></td><td class="num"><b>284.62</b></td>
         </tr>
         <tr>
-          <td>Kimi-48B × SGLang <span class="pill cool">TP4</span></td>
-          <td class="num">104.67</td><td class="num">353.53</td><td class="num">839.00</td>
-          <td class="num">50.80</td><td class="num">119.21</td><td class="num">234.17</td>
+          <td>Kimi-48B × SGLang <span class="tag neu">TP4</span></td>
+          <td class="num"><b>104.67</b></td><td class="num"><b>353.53</b></td><td class="num">839.00</td>
+          <td class="num"><b>50.80</b></td><td class="num">119.21</td><td class="num">234.17</td>
         </tr>
         <tr>
           <td>MiMo-9B × SGLang</td>
-          <td class="num">44.31</td><td class="num">360.23</td><td class="num"><b>998.05</b></td>
-          <td class="num">41.47</td><td class="num"><b>308.72</b></td><td class="num"><b>299.81</b></td>
+          <td class="num"><b>44.31</b></td><td class="num"><b>360.23</b></td><td class="num"><b>998.05</b></td>
+          <td class="num"><b>41.47</b></td><td class="num"><b>308.72</b></td><td class="num"><b>299.81</b></td>
         </tr>
         <tr>
           <td>MiMo-9B × vLLM</td>
@@ -786,21 +809,21 @@ footer a { color: var(--accent); }
         </tr>
         <tr>
           <td>Recon2Reason-4B × vLLM</td>
-          <td class="num">98.83</td><td class="num">544.43</td><td class="num">845.30</td>
-          <td class="num">81.93</td><td class="num">267.09</td><td class="num">190.66</td>
+          <td class="num"><b>98.83</b></td><td class="num"><b>544.43</b></td><td class="num"><b>845.30</b></td>
+          <td class="num"><b>81.93</b></td><td class="num"><b>267.09</b></td><td class="num"><b>190.66</b></td>
         </tr>
         <tr>
-          <td>Recon2Reason-4B × SGLang <span class="pill warn">封存</span></td>
+          <td>Recon2Reason-4B × SGLang <span class="tag crit">已终止</span></td>
           <td class="num">78.35</td><td class="num">441.43</td><td class="num">719.64</td>
           <td class="num">57.86</td><td class="num">226.27</td><td class="num">149.34</td>
         </tr>
         <tr>
           <td>RoboBrain-8B × vLLM</td>
-          <td class="num">64.01</td><td class="num">387.93</td><td class="num">667.69</td>
-          <td class="num">51.14</td><td class="num">225.76</td><td class="num">175.71</td>
+          <td class="num"><b>64.01</b></td><td class="num"><b>387.93</b></td><td class="num"><b>667.69</b></td>
+          <td class="num"><b>51.14</b></td><td class="num"><b>225.76</b></td><td class="num"><b>175.71</b></td>
         </tr>
         <tr>
-          <td>RoboBrain-8B × SGLang <span class="pill warn">封存</span></td>
+          <td>RoboBrain-8B × SGLang <span class="tag crit">已终止</span></td>
           <td class="num">45.69</td><td class="num">327.14</td><td class="num">543.80</td>
           <td class="num">37.14</td><td class="num">126.65</td><td class="num">141.66</td>
         </tr>
@@ -808,461 +831,471 @@ footer a { color: var(--accent); }
     </table>
   </div>
 
-  <div class="note">
-    <span class="lab">怎么读这张表</span>
-    <p>
-      <strong>没有哪个引擎全面领先。</strong>Kimi 在 16K 高并发 vLLM 反超 +22%，
-      但 4K/c1 落后 61%；MiMo 恰恰相反，SGLang 在 16K 档快 3 倍。
-      跨引擎选择必须按「哪个档位是你真实的负载」来定，不能用平均值决策。
-    </p>
-  </div>
+  <figure class="figure">
+    <div class="bars">
+      <div class="bargroup">
+        <div class="glabel">Kimi-48B · 16K/c64</div>
+        <div class="barrow"><span class="eng">vLLM</span><span class="bartrack"><span class="barfill v" style="width:88%"></span></span><span class="val">284.62</span></div>
+        <div class="barrow"><span class="eng">SGLang</span><span class="bartrack"><span class="barfill s" style="width:72%"></span></span><span class="val">234.17</span></div>
+        <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
+      </div>
+      <div class="bargroup">
+        <div class="glabel">MiMo-9B · 16K/c64</div>
+        <div class="barrow"><span class="eng">SGLang</span><span class="bartrack"><span class="barfill s" style="width:93%"></span></span><span class="val">299.81</span></div>
+        <div class="barrow"><span class="eng">vLLM</span><span class="bartrack"><span class="barfill v" style="width:31%"></span></span><span class="val">100.82</span></div>
+        <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
+      </div>
+      <div class="bargroup">
+        <div class="glabel">Recon2Reason-4B · 16K/c64</div>
+        <div class="barrow"><span class="eng">vLLM</span><span class="bartrack"><span class="barfill v" style="width:59%"></span></span><span class="val">190.66</span></div>
+        <div class="barrow"><span class="eng">SGLang</span><span class="bartrack"><span class="barfill s" style="width:46%"></span></span><span class="val">149.34</span></div>
+        <div class="axis"><span></span><span class="ticks"><span>0</span><span>162</span><span>324</span></span><span></span></div>
+      </div>
+    </div>
+    <figcaption>图 1　16K/c64 档三组对照。同一模型下两引擎差距的方向并不一致，且幅度可达 3 倍。</figcaption>
+  </figure>
+
+  <p>
+    结论是两引擎不存在普适优劣。Kimi 在 16K 高并发档 vLLM 领先 21.5%，而 4K 单流档落后 61.1%；
+    MiMo 的情形相反，SGLang 在 16K/c64 档领先 197%。因此引擎选择必须依据目标负载所在的具体档位，
+    以平均值或单一档位决策均会导致显著误判。
+  </p>
 </section>
 
-<!-- ============ 4 根因分析 ============ -->
+<!-- ============ 4 ============ -->
 <section>
-  <h2><span class="num">04</span>两个被查清的根因</h2>
+  <h2><span class="num">4</span>失效根因分析</h2>
 
-  <h3>A. Kimi 16K/c64 崩溃：进程累计状态，不是配置问题</h3>
+  <h3>4.1 长上下文高并发的周期性失效</h3>
+
   <p>
-    现象是「第一轮永远通过、第二轮永远 KERNEL VMFault」。为此先后试过五个配置：
-    默认、<code>--enforce-eager</code>、<code>--max-num-seqs</code> 24 / 16 / 32+eager。
-    <strong>五个配置、五个崩溃点（29 / 62 / 23 / 16 / 31 个请求），与并发上限毫无关系。</strong>
-  </p>
-  <p>
-    重读 job 1120618 的 3 MB 日志才看清：那次作业用<strong>一个服务进程连跑 6 档序列</strong>，
-    10:30 启动、11:02:58 才崩，期间跑完 10 个档位、约 1200 个请求。
-    而后续作业只跑 16K/c64 一档（128 请求 ≈ 10 分钟），于是表现为「第二轮必崩」。
+    Kimi-Linear-48B 在 16K/c64 档表现出的现象是：首次运行的轮次正常完成，
+    随后的轮次必然触发 <code>KERNEL VMFault</code>。
+    四个 TP rank 同时异常，且访存地址互不相同。
   </p>
 
-  <div class="note">
-    <span class="lab">解法与代价</span>
+  <p>
+    为该现象提出的初始假设是单批规模过大。据此先后测试五个配置：
+    默认配置、<code>--enforce-eager</code>、<code>--max-num-seqs</code> 取 24、16、32（配合 eager）。
+    五个配置分别在处理 29、62、23、16、31 个请求时崩溃。
+  </p>
+
+  <div class="note caution">
+    <span class="head">假设被否证</span>
     <p>
-      <strong>每轮压测前重启服务进程。</strong>实测连续四轮各 128/128、0 处 VMFault。
-      代价是每轮多 3–4 分钟冷启动。
+      五个崩溃点与各配置的并发上限均不相关，其中取 16 时崩溃点的运行请求数正是 16，
+      说明崩溃发生于并发上限而非其附近。批处理规模假设不成立。
     </p>
   </div>
 
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr>
-          <th>轮次</th>
-          <th class="num">吞吐 tok/s</th>
-          <th class="num">TTFT</th>
-          <th class="num">TPOT</th>
-          <th>备注</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>R1</td><td class="num">235.14</td><td class="num">47.5 s</td><td class="num">218.3 ms</td>
-          <td>页缓存未暖，<strong>不作稳态引用</strong></td>
-        </tr>
-        <tr><td>R2</td><td class="num">283.53</td><td class="num">31.5 s</td><td class="num">187.4 ms</td><td></td></tr>
-        <tr><td>R3</td><td class="num">284.62</td><td class="num">30.8 s</td><td class="num">187.2 ms</td><td></td></tr>
-        <tr class="highlight"><td>R4</td><td class="num">286.84</td><td class="num">30.6 s</td><td class="num">185.7 ms</td><td>四轮极差仅 1.2%</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>B. Kimi vLLM 4K/c1 落后 61%：每步 24 ms 的固定气泡</h3>
   <p>
-    这个缺口我一开始猜成「低并发时 kernel 效率差」。把 TPOT 拆开看，猜错了。
+    重新检视既有作业 1120618 的完整服务端日志（约 3 MB）后得到关键事实：
+    该作业以单一服务进程连续执行六个档位的完整序列，10:30 启动，11:02:58 崩溃，
+    期间完成 10 个档位、约 1200 个请求；崩溃发生于 16K/c64 的<strong>首轮</strong>。
+    由于后续作业仅执行单一档位（128 请求，约 10 分钟），
+    「首轮必过、次轮必崩」实为观测缩减造成的假象。
   </p>
 
+  <p>据此提出修正假设：失效与进程的累计处理量相关，而非与轮次或批处理规模相关。</p>
+
   <div class="tablewrap">
     <table>
+      <caption>表 6　每轮重启服务进程的四轮结果（单位：output tok/s）</caption>
       <thead>
-        <tr><th>配置</th><th class="num">vLLM TPOT</th><th class="num">SGLang TPOT</th><th>含义</th></tr>
+        <tr><th class="num">轮次</th><th class="num">吞吐</th><th class="num">TTFT</th><th class="num">TPOT</th><th>备注</th></tr>
       </thead>
       <tbody>
-        <tr><td>4K / c1</td><td class="num">24.18 ms</td><td class="num">9.31 ms</td><td>起点差距</td></tr>
-        <tr><td>4K / c8</td><td class="num">24.96 ms</td><td class="num">20.97 ms</td><td>vLLM 几乎不动</td></tr>
-        <tr><td>16K / c1</td><td class="num">25.23 ms</td><td class="num">—</td><td>对 context 也不敏感</td></tr>
+        <tr><td class="num">R1</td><td class="num">235.14</td><td class="num">47.5 s</td><td class="num">218.3 ms</td><td>页缓存未预热，不作稳态引用</td></tr>
+        <tr><td class="num">R2</td><td class="num">283.53</td><td class="num">31.5 s</td><td class="num">187.4 ms</td><td></td></tr>
+        <tr><td class="num">R3</td><td class="num">284.62</td><td class="num">30.8 s</td><td class="num">187.2 ms</td><td></td></tr>
+        <tr class="emphasis"><td class="num">R4</td><td class="num">286.84</td><td class="num">30.6 s</td><td class="num">185.7 ms</td><td>四轮极差 1.2%</td></tr>
       </tbody>
     </table>
   </div>
 
   <p>
-    vLLM 每步先付 ~24 ms 固定开销，之后加请求几乎免费（拟合 <code>24.07 + 0.111 ms/req</code>）；
-    SGLang 每步只付 7.6 ms，但每请求要加 1.67 ms（<code>7.64 + 1.67 ms/req</code>）。
-    这就是为什么并发越高 vLLM 越占优、单流却大幅落后。
+    四轮均以 128/128 请求完成、零次 VMFault。R2 至 R4 的相对极差为 1.2%，
+    可视为可重复的稳态区间（283.53–286.84 tok/s）。
   </p>
 
-  <p>24 ms ÷ 27 层 ≈ <strong>0.89 ms/层</strong>，对得上逐层 eager kernel launch + TP=4 all-reduce。机理线索在启动日志里：</p>
+  <p><strong>结论</strong>：该失效源于服务进程的累计状态，交付口径为「单轮压测 + 每轮重启服务」。</p>
 
-  <pre class="fail"><code>CUDAGraphMode.FULL_AND_PIECEWISE is not supported with
+  <h3>4.2 单流性能差距的定量归因</h3>
+
+  <p>
+    Kimi × vLLM 在 4K/c1 档为 40.73 tok/s，较 SGLang 的 104.67 低 61.1%。
+    初始推测为低并发下注意力核效率不足。将 TPOT 按配置展开后，该推测不成立。
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 7　TPOT 随批次规模与上下文长度的变化</caption>
+      <thead>
+        <tr><th>配置</th><th class="num">vLLM TPOT</th><th class="num">SGLang TPOT</th><th>观察</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>4K / c1</td><td class="num">24.18 ms</td><td class="num">9.31 ms</td><td>初始差距</td></tr>
+        <tr><td>4K / c8</td><td class="num">24.96 ms</td><td class="num">20.97 ms</td><td>vLLM 基本不变</td></tr>
+        <tr><td>16K / c1</td><td class="num">25.23 ms</td><td class="num">—</td><td>对上下文长度不敏感</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    线性拟合得：vLLM 为 <code>24.07 ms + 0.111 ms/request</code>，
+    SGLang 为 <code>7.64 ms + 1.67 ms/request</code>。
+    即 vLLM 每解码步承担约 24 ms 的固定开销，边际请求成本极低；
+    SGLang 固定开销仅 7.6 ms，但边际成本高一个数量级。
+    该结构解释了两个方向相反的观测：批次增大时 vLLM 占优，单流时 SGLang 占优。
+  </p>
+
+  <p>
+    24 ms 除以 27 层得每层约 0.89 ms，量级与逐层即时核发射及 TP=4 集合通信同步相符。
+    机理线索见服务启动日志：
+  </p>
+
+  <pre class="log err"><code>CUDAGraphMode.FULL_AND_PIECEWISE is not supported with
   TritonMLABackend backend (support: AttentionCGSupport.NEVER);
   setting cudagraph_mode=PIECEWISE</code></pre>
 
   <p>
-    <code>AttentionCGSupport.NEVER</code> 意味着 MLA 层的 decode 注意力永远进不了整图，
-    只能 piecewise 捕获，其余部分每步 eager 发射。Kimi 有 7 层 MLA，直接命中。
+    该条目含 7 层 MLA，其解码注意力无法纳入完整计算图，只能以分段方式捕获，
+    其余部分逐步即时发射。
   </p>
 
-  <div class="note warn">
-    <span class="lab">与 gotcha #21 的区别</span>
+  <p>
+    由此可推算单流吞吐上界约为 <code>1000 / 24.2 ≈ 41 tok/s</code>，
+    实测值 40.73 已贴近该上界，进一步说明瓶颈即为此固定开销，
+    而非可由参数调节的某一环节。
+  </p>
+
+  <div class="note">
+    <span class="head">与既有结论的区分</span>
     <p>
-      #21 讲的是 MiMo × vLLM 的 16K 档慢 5–7 倍，根因是 DCU 缺 paged-attention kernel，
-      <strong>TPOT 从 47.9 ms 涨到 119.3 ms——context 相关</strong>。
-      Kimi 这个是 <strong>TPOT 恒定 24 ms——context 无关</strong>。
-      两者根因不同，不能套用同一个结论。
+      仓库中另有一条关于 MiMo × vLLM 长上下文性能的记录，其 TPOT 由 4K 档的 47.9 ms 升至 16K 档的 119.3 ms，
+      呈明显的上下文相关性，根因为缺失分页注意力核。
+      本节的 TPOT 恒定于 24 ms，与上下文无关，两者根因不同，不可互推。
     </p>
   </div>
-</section>
 
-<!-- ============ 5 封存 ============ -->
-<section>
-  <h2><span class="num">05</span>封存：查不动的两个条目</h2>
-  <p class="lede">
-    Recon2Reason-4B 与 RoboBrain2.5-8B 的 SGLang 侧，服务能启动但永远 503，约 20 秒后 abort。
-    封存前已穷举排除。
+  <h3>4.3 启动阶段的访存异常（未解决）</h3>
+
+  <p>
+    Recon2Reason-4B 与 RoboBrain2.5-8B 的 SGLang 条目在启动后健康检查始终返回 503，
+    约 20 秒后进程中止。崩溃位置的调用链如下：
   </p>
 
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>假设</th><th>反证</th><th>证据来源</th></tr></thead>
-      <tbody>
-        <tr><td>节点故障</td><td>三个不同节点表现一致</td><td class="mono">1126056 / 1126225</td></tr>
-        <tr><td>cuda graph 捕获</td><td><code>--disable-cuda-graph</code> 同样崩</td><td class="mono">1126456</td></tr>
-        <tr><td>启动参数</td><td>与成功日志逐行一致：KV tokens 331145、avail mem 9.44 GB、捕获 bs 列表全同</td><td class="mono">server.log:43-52</td></tr>
-        <tr><td>显存不足</td><td>KV 分配成功，剩余 9.44 GB</td><td class="mono">同上</td></tr>
-        <tr><td>Triton 后端选错</td><td>走 amd 后端，缓存有 <code>.amdgcn</code>/<code>.hsaco</code>，目标 arch 为 gfx936</td><td class="mono">1127698 / 1127816</td></tr>
-        <tr><td>wave 尺寸不匹配</td><td>HIPOptions 从 gfx936 推出 warp_size=64，与运行时一致</td><td class="mono">Triton 源码</td></tr>
-        <tr><td>镜像整体损坏</td><td><strong>Kimi 用同一镜像当日跑通</strong>（16K/c64 228.40）</td><td class="mono">1126055</td></tr>
-        <tr><td>Kimi 可作对照组</td><td><strong>不成立</strong>：Kimi 走 TRITON_MLA，从不调用 <code>decode_attention_fwd_grouped</code></td><td class="mono">server.log.gz</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>崩溃现场</h3>
-  <pre class="fail"><code>radix_attention.py:127     forward
- → triton_backend.py:1199 forward_decode
+  <pre class="log err"><code>radix_attention.py:127       forward
+ → triton_backend.py:1199   forward_decode
   → decode_attention.py:771 decode_attention_fwd
    → decode_attention.py:712 decode_attention_fwd_grouped
-    → decode_attention.py:612 _decode_softmax_reducev_fwd   ← 在此 JIT 编译
+    → decode_attention.py:612 _decode_softmax_reducev_fwd    ← JIT 编译点
      → triton/runtime/jit.py:861 _do_compile
       → HSA_STATUS_ERROR_EXCEPTION → KERNEL VMFault
 
-kernel name: _fwd_grouped_kernel_stage1
-grid: x:16384, y:8, z:16</code></pre>
+kernel: _fwd_grouped_kernel_stage1
+grid:   x:16384, y:8, z:16</code></pre>
 
-  <h3>最可能的根因</h3>
+  <p>为定位根因，完成了八项对照实验：</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 8　排除性实验</caption>
+      <thead><tr><th>假设</th><th>对照结果</th><th class="num">作业号</th></tr></thead>
+      <tbody>
+        <tr><td>节点故障</td><td>三个不同节点表现一致</td><td class="num">1126056 / 1126225</td></tr>
+        <tr><td>计算图捕获</td><td><code>--disable-cuda-graph</code> 同样崩溃</td><td class="num">1126456</td></tr>
+        <tr><td>启动参数</td><td>与成功运行的日志逐项一致：KV tokens 331145、可用显存 9.44 GB、捕获批次列表相同</td><td class="num">—</td></tr>
+        <tr><td>显存容量</td><td>KV 缓存分配成功，剩余 9.44 GB</td><td class="num">—</td></tr>
+        <tr><td>Triton 后端选择</td><td>实际使用 amd 后端，缓存含 <code>.amdgcn</code> 与 <code>.hsaco</code>，目标架构为 gfx936</td><td class="num">1127698</td></tr>
+        <tr><td>波前尺寸不匹配</td><td>由 gfx936 推导 warp_size=64，与运行时一致</td><td class="num">1127816</td></tr>
+        <tr><td>镜像整体损坏</td><td>同镜像下 Kimi 条目当日完成 128/128 请求</td><td class="num">1126055</td></tr>
+        <tr><td>以 Kimi 作对照组</td><td>不成立：Kimi 经 TRITON_MLA 路径，不调用该解码核</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <p>
-    <code>tvm-ffi</code> 的 JIT KV-cache 路径。11-02 那次 <code>_find_rocm_home()</code>
-    没识别到 HIP 工具链，抛 <code>Could not find CUDA installation</code>，
-    <code>can_use_store_cache=False</code>，回落 <code>k_cache[indices] = k</code>，一切正常。
-    现在 <code>ROCM_PATH=/opt/dtk</code> 被识别，JIT 编成，走进新路径，产出在 gfx936 上越界的 kernel。
+    综合排除结果，最可能的作用链为：<code>tvm-ffi</code> 的 JIT KV 缓存路径在环境配置变化后由「编译失败回落」
+    转为「编译成功执行」。历史成功运行的日志中存在
+    <code>Could not find JIT KV-Cache kernel ... Could not find CUDA installation</code> 一行，
+    表明当时工具链未被识别，<code>can_use_store_cache</code> 为假，系统改走简单索引赋值路径；
+    当前 <code>ROCM_PATH</code> 可被识别，JIT 生成目标代码并进入执行，
+    而该代码在 gfx936 上存在越界访问。
   </p>
 
-  <div class="note crit">
-    <span class="lab">为什么不再投入</span>
+  <div class="note negative">
+    <span class="head">该判断的局限</span>
     <p>
-      交付不依赖这条路——两个条目的 vLLM 兄弟条目已在 2026-11-12 产出完整 6 档数据。
-      而每轮诊断都要重载 8.5 GB 镜像，节点根盘水位在 0–278 GB 间波动，多次因磁盘失败。
-      本想做的 chunked 扫描预期只有几个百分点，且这两个条目受单卡 KV 上限压制
-      （33 万 tokens vs 64×17K 需 111 万）。
+      上述作用链由间接证据推出，未经直接验证。另一条待核实的线索是崩溃 kernel 的
+      <code>grid x=16384</code>：其中 y 与 z 维可对应头分块与 KV 切分，
+      但 x 维为解码 token 数，在本配置下不应超过 256；16384 仅与 <code>max_prefill_tokens</code> 吻合。
+      若该读法正确，崩溃发生于预填充尺寸的批次，指向引擎形状处理的版本差异，而非 Triton 代码生成。
     </p>
   </div>
 </section>
 
-<!-- ============ 6 方法论 ============ -->
+<!-- ============ 5 ============ -->
 <section>
-  <h2><span class="num">06</span>测试方法</h2>
+  <h2><span class="num">5</span>终止判据与未解决的问题</h2>
 
-  <div class="two">
-    <div class="card">
-      <h4>压测口径</h4>
-      <p>
-        6 档 = 输入 4K/16K × 输出 1K × 并发 1/8/64，每档两轮。
-        客户端统一用 <code>sglang.benchmark.serving</code>，vLLM 条目也用同一个（双容器，保证可比）。
-      </p>
-      <p>随机 token 负载，不需要下载数据集。</p>
-    </div>
-    <div class="card">
-      <h4>有效性校验</h4>
-      <p>
-        必须 <code>mean_ttft_ms != 0</code> 且吞吐不超物理上限，否则判 INVALID 拒绝入库。
-      </p>
-      <p>
-        <strong>这套校验此前从未真正执行过</strong>——heredoc 里两处 bug（<code>os</code> 未导入、
-        <code>ILENS</code> 未定义），已于本轮修复。
-      </p>
-    </div>
-    <div class="card">
-      <h4>判定规则</h4>
-      <p>
-        变体对比统一阈值：<strong>&gt;2% 视为有效</strong>，±2% 内视为噪声，
-        更差则记录撤销。但本档历史波动如果本身有 ±5%，2% 的改善就不该当确定结论。
-      </p>
-    </div>
-    <div class="card">
-      <h4>AB 对照纪律</h4>
-      <p>
-        A 与 B 必须在<strong>同一节点、同一镜像、同一时段</strong>跑，
-        且用同作业内的 A 数据做分母，不能拿历史归档值比。
-      </p>
-    </div>
-  </div>
-
-  <h3>核心脚本</h3>
-  <p>所有实验脚本在 <code>sweeps/</code>，都是自包含的 slurm 作业。提交方式：</p>
-
-  <pre class="cmd"><code># 同步仓库到集群（改完必须同步，否则作业跑到旧脚本）
-./tools/sync_remote.sh
-
-# 提交
-ssh -p 65032 luql@zzeshell.scnet.cn
-cd /public/home/luql/work/zoo-sync
-sbatch sweeps/kimi-16k-chunked-verify.slurm</code></pre>
-
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>脚本</th><th>用途</th><th>作业</th></tr></thead>
-      <tbody>
-        <tr>
-          <td class="mono">kimi-16k-020-restart.slurm</td>
-          <td>每轮重启服务，验证累计状态假设（4 轮）</td>
-          <td class="mono">1124366</td>
-        </tr>
-        <tr>
-          <td class="mono">kimi-16k-chunked-verify.slurm</td>
-          <td>chunked-prefill 4096 的 A/B 对照</td>
-          <td class="mono">1126055</td>
-        </tr>
-        <tr>
-          <td class="mono">kimi-vllm-4k-opt.slurm</td>
-          <td>4K/c1 固定气泡的三个候选参数</td>
-          <td class="mono">1128188 / 1128368</td>
-        </tr>
-        <tr>
-          <td class="mono">t02-chunked-verify.slurm</td>
-          <td>Recon/RoboBrain 的 chunked 扫描（已封存）</td>
-          <td class="mono">1126056 / 1126225</td>
-        </tr>
-        <tr>
-          <td class="mono">asr-throughput.slurm</td>
-          <td>ASR 三档并发对照</td>
-          <td class="mono">—</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h3>路径约定</h3>
-  <pre class="pass"><code># 仓库（本地）
-~/Downloads/agent/repo/dcu-model-test/zoo/
-
-# 集群同步副本（作业从这里 rsync 到 WORK）
-luql:/public/home/luql/work/zoo-sync/
-
-# 单次作业的工作目录 —— 必须在家目录（NFS，432 GB）
-luql:/public/home/luql/work/&lt;实验名&gt;/
-
-# 模型权重
-luql:/public/home/luql/models/&lt;模型名&gt;/
-
-# 镜像归档（唯一副本，55 GB）
-luql:/public/home/luql/archive/zoo-dcu-2026-11/images/</code></pre>
-</section>
-
-<!-- ============ 7 调优经验 ============ -->
-<section>
-  <h2><span class="num">07</span>调优经验</h2>
-  <p class="lede">
-    59 条踩坑里挑出最值钱的。完整清单在 <code>docs/gotchas.md</code>。
-  </p>
-
-  <h3>一、先分离变量，再谈根因</h3>
-  <p>
-    Kimi 16K/c64 那次，我沿着「批大小太大」这个最直觉的解释连开三个作业降
-    <code>--max-num-seqs</code>，全部失败。<strong>真因是进程累计状态，一个「每轮重启」的实验就能分离出来。</strong>
-  </p>
-  <p>
-    教训：当一个现象有多个竞争假设时，先设计能<strong>区分</strong>它们的实验，
-    而不是沿着最直觉的那个方向加码。
-  </p>
-
-  <h3>二、置信区间比数字本身重要</h3>
-  <p>
-    单轮成功不能作为「问题已解决」的证据——本仓库曾据此误记「已跑通」，被第二轮推翻。
-    反过来，「第二轮必崩」也曾被误读成「批大小问题」。
-  </p>
-  <p>
-    现在所有变体对比都要求：同节点、同时段、A/B 同作业内对照，
-    且要报告本档历史波动幅度。Kimi c64 的 +2.7% 就是因此没被当成确定收益。
-  </p>
-
-  <h3>三、参数失效不会报错</h3>
-  <p>审计 20 个条目后发现三类<strong>静默失效</strong>，共同点是没有任何报错：</p>
-
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>类型</th><th>实例</th><th>后果</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>同一变量 export 两次</td>
-          <td><code>EXTRA_ARGS</code> 在 env.sh 里被覆盖</td>
-          <td>前一行整个失效</td>
-        </tr>
-        <tr>
-          <td>启动命令不引用变量</td>
-          <td><code>submit.slurm</code> 内联参数，<code>grep EXTRA_ARGS</code> 计数 0</td>
-          <td>改 env.sh 完全无效</td>
-        </tr>
-        <tr>
-          <td>日志写到仓库外</td>
-          <td>服务端日志落 <code>$WORK/server-$JID.log</code></td>
-          <td>无法核对生效值</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h3>5.1 终止两个条目的依据</h3>
 
   <p>
-    最严重的后果：<code>env.sh</code> 里写着「必须显式 <code>--attention-backend triton</code>
-    否则首个 decode 请求崩溃」，而这条<strong>从未执行过</strong>——服务能跑只是因为后来换成了 0.21 镜像，
-    那个限制本来就不存在。
+    对 4.3 节所述问题，决定终止进一步排查。判断依据有三：
   </p>
 
-  <h3>四、磁盘是基础设施问题，不是小事</h3>
-  <p>
-    我这一轮把登录节点从 84% 灌到 <strong>99%（只剩 15 GB）</strong>，
-    留下 <code>/tmp/pr-insp3</code> 单目录 31 GB。至少 3 次作业因 <code>no space left</code> 失败。
-  </p>
-
-  <div class="note crit">
-    <span class="lab">两条硬约束（实测）</span>
-    <p>
-      <strong>镜像存储只能放节点本地</strong>——NFS 家目录上 overlay 报
-      <code>lsetxattr: operation not supported</code>，vfs 报 <code>pivot_root: permission denied</code>。
-    </p>
-    <p>
-      <strong>数据必须放家目录</strong>（<code>/public/home/luql</code>，432 GB），
-      不要放节点本地 <code>/tmp</code>。而且清理 podman 目录时普通 <code>rm -rf</code> 删不掉
-      （uid 映射），必须先 <code>podman rmi -af</code> + <code>system prune</code>。
-    </p>
-  </div>
-
-  <h3>五、「官方未下发」是假设，不是事实</h3>
-  <p>
-    11 个 T01/T02 条目的 §6 曾全部挂 <code>[BLOCKED]</code>，22 个文件写了 44 处「官方未下发」。
-    官方澄清后我第一反应是「取来公开分数填进去就能跑通」——<strong>也错了</strong>。
-  </p>
-
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th></th><th>shot</th><th>模型</th><th>指标</th></tr></thead>
-      <tbody>
-        <tr><td>我们的 verify.py</td><td>0-shot greedy</td><td>Instruct</td><td>GSM8K / plain MMLU</td></tr>
-        <tr><td>Kimi 官方 Table 9</td><td>未标</td><td>Instruct</td><td><strong>只有</strong> MMLU-Redux / MMLU-Pro</td></tr>
-        <tr><td>Kimi 官方 Table 8</td><td><strong>8-shot</strong></td><td><strong>Base</strong></td><td>GSM8K 86.3</td></tr>
-        <tr><td>MiMo 官方</td><td>avg@1/3</td><td>Distill</td><td><strong>完全没有</strong> MMLU/GSM8K</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p>
-    0-shot instruct 的成绩去比 8-shot base 的分数，差出来的每一分都可能是 shot 数或模型版本造成的。
-    减出来的「劣化」不是硬件/框架的锅，但它会以「劣化 ≤2pt → 通过」的形式写进 README。
-    <strong>这比不填数字更糟</strong>，因为它看起来像通过了验收。
-  </p>
-
-  <h3>六、别把缺陷当设计</h3>
-  <p>
-    这轮最大的认知错误：看到 <code>Failed to load JIT KV-Cache kernel ... Could not find CUDA installation</code>
-    这行日志，我推断「当年能跑是因为它失败了，所以是正常的降级路径」。
-  </p>
-  <p>
-    DTK 是 HIP/ROCm 体系，根本没有 CUDA——那句报错是 Triton 找不到工具链的<strong>误报</strong>。
-    正确做法是让它指向 DTK 的编译器，而不是依赖「编译失败」侥幸能跑。
-    把缺陷写进文档当经验，会让下一个人沿着错误的方向优化。
-  </p>
-</section>
-
-<!-- ============ 8 全部条目 ============ -->
-<section>
-  <h2><span class="num">08</span>条目全景</h2>
-
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>条目</th><th>赛道</th><th>状态</th><th>基准</th><th>说明</th></tr></thead>
-      <tbody>
-        <tr><td>Kimi-Linear-48B × SGLang</td><td class="mono">T01</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>chunked 已进配置</td></tr>
-        <tr><td>Kimi-Linear-48B × vLLM</td><td class="mono">T01</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>4K/c1 机理已查</td></tr>
-        <tr><td>MiMo-V2.6-9B × SGLang</td><td class="mono">T01</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>16K/c64 全库最高 299.81</td></tr>
-        <tr><td>MiMo-V2.6-9B × vLLM</td><td class="mono">T01</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>16K 慢 5 倍，缺 kernel</td></tr>
-        <tr><td>Recon2Reason-4B × vLLM</td><td class="mono">T02</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>vLLM 侧正常</td></tr>
-        <tr><td>Recon2Reason-4B × SGLang</td><td class="mono">T02</td><td><span class="pill crit">封存</span></td><td>6 档（历史）</td><td>Triton JIT VMFault</td></tr>
-        <tr><td>RoboBrain-8B × vLLM</td><td class="mono">T02</td><td><span class="pill ok">bench</span></td><td>6 档</td><td>vLLM 侧正常</td></tr>
-        <tr><td>RoboBrain-8B × SGLang</td><td class="mono">T02</td><td><span class="pill crit">封存</span></td><td>6 档（历史）</td><td>同上</td></tr>
-        <tr><td>Trident-Qwen3VL-2B × transformers</td><td class="mono">T02</td><td><span class="pill cool">bench</span></td><td>6 档（embedding）</td><td>自建 OpenAI 兼容服务</td></tr>
-        <tr><td>Trident-Qwen3VL-2B × SGLang / vLLM</td><td class="mono">T02</td><td><span class="pill warn">blocked</span></td><td>—</td><td>架构未注册，保证据</td></tr>
-        <tr><td>Qwen-Image-2.1-Turbo</td><td class="mono">T03</td><td><span class="pill ok">180/180</span></td><td>—</td><td>2048×2048 全量</td></tr>
-        <tr><td>Wan2.1-I2V-14B</td><td class="mono">T03</td><td><span class="pill ok">60/60</span></td><td>—</td><td>4 卡 FSDP</td></tr>
-        <tr><td>HY-OmniWeaving</td><td class="mono">T03</td><td><span class="pill ok">60/60</span></td><td>—</td><td>4 卡 SP 2.23×</td></tr>
-        <tr><td>HY-World-2.0</td><td class="mono">T03</td><td><span class="pill ok">5/5</span></td><td>—</td><td>单卡</td></tr>
-        <tr><td>MiniMax-Music3</td><td class="mono">T03</td><td><span class="pill ok">60/60</span></td><td>—</td><td>串行，3.4 h</td></tr>
-        <tr><td>AuK / AuK-Flash</td><td class="mono">T03/04</td><td><span class="pill ok">120/120</span></td><td>—</td><td>4.4 s / 1.0 s 每条</td></tr>
-        <tr><td>Qwen3-ASR-1.7B</td><td class="mono">T04</td><td><span class="pill ok">300/300</span></td><td>—</td><td>并发已调 −13%</td></tr>
-        <tr><td>Qwen3-ForcedAligner-0.6B</td><td class="mono">T04</td><td><span class="pill ok">30/30</span></td><td>—</td><td>0.36 s/条</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ============ 9 待办 ============ -->
-<section>
-  <h2><span class="num">09</span>留给下一个人的</h2>
-
-  <div class="two">
-    <div class="card">
-      <h4>可以继续推进的</h4>
-      <p>
-        <strong>Recon/RoboBrain × vLLM 的参数扫描</strong>：这两个条目 <code>optimized=false</code>，
-        从没扫过 <code>chunked_prefill_size</code>（当前是默认 8192）。
-        SGLang 侧已封存，vLLM 侧是唯一可动的路。
-      </p>
-      <p>
-        <strong>Kimi vLLM 4K/c1 的三个候选参数</strong>：<code>--compilation-config</code>、
-        <code>--async-scheduling</code>、RCCL 调优。实验脚本已就绪，作业 1128368。
-      </p>
-    </div>
-    <div class="card">
-      <h4>不建议再碰的</h4>
-      <p>
-        <strong>MiMo × vLLM 16K 档</strong>：三轮扫描含 v0 引擎全无效，缺 paged-attention kernel，
-        只能自建镜像。
-      </p>
-      <p>
-        <strong>fp8 / 量化</strong>：<code>torch.addmm</code> 对 Float8 直接 NotImplementedError，
-        一行代码可复现。
-      </p>
-      <p>
-        <strong>Wan 8 卡</strong>：FSDP 4→8 卡只有 1.11×，已饱和；数据并行分片单卡必 OOM。
-      </p>
-    </div>
-  </div>
-
-  <h3>重新打开 Recon/RoboBrain 的两种做法</h3>
-  <p>如果将来确实需要，按成功率从高到低试：</p>
-  <ol class="plain">
+  <ol class="refs">
     <li>
-      <code>export TVM_FFI_GPU_BACKEND=cuda</code>（务必无 <code>CUDA_HOME</code>）→
-      强制复刻「JIT 失败、回落」状态。估 60–70%。
+      <strong>交付不依赖该路径。</strong>两个条目的 vLLM 对偶条目已于 2026-11-12 完成全量六档基准，
+      其 SGLang 侧的历史数据与产物亦完整保留。
     </li>
     <li>
-      <code>rm -rf ~/.triton/cache</code> + <code>TRITON_CACHE_DIR</code> 指向本地 +
-      <code>TRITON_ALWAYS_COMPILE=1</code> → 排除陈旧 hsaco。估 35–45%。
+      <strong>诊断成本已超出预期收益。</strong>单次诊断须重新载入 8.5 GB 镜像归档，
+      而节点根分区可用空间在 0–278 GB 之间波动，实验期间三次因空间不足中断。
+      原计划验证的 chunked-prefill 参数收益预期为个位百分点，
+      且该模型受单卡 KV 缓存容量限制（331k tokens，而 64×17K 需 1.11M），可用空间本就有限。
+    </li>
+    <li>
+      <strong>替代路径成本更高。</strong>若要真正修复，须先解决镜像可复现性与 Triton 工具链版本匹配，
+      属于独立课题，不在本轮范围内。
     </li>
   </ol>
+
+  <p>若将来重新开启，建议按成功率降序尝试以下两项：</p>
+
+  <ul class="plain">
+    <li>
+      设置 <code>TVM_FFI_GPU_BACKEND=cuda</code>（且不设 <code>CUDA_HOME</code>），
+      以复现「JIT 失败并回落」的历史状态。估计成功率 60–70%。
+    </li>
+    <li>
+      清除 <code>~/.triton/cache</code>，将 <code>TRITON_CACHE_DIR</code> 指向本地盘并设置
+      <code>TRITON_ALWAYS_COMPILE=1</code>，以排除陈旧目标代码。估计成功率 35–45%。
+    </li>
+  </ul>
+
+  <h3>5.2 其他明确不再投入的方向</h3>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 9　已界定的性能上限</caption>
+      <thead><tr><th>对象</th><th>结论</th><th>依据</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>MiMo × vLLM 16K 档</td>
+          <td>无法改善</td>
+          <td>三轮参数扫描（含 v0 引擎）均无效；缺失分页注意力核，需自建镜像</td>
+        </tr>
+        <tr>
+          <td>fp8 量化</td>
+          <td>不可用</td>
+          <td><code>torch.addmm</code> 对 Float8 抛出 NotImplementedError，一行代码可复现</td>
+        </tr>
+        <tr>
+          <td>Wan2.1 多卡扩展</td>
+          <td>已饱和</td>
+          <td>FSDP 由 4 卡增至 8 卡仅得 1.11×；数据并行分片单卡显存不足</td>
+        </tr>
+        <tr>
+          <td>T01/T02 精度验收</td>
+          <td>口径不可比</td>
+          <td>官方公开分数为 8-shot/base 或 EM 口径，本地评测为 0-shot greedy，差值不含硬件因素</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section>
+  <h2><span class="num">6</span>方法论问题</h2>
+
+  <p>
+    本轮在排查过程中出现若干判断失误，其成因具有普遍性，故单独记录。
+  </p>
+
+  <h3>6.1 观测缩减导致的假规律</h3>
+
+  <p>
+    「首轮必过、次轮必崩」这一规律在三个作业中均成立，因而被视为稳定现象。
+    实际上它是观测窗口缩减的产物：早期作业连续执行六个档位，后续作业仅执行单档，
+    前者掩盖了「累计处理量」这一真实变量。若仅依据后期作业推断，无论提出多少假设都无法收敛。
+  </p>
+
+  <p>对应的做法是：当多个竞择假设并存时，先设计能区分它们的实验，而非沿最直觉的方向追加验证。</p>
+
+  <h3>6.2 参数的静默失效</h3>
+
+  <p>
+    对 20 个条目的启动配置审计发现三类参数失效情形，其共同特征是不产生任何错误输出：
+  </p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 10　参数失效的三种形态</caption>
+      <thead><tr><th>形态</th><th>实例</th><th>后果</th></tr></thead>
+      <tbody>
+        <tr><td>同名变量重复导出</td><td><code>EXTRA_ARGS</code> 在同一文件内定义两次</td><td>先前定义被整体覆盖</td></tr>
+        <tr><td>启动命令不使用该变量</td><td>作业脚本内联参数，引用计数为零</td><td>修改环境文件完全无效</td></tr>
+        <tr><td>日志写入仓库外路径</td><td>服务端日志落在工作目录之外</td><td>无法核对实际生效值</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    其中一例具有代表性：配置文件中注明「必须显式指定注意力后端，否则首个解码请求崩溃」，
+    而该行因上述机制从未执行。服务能够正常运行的真实原因是镜像版本此后发生了变更，
+    该限制已不复存在。这使一条错误的约束长期留在文档中。
+  </p>
+
+  <h3>6.3 将缺陷误记为设计</h3>
+
+  <p>
+    本轮最具影响的判断错误发生在对 <code>Could not find CUDA installation</code> 一行的解读上。
+    该报错出现在成功运行的日志中，据此初步推断「编译失败是正常的降级路径，服务依赖该失败才能运行」。
+  </p>
+
+  <p>
+    该推断有两处错误：其一，DTK 为 HIP/ROCm 体系，本无 CUDA，该报错属于工具链探测失败的误报；
+    其二，依赖编译失败才能运行意味着系统处于非预期状态，不应被记录为设计。
+    正确方向是令工具链指向 DTK 的编译器，使编译成功并生成正确代码。
+  </p>
+
+  <p>
+    把缺陷写入文档并标注为经验，其代价高于不记录——后续工作会沿着错误方向优化，且难以察觉。
+  </p>
+
+  <h3>6.4 基础设施约束</h3>
+
+  <p>
+    实验期间因存储位置选择产生的失败具有一致性，可作为集群作业的固定规范：
+  </p>
+
+  <div class="note negative">
+    <span class="head">容器存储与数据存储必须分离</span>
+    <p>
+      <strong>镜像存储只能位于节点本地盘。</strong>在 NFS 家目录上，overlay 驱动报
+      <code>lsetxattr: operation not supported</code>，vfs 驱动报 <code>pivot_root: permission denied</code>，
+      两者均已实测确认。
+    </p>
+    <p>
+      <strong>实验数据必须位于家目录。</strong>单次镜像展开后占用 20–32 GB，
+      若在节点本地反复展开，会耗尽根分区。实验期间一次误操作使登录节点使用率由 84% 升至 99%。
+      此外，rootless podman 的存储目录无法以常规 <code>rm</code> 删除，
+      须先执行 <code>rmi -af</code> 与 <code>system prune</code>。
+    </p>
+  </div>
+
+  <p>
+    作业模板应包含节点可用空间自检，不足时以非零状态码退出，使调度器在下一节点重新排队。
+    主动退出比写到中途失败更易清理。
+  </p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section>
+  <h2><span class="num">7</span>结论与后续工作</h2>
+
+  <h3>7.1 主要结论</h3>
+
+  <ol class="refs">
+    <li>
+      <strong>参数优化的收益有限但确定。</strong>chunked-prefill 4096 在 16K/c8 档带来 10.5% 提升，
+      超出该档波动范围；ASR 并发调整在指标不变的前提下降低 13% 耗时。两项均为「已测但未落地」的配置补齐。
+    </li>
+    <li>
+      <strong>长上下文高并发失效源于进程累计状态。</strong>每轮重启服务即可稳定出数，
+      四轮极差 1.2%。该结论否定了此前关于批处理规模的假设。
+    </li>
+    <li>
+      <strong>引擎优劣依负载档位而定。</strong>同一模型下，两引擎在不同档位的差距最大可达 3 倍且方向相反。
+      引擎选择须依据实际负载分布，不宜以单一指标或平均值决策。
+    </li>
+    <li>
+      <strong>两个条目的 SGLang 路径终止排查。</strong>八项对照实验排除了常规假设，
+      剩余疑点指向工具链与镜像的版本匹配，其成本超出本轮范围。
+    </li>
+  </ol>
+
+  <h3>7.2 后续可推进项</h3>
+
+  <div class="pair">
+    <div class="panel">
+      <h4>参数扫描的空白</h4>
+      <p>
+        Recon2Reason-4B 与 RoboBrain2.5-8B 的 vLLM 条目尚未进行任何参数扫描，
+        其 <code>chunked_prefill_size</code> 仍为默认值 8192。SGLang 侧终止后，vLLM 侧是唯一可推进路径。
+      </p>
+    </div>
+    <div class="panel">
+      <h4>单流开销的三项候选</h4>
+      <p>
+        针对 4.2 节所述 24 ms 固定开销，待验证 <code>--compilation-config</code>（编译模式）、
+        <code>--async-scheduling</code>（调度异步化）与 RCCL 通信参数。
+        实验脚本已就绪，对应作业 1128368。
+      </p>
+    </div>
+  </div>
+
+  <h3>7.3 数据可核验性</h3>
+
+  <p>
+    本报告全部数值均可在仓库内逐条核对：六档基准位于各条目
+    <code>bench/round1.jsonl</code> 与 <code>bench/round2.jsonl</code>，
+    汇总结论位于 <code>bench/summary.md</code>，条目级元数据位于 <code>meta.json</code>。
+    实验作业号在各节中列出，其服务端日志与产物保存在集群
+    <code>/public/home/luql/work/</code> 下对应目录。
+  </p>
+
+  <p>
+    工程约束的完整清单（59 项）位于 <code>docs/gotchas.md</code>，
+    按问题隐蔽程度排序，每项包含现象、排除过程与判据。
+  </p>
+</section>
+
+<!-- ============ 附录 ============ -->
+<section>
+  <h2><span class="num">A</span>附录：条目总览</h2>
+
+  <div class="tablewrap">
+    <table>
+      <caption>表 A1　20 个条目的赛道归属与完成状态</caption>
+      <thead><tr><th>条目</th><th class="num">赛道</th><th>状态</th><th>基准</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>Kimi-Linear-48B × SGLang</td><td class="num">T01</td><td><span class="tag ok">完成</span></td><td>六档</td><td>chunked 已纳入配置</td></tr>
+        <tr><td>Kimi-Linear-48B × vLLM</td><td class="num">T01</td><td><span class="tag ok">完成</span></td><td>六档</td><td>单流开销已定量</td></tr>
+        <tr><td>MiMo-V2.6-9B × SGLang</td><td class="num">T01</td><td><span class="tag ok">完成</span></td><td>六档</td><td>16K/c64 全局最高</td></tr>
+        <tr><td>MiMo-V2.6-9B × vLLM</td><td class="num">T01</td><td><span class="tag ok">完成</span></td><td>六档</td><td>长上下文受限</td></tr>
+        <tr><td>Recon2Reason-4B × vLLM</td><td class="num">T02</td><td><span class="tag ok">完成</span></td><td>六档</td><td>—</td></tr>
+        <tr><td>Recon2Reason-4B × SGLang</td><td class="num">T02</td><td><span class="tag crit">终止</span></td><td>六档（历史）</td><td>第 4.3 节</td></tr>
+        <tr><td>RoboBrain-8B × vLLM</td><td class="num">T02</td><td><span class="tag ok">完成</span></td><td>六档</td><td>—</td></tr>
+        <tr><td>RoboBrain-8B × SGLang</td><td class="num">T02</td><td><span class="tag crit">终止</span></td><td>六档（历史）</td><td>第 4.3 节</td></tr>
+        <tr><td>Trident-Qwen3VL-2B × transformers</td><td class="num">T02</td><td><span class="tag ok">完成</span></td><td>六档（嵌入）</td><td>自建兼容服务</td></tr>
+        <tr><td>Trident-Qwen3VL-2B × SGLang / vLLM</td><td class="num">T02</td><td><span class="tag warn">受阻</span></td><td>—</td><td>架构未注册</td></tr>
+        <tr><td>Qwen-Image-2.1-Turbo</td><td class="num">T03</td><td><span class="tag ok">180/180</span></td><td>—</td><td>2048×2048</td></tr>
+        <tr><td>Wan2.1-I2V-14B</td><td class="num">T03</td><td><span class="tag ok">60/60</span></td><td>—</td><td>四卡 FSDP</td></tr>
+        <tr><td>HY-OmniWeaving</td><td class="num">T03</td><td><span class="tag ok">60/60</span></td><td>—</td><td>四卡序列并行 2.23×</td></tr>
+        <tr><td>HY-World-2.0</td><td class="num">T03</td><td><span class="tag ok">5/5</span></td><td>—</td><td>单卡</td></tr>
+        <tr><td>MiniMax-Music3</td><td class="num">T03</td><td><span class="tag ok">60/60</span></td><td>—</td><td>串行，3.4 h</td></tr>
+        <tr><td>AuK / AuK-Flash</td><td class="num">T03/04</td><td><span class="tag ok">120/120</span></td><td>—</td><td>4.4 s / 1.0 s 每条</td></tr>
+        <tr><td>Qwen3-ASR-1.7B</td><td class="num">T04</td><td><span class="tag ok">300/300</span></td><td>—</td><td>并发已优化</td></tr>
+        <tr><td>Qwen3-ForcedAligner-0.6B</td><td class="num">T04</td><td><span class="tag ok">30/30</span></td><td>—</td><td>0.36 s/条</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    「完成」指该条目已通过官方条件校验或六档基准；「终止」指经系统性排除后停止排查，
+    其历史数据仍然有效；「受阻」指架构层面不受支持，已有替代方案保证可用性。
+  </p>
 </section>
 
 <footer>
-  <p>数据源：<span class="mono">models/*/bench/round*.jsonl</span> · <span class="mono">models/*/meta.json</span> · 集群作业日志</p>
-  <p>经验库：<span class="mono">docs/gotchas.md</span>（59 条）· <span class="mono">docs/REPORT.md</span> · <span class="mono">sweeps/results-*.md</span></p>
-  <p>仓库：<span class="mono">github.com/lql341/scnet-dcu-model-zoo</span> · <span class="mono">developer.sourcefind.cn/codes/luql/scnet-dcu-model-zoo</span></p>
-  <p style="margin-top:1rem">2026-11-15 · 所有数字均可在仓库内逐条核验</p>
+  <p>数据来源：models/*/bench/round*.jsonl · models/*/meta.json · 集群作业日志</p>
+  <p>工程约束：docs/gotchas.md（59 项）· docs/REPORT.md · sweeps/results-*.md</p>
+  <p>代码仓库：github.com/lql341/scnet-dcu-model-zoo · developer.sourcefind.cn/codes/luql/scnet-dcu-model-zoo</p>
+  <p style="margin-top:0.9rem">2026-11-15　本报告全部数值可在仓库内逐条核验</p>
 </footer>
 
 </div>
