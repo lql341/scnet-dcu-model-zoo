@@ -534,7 +534,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm     # 自动跳过已有
 | 3 | **Kimi-Linear** | TP=4 | TP=8（整节点 8 卡，`-c 64`） | 单流更好，长上下文不一定 | 2 卡时 |
 | 4 | **MiMo × SGLang** | 4K/c64 998 tok/s | 16K 档已 +5~8%（chunked 4096）；再试 CUDA Graph 与 chunked 组合的全档位扫描 | +5% | 2 卡时 |
 | 5 | **vLLM 长上下文** | 16K 只有 SGLang 的 1/5 | **自建镜像**重编 aiter / 找 paged-attn kernel | 可能 3–5× | 8–16 卡时 |
-| 6 | **量化** | 仅 AWQ 探针（慢 5×） | MiMo/Kimi 无官方 AWQ 权重 → 用 `llm-compressor` 自量化；或试 GPTQ | 显存 2–4×↓ | 4–8 卡时 |
+| 6 | **量化** | 仅 AWQ 探针（慢 5×）；fp8 在 DCU 上无 kernel | **先补 kernel 再量化**：无 fused dequant-GEMM 时自量化只省显存不提吞吐，详见 `docs/quantization-branch.md` | 显存 2–4×↓（吞吐不变） | 2–3 卡时（+kernel 8–16） |
 | 7 | **Qwen-Image** | 19.8 s/张 | 已证合批不可行（显存）；可试 `torch.compile` | 未知 | 2 卡时 |
 | 8 | **ASR** | 300 条 30 s | 已 −10%（mns64+16 并发）；再试 batch 推理 API | 小 | 1 卡时 |
 
