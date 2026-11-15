@@ -6,24 +6,24 @@
 # ---------- 模型 ----------
 export MODEL_ID="Wan-AI/Wan2.1-I2V-14B-480P"
 export MODEL_PATH="/models/Wan21"
-export HOST_MODEL_PATH="/public/home/scnethr2601a10/models/Wan2.1-I2V-14B-480P"
+export HOST_MODEL_PATH="/public/home/luql/models/Wan2.1-I2V-14B-480P"
 export TASK="i2v-14B"
 
 # ---------- 镜像 / 框架 / 卡型 ----------
 # 用 SGLang 镜像：DTK 26.04 + DCU 版 torch 2.9（Wan2.1 官方代码的 flash_attn 会缺失，
 # wan/modules/attention.py 会自动回落到 torch.nn.functional.scaled_dot_product_attention）
 export IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"
-export HOST_IMAGE_TAR="/public/home/scnethr2601a10/images/mimo-sglang-bw10000_1.1.1.tar"
+export HOST_IMAGE_TAR="/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz"
 export FRAMEWORK="wan2.1"
 export CARD="BW1000"
 export PRECISION="bf16"
 export PORT=30000
 
 # ---------- 官方代码与依赖 ----------
-export WAN_SRC_HOST="/public/home/scnethr2601a10/Wan2.1-src"
+export WAN_SRC_HOST="/public/home/luql/archive/zoo-dcu-2026-11/sources/Wan2.1-src"
 # diffusers 复用 Qwen-Image 条目归档的那份（hub 1.33.0 与之配套），纯 Python 依赖单独一套
-export WHEELS_HOST="/public/home/scnethr2601a10/wheels/wan-fix"
-export WHEELS_QI_HOST="/public/home/scnethr2601a10/wheels/qi2"
+export WHEELS_HOST="/public/home/luql/wheels/wan-fix"
+export WHEELS_QI_HOST="/public/home/luql/wheels/qi2"
 
 # ---------- 并行 ----------
 # 官方 60 条条件，按卡分片跑（1 卡 1 进程）。SHARD_TOTAL 由 submit.slurm 按申请卡数设置。

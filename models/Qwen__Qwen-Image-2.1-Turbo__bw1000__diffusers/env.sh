@@ -5,10 +5,10 @@
 #       故用镜像自带 5.8.1 + diffusers 0.42.1（已内置 QwenImage21Pipeline）实测。
 export MODEL_ID="Qwen/Qwen-Image-2.1-Turbo"
 export MODEL_PATH="/models/QwenImage"
-export HOST_MODEL_PATH="/public/home/scnethr2601a10/models/Qwen-Image-2.1-Turbo"
+export HOST_MODEL_PATH="/public/home/luql/models/Qwen-Image-2.1-Turbo"
 
 export IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"
-export HOST_IMAGE_TAR="/public/home/scnethr2601a10/images/mimo-sglang-bw10000_1.1.1.tar"
+export HOST_IMAGE_TAR="/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz"
 export FRAMEWORK="diffusers"
 export CARD="BW1000"
 export PRECISION="bf16"
@@ -17,5 +17,5 @@ export PORT=0
 export WIDTH=2048
 export HEIGHT=2048
 export NFE=8                 # Turbo 版内置 8 步日程；只设 num_inference_steps 不会覆盖，需传 sigmas
-export WHEELS_HOST="/public/home/scnethr2601a10/wheels/qi2"
+export WHEELS_HOST="/public/home/luql/wheels/qi2"   # qi2 的 huggingface_hub 是 1.33.0；qi 里是旧的 0.36.2，diffusers 0.41 会 ImportError
 export LOAD_TIMEOUT=1800

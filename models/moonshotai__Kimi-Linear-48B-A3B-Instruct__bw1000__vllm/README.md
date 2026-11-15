@@ -97,14 +97,31 @@ T01 官方 `baselines/<模型>.json` 从未下发 → **[BLOCKED]**，不填估�
 | 4K / c64 | **858.08** | 839.00 | **+2%** |
 | 16K / c1 | 37.36 | 50.80 | −26% |
 | 16K / c8 | 197.83 | 119.21 | **+66%** |
-| 16K / c64 | ❌ 无数据 | 234.17 | — |
+| 16K / c64 | ❌ 崩溃（GPU VMFault） | 234.17 | — |
 
 **结论（与 MiMo 的"vLLM 全面落后"不同，值得记录）**：
 - **高并发档 vLLM 反超**：4K/c64 +2%、16K/c8 **+66%**。Kimi 是 48B 小激活（3B）MoE-like 结构，
   vLLM 的调度在高并发下更吃得开。
 - **单流 vLLM 明显落后**（4K/c1 −61%），说明低并发时 SGLang 的 kernel 更优。
-- **16K/c64 两轮均失败**：压测客户端一条请求都没成功（`IndexError: ... size 0`），
-  同 MiMo×vLLM 的症状，根因是 DCU 缺 paged-attention 内核（`docs/gotchas.md` #21）。
+- **16K/c64 两轮均失败，根因已定位（2026-11-15 复现并抓到服务端日志）**：
+  不是"客户端没起来"，而是**服务端 worker 被 GPU 内存错误打死**：
+
+  ```
+  Invalid address access: 0x7f7e01015000, Error code: 1.
+  >>>>>>>> KERNEL VMFault !!!! <<<<<<
+  (EngineCore) ERROR [multiproc_executor.py:283] Worker proc VllmWorker-3 died unexpectedly
+  (APIServer) ERROR [serving.py:448] EngineDeadError: EngineCore encountered an issue
+  ```
+
+  崩溃时调度器状态 `num_running_reqs=33, num_waiting_reqs=31`（16K 输入 × c64）。
+  同配置下 **16K/c1、16K/c8 都正常**（本轮实测 34.78 / 184.51 tok/s），
+  所以这是**大 batch + 长上下文下的 kernel 地址越界**，与显存容量无关（无 OOM 记录）。
+  上一版把根因写成"缺 paged-attn 内核"是推测；现在有 VMFault 的原始证据，
+  结论收紧为：vLLM 0.20 在 DCU 上跑 16K×c64 会触发 GPU 访存错误，属框架/kernel 缺陷，非配置问题。
+
+  排查过程中另修掉一个**会掩盖真因**的问题：压测客户端 `--ready-check-timeout-sec` 默认 60 s，
+  而本模型冷启动要 410 s，于是"服务还没起来"被记成"该档不支持"。已改为可配（默认 900 s），
+  否则永远看不到上面的 VMFault。
 
 ### 7.1 多卡起服务必须显式给可见性
 

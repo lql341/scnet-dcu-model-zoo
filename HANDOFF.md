@@ -12,7 +12,7 @@
 > 正在跑的 OmniWeaving 作业被 CANCELLED（22 h，**53/60 产物已在盘上**）。集群范围内 `squeue -a` 为 0 条作业、
 > OpenAPI 的 `queues` 也返回空 → 判断为账号/分区权限变更（正是 §9 的 P0-7）。详见 §11「事故记录」。
 >
-> 最后更新：2026-11-14　余额约 **4275**　状态：**19 个条目**——9 个官方评测全绿（935 条全覆盖）、8 个 6 档基准、2 个 blocked
+> 最后更新：2026-11-14　余额约 **4275**　状态：**20 个条目**——9 个官方评测全绿（935 条全覆盖）、8 个 6 档基准、1 个 embedding 服务（Trident 自建 serving）、2 个 blocked
 > 本轮新进展：**AuK 与 Qwen-Image 的 blocked 根因全部推翻重定位**——都不是卡的错，
 > 是「离线 wheel 按 cp312 下、容器是 py3.10」「`--no-deps` 不校验 `Requires-Dist`」这类工程错误。
 > 两个条目已重新起跑官方全量条件评测。详见 §7 / §9。
@@ -30,7 +30,7 @@
 
 ## 1. 一句话现状
 
-在 **BW1000（海光 DCU）** 上完成 **19 个条目**（模型 × 框架 × 精度），其中
+在 **BW1000（海光 DCU）** 上完成 **20 个条目**（模型 × 框架 × 精度），其中
 **9 个完成官方条件评测且全绿**（935 条真实产物，官方 9 份清单全覆盖）、**8 个有完整 6 档基准**。
 本轮把原先 2 个 blocked（AuK、Qwen-Image）的根因重定位并修掉，**两个都已跑完官方全量条件**：
 - AuK：卡点 = 离线 wheel 标签（cp312 vs py3.10）+ `torchaudio.save` 走 torchcodec → **120/120**，4.4 s/条
@@ -244,7 +244,7 @@ zoo/
 ├── ARTIFACTS.md               SCNet 侧产物位置与重建成本
 ├── docs/
 │   ├── entry-spec.md          ★ 条目规范（强制）
-│   ├── gotchas.md             ★ 32 条踩坑（按隐蔽度排序）
+│   ├── gotchas.md             ★ 35 条踩坑（按隐蔽度排序）
 │   ├── environment.md         硬件/软件/镜像能力实测
 │   ├── manual-push.md         手动推镜像到 SCNet 镜像库
 │   ├── image-archive.md       镜像归档与还原
@@ -253,7 +253,7 @@ zoo/
 │   ├── platform-checklist.md  platform/ 截图清单
 │   ├── landscape.md           93 个公开仓库竞争盘点
 │   └── SELF-CHECK-2026-11-02.md  T03/T04 材料到位后的自查
-├── models/<org>__<model>__<card>__<framework>/    19 个条目
+├── models/<org>__<model>__<card>__<framework>/    20 个条目
 ├── official/t03-t04/          ★ 官方条件清单 + file-manifest + provenance
 ├── sweeps/                    参数扫描脚本（非正式条目）
 └── tools/                     lint_entry.sh / gen_index.py / check_quota.sh

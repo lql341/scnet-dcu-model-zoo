@@ -71,7 +71,10 @@ def main():
         p = it.get("params") or {}
         img = resolve_image(it, asset_root, os.path.dirname(cond))
         fsdp = os.environ.get("FSDP", "0") == "1"
-        nproc = int(os.environ.get("FSDP_NPROC", "8"))
+        # 非 FSDP（数据并行分片）必须是 1 进程：分片本身已经把不同的条分给不同进程，
+        # 每个分片只能看自己那一张卡。此前误用 FSDP_NPROC，8 卡时每个分片都起 8 个 rank，
+        # 全部落在同一张卡上，torchrun 报 ChildFailedError（实测 2026-11-15）。
+        nproc = int(os.environ.get("FSDP_NPROC", "8")) if fsdp else 1
         # 单卡 64 GB 装不下 14B + UMT5-XXL（实测 --offload_model 与 --t5_cpu 仍 OOM）：
         # 改用官方推荐的多卡 FSDP（--dit_fsdp --t5_fsdp，不需要 xfuser，非序列并行）
         launcher = ["torchrun", f"--nproc_per_node={nproc}", "--master_port", str(29500 + (os.getpid() % 500)),

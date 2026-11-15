@@ -1,0 +1,33 @@
+# image.lock —— 镜像锁定
+
+本条目**不需要构建镜像**：直接使用 Harbor 上现成的镜像。
+锁定 digest 是为了保证任意时间点复现出完全相同的环境。
+
+| 项 | 值 |
+| --- | --- |
+| registry | `image.ac.com:5000`（Harbor，内网 10.13.17.207，仅 HTTPS） |
+| repository | `dcu/linshp/base/mimo-sglang-bw10000` |
+| tag | `1.1.1` |
+| digest | `sha256:db981c466e743e470d78a06bc2fb004f181924041fdcb074a1aadf4f10090e93` |
+| 压缩大小 | 7.8 GiB |
+| 架构 | linux/amd64 |
+| 认证 | **匿名可 pull**（公开项目 `dcu`），需 `--tls-verify=false` |
+
+## 拉取
+
+```bash
+export XDG_RUNTIME_DIR=/tmp/xdg-$$ && mkdir -p $XDG_RUNTIME_DIR && chmod 700 $XDG_RUNTIME_DIR
+JID=${SLURM_JOB_ID:-$$}
+PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID \
+    --storage-driver overlay --storage-opt ignore_chown_errors=true"
+$PD pull --tls-verify=false --cert-dir=/tmp/emptycerts image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1
+
+# 校验
+$PD image inspect image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1 --format '{{.Digest}}'
+```
+
+## 为什么不自建镜像
+
+- Harbor 公共项目里已有满足要求的镜像（DTK 26.04 + das 优化版框架），自建需要从 DTK 基础镜像装 torch/triton/sglang，成本远高于复用。
+- 4 个条目只用到 **2 个镜像**，全部复用，无一条需要构建。
+- 若将来某条目必须自建（例如镜像内 `aiter` 残包需要补包），应在本目录放 `Dockerfile` 并在 README §3 写明，而不是改公共镜像。

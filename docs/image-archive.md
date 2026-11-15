@@ -2,7 +2,7 @@
 
 ## 为什么要归档
 
-本项目 19 个条目引用的 5 个镜像均属于**第三方账号**（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`）。上游删仓库时，
+本项目 20 个条目引用的 5 个镜像均属于**第三方账号**（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`）。上游删仓库时，
 `image.lock` 里的 digest 也救不回来（blob 随仓库消失）。归档是这道风险的兜底。
 
 同时它是**后续手动 push 到自有命名空间**的物料来源，见 `docs/manual-push.md`。

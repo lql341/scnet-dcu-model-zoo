@@ -1,0 +1,6 @@
+{"tokens": 512, "concurrency": 1, "items": 1, "wall_s": 0.044, "items_per_s": 22.787, "tokens_per_s": 11667.0, "lat_p50_ms": 43.4, "lat_p95_ms": 43.4}
+{"tokens": 512, "concurrency": 8, "items": 8, "wall_s": 0.345, "items_per_s": 23.177, "tokens_per_s": 11866.7, "lat_p50_ms": 193.4, "lat_p95_ms": 301.5}
+{"tokens": 2048, "concurrency": 1, "items": 1, "wall_s": 0.066, "items_per_s": 15.215, "tokens_per_s": 31159.3, "lat_p50_ms": 65.3, "lat_p95_ms": 65.3}
+{"tokens": 2048, "concurrency": 8, "items": 8, "wall_s": 0.511, "items_per_s": 15.65, "tokens_per_s": 32051.2, "lat_p50_ms": 286.9, "lat_p95_ms": 444.4}
+{"tokens": 4096, "concurrency": 1, "items": 1, "wall_s": 0.113, "items_per_s": 8.86, "tokens_per_s": 36291.2, "lat_p50_ms": 112.4, "lat_p95_ms": 112.4}
+{"tokens": 4096, "concurrency": 8, "items": 8, "wall_s": 0.883, "items_per_s": 9.062, "tokens_per_s": 37117.5, "lat_p50_ms": 496.5, "lat_p95_ms": 769.0}

@@ -11,7 +11,9 @@ export SERVED_NAME="kimi-linear-48b"
 
 export IMAGE="image.ac.com:5000/dcu/linshp/base/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw:1.0.0"
 export CLI_IMAGE="image.ac.com:5000/dcu/linshp/base/mimo-sglang-bw10000:1.1.1"   # 仅压测客户端
-export HOST_CLI_TAR=""
+# 归档 tar.gz（离线可复现；留空则回退 Harbor 拉取，但需要 /etc/docker/certs.d 凭据）
+export HOST_IMAGE_TAR="/public/home/luql/archive/zoo-dcu-2026-11/images/vllm0.20-ubuntu22.04-dtk26.04-py3.10_qwen_asr1.7_bw_1.0.0.tar.gz"
+export HOST_CLI_TAR="/public/home/luql/archive/zoo-dcu-2026-11/images/mimo-sglang-bw10000_1.1.1.tar.gz"
 export FRAMEWORK="vllm"
 export CARD="BW1000"
 export PRECISION="bf16"

@@ -18,6 +18,9 @@ echo "[bench] module=$BENCH  mode=$BENCH_MODE  ctx=$MAX_LEN"
 python3 /preflight_lib.py || exit 1
 
 DATA=(--dataset-name random-ids)   # 随机 token，无需下载数据集
+# 客户端默认只等 60 s 服务就绪；本模型冷启动 + kernel 编译可达数分钟，
+# 60 s 会把"服务还没起来"误记成"该档不支持"（实测 16K/c64 两轮都栽在这）
+READY_TIMEOUT="${READY_TIMEOUT:-900}"
 # 档位集合可覆盖：用于复现自检（BENCH_QUICK=1 只跑 4K/并发1/1轮），不影响正式口径
 ILENS="${BENCH_ILENS:-4096 16384}"
 CONCS="${BENCH_CONCS:-1 8 64}"
@@ -34,6 +37,7 @@ for ILEN in $ILENS; do
         --model "$SERVED_NAME" --tokenizer "$MODEL_PATH" "${DATA[@]}" \
         --random-input-len "$ILEN" --random-output-len 1024 --random-range-ratio 1 \
         --max-concurrency "$C" --num-prompts "$N" --seed 1 \
+        --ready-check-timeout-sec "${READY_TIMEOUT:-60}" \
         --output-file "bench/round${R}.jsonl" > "bench/${TAG}.log" 2>&1 \
         || echo "[bench] FAIL $TAG，见 bench/${TAG}.log；不支持的档位写进报告「注意事项」"
     done

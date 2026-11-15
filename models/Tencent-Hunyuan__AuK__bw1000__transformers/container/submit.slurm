@@ -10,8 +10,8 @@
 set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"
 source "$REPO/env.sh"
-WORK="${WORK:-/public/home/scnethr2601a10/work/auk}"
-ASSETS=/public/home/scnethr2601a10/work/official-t34
+WORK="${WORK:-/public/home/luql/work/auk}"
+ASSETS=${ASSETS:-/public/home/luql/work/official-t34}
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"

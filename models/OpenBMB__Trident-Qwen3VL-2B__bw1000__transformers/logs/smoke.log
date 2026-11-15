@@ -1,0 +1,9 @@
+== /health
+{"status": "ok", "model": "/models/Trident", "stats": {"requests": 0, "items": 0, "seconds": 0.0}}
+== /v1/models
+{"object": "list", "data": [{"id": "OpenBMB/Trident-Qwen3VL-2B", "object": "model", "owned_by": "OpenBMB"}]}
+== 三条向量化路径（2026-11-15 实测，作业 1120169）
+[smoke] text_only   dim=2048 ||v||=1.0000
+[smoke] image_only  dim=2048 ||v||=1.0000
+[smoke] text_image  dim=2048 ||v||=1.0000
+[smoke] 三种输入全部通过

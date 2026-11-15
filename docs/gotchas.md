@@ -512,3 +512,128 @@ sacct -j <JOBID> -n -P -o JobID,ReqTRES,AllocTRES
 
 **教训**：`exitcode -9` + 无 traceback + `oom_kill events` 是**宿主内存**耗尽，
 不是显存、也不是代码问题；Docker/podman 场景下容易被当成"容器被杀"去查驱动。
+
+## 33. `WORK` 指到仓库目录：`cp` 把自己拷进自己，报错却是 `ModuleNotFoundError: dashscope`
+
+**现象**：8 卡作业一切正常地起了容器、装了依赖、`wan import OK`，然后在生成阶段全部 rank 退出，
+唯一可见的错误是：
+
+```
+File "/opt/wan-src/generate.py", line 19, in <module>
+  from wan.utils.prompt_extend import DashScopePromptExpander
+ModuleNotFoundError: No module named 'dashscope'
+```
+
+**根因**：与 dashscope 无关。提交脚本里有两行惯用写法：
+
+```bash
+WORK="${WORK:-/public/home/luql/work/zoo-wan}"     # ← 恰好等于 REPO
+mkdir -p "$WORK/repo" && cp -rf "$REPO"/. "$WORK/repo"/ 2>/dev/null
+```
+
+把 `$REPO` 拷进它自己的子目录时，GNU `cp` **一开始就报错退出**（`cannot copy a directory into itself`），
+而 `2>/dev/null` 把这个错误吞掉了。后果是 `/work/repo` 只有容器以前留下的旧内容、
+**`patches/` 目录根本没拷进去**，于是"容器内拷贝源码 + 打补丁"那一步的 `for p in patches/*.patch`
+匹配不到任何文件、静默跳过，运行时用的还是不支持惰性导入的原始源码。
+
+**为什么错误信息会误导**：补丁没打上 → 官方 `generate.py` 在模块级 import `dashscope` →
+而镜像里没有 `dashscope` → 报 `ModuleNotFoundError`。**真正缺的是补丁文件，不是 Python 包。**
+
+**解法**：`WORK` 必须与 `REPO` 分开，并给 `cp` 加自保护（不要再 `2>/dev/null`）：
+
+```bash
+WORK="${WORK:-/public/home/luql/work/<条目>-run}"
+mkdir -p "$WORK/repo"
+if [ "$(cd "$REPO" && pwd -P)" = "$(cd "$WORK/repo" && pwd -P)" ]; then
+  echo "[host] WORK/repo 与 REPO 相同，跳过拷贝"
+else
+  cp -rf "$REPO"/. "$WORK/repo"/ || { echo "[host] 拷贝仓库失败"; exit 1; }
+fi
+```
+
+**代价**：两次 8 卡作业（各 ~30 min）白跑，且第一反应会是去装 `dashscope`。
+
+**规则**：`2>/dev/null` 只允许出现在"失败也无所谓"的地方；凡是后续步骤依赖其产物的拷贝/安装，
+一律保留 stderr 并在失败时 `exit`。
+
+## 34. 数据并行分片模式里误用 `FSDP_NPROC`：每个分片起 N 个 rank 抢同一张卡
+
+**现象**：`SHARD_TOTAL=8`（8 卡各跑各的）时，每个分片的日志里都出现
+`torch.distributed.elastic...ChildFailedError`、`rank : 1 (local_rank: 1)`，
+并且显存瞬间打满到 63.98 GiB 后 OOM。
+
+**根因**：启动器把"进程数"和"卡数"混用了：
+
+```python
+nproc = int(os.environ.get("FSDP_NPROC", "8"))   # FSDP 下确实是 8
+launcher = ["torchrun", f"--nproc_per_node={nproc}", ...]   # 但分片模式下应恒为 1
+```
+
+FSDP 是"N 个 rank 共同算一条"，分片是"1 个 rank 独占一张卡算自己那几条"。分片模式下
+仍按 `FSDP_NPROC` 起进程，就是 8 个 rank 全落在 `HIP_VISIBLE_DEVICES=<i>` 指定的同一张卡上。
+
+**解法**：
+
+```python
+nproc = int(os.environ.get("FSDP_NPROC", "8")) if fsdp else 1
+```
+
+**顺带确认的一条硬约束**（本次实测）：Wan2.1-I2V-14B 在 64 GB 单卡上**装不下**——
+即使 `--offload_model True --t5_cpu` 也 OOM（`Tried to allocate 310 MiB, 0 bytes free`）。
+所以这个模型**没有"分片"这个选项**，多卡只能走 FSDP。
+
+## 35. 只测文本会误判"已跑通"：`qwen_vl_utils` 版本错，图像路径必崩
+
+**现象**：给 Qwen3-VL 系模型搭自建 serving，文本路径完全正常（2048 维、L2 归一化），
+一旦输入图片就 500：
+
+```
+RuntimeError: shape '[1, 1, 2, 3, 32, 2, 16, 32, 2, 16]' is invalid for input of size 6439776
+```
+
+**根因**：`qwen_vl_utils` 版本与 Qwen3-VL 的 grid/patch 约定不匹配（实测 0.0.8 崩、0.0.14 正常）。
+官方 `trident_embedder.py` 的注释里其实写了 `pip install qwen-vl-utils==0.0.14`，
+而集群 wheels 目录里只有早先为 OmniWeaving 下的 0.0.8 —— **版本号只差一位，症状完全是内核级的**。
+
+**判据**（`diag_images.py` 的做法）：分别打印 processor 的 `pixel_values.shape` 与 `image_grid_thw`，
+再对比模型期望的 `t×(h/merge)×(w/merge)×3×temporal×patch×patch`。
+两者自洽 → 问题在"自建管线的前处理"（多半是 `qwen_vl_utils` 版本）；
+两者矛盾 → 问题在 processor/model 版本不配套。
+
+**解法**：`pip download qwen_vl_utils==0.0.14` 单独放一个 wheels 目录，容器里 `--no-deps --upgrade`
+装进隔离目录。
+
+**教训**：多模态模型的"跑通"必须包含**三类输入**（纯文本 / 纯图像 / 图文），
+只测文本会把前处理问题全部漏掉；而这类问题的报错又长得像模型代码 bug，容易往错误方向查。
+
+## 36. 压测客户端的 `ready-check-timeout` 默认 60 s：会把"服务在加载"记成"该档不支持"
+
+**现象**：某个高负载档位（Kimi × vLLM 16K/c64）两轮都报失败，客户端日志只有
+
+```
+Waiting up to 60s for http://127.0.0.1:30000/v1/models to become ready...
+Server at http://127.0.0.1:30000/v1/models is not ready. Exiting.
+```
+
+看起来像"这个档位不支持"，于是被写进报告当结论。
+
+**根因**：SGLang/vLLM 的 `bench_serving` 客户端有个 `--ready-check-timeout-sec`，默认 **60 s**。
+而 48B + TP=4 的冷启动（含 kernel 编译）实测要 **410 s**。于是客户端在服务还在加载时就退出，
+真正的服务端错误被完全掩盖。
+
+**解法**：把它显式设大（本仓库改为 `READY_TIMEOUT`，默认 900 s），并**务必保存服务端日志**
+（`podman logs <name> > $WORK/vllm-logs-$JID.txt`，容器一删日志就没了）。
+
+**改大之后才看到的真因**（同一档位）：
+
+```
+Invalid address access: 0x7f7e01015000, Error code: 1.
+>>>>>>>> KERNEL VMFault !!!! <<<<<<
+(EngineCore) ERROR [multiproc_executor.py:283] Worker proc VllmWorker-3 died unexpectedly, shutting down executor.
+```
+
+即 worker 被 **GPU 访存错误**打死（崩溃时 `num_running_reqs=33, num_waiting_reqs=31`），
+而不是超时、不是 OOM、也不是"不支持"。
+
+**教训**：凡是"客户端说服务没准备好"的失败，都要先把客户端的等待时间调到明显大于冷启动时间，
+否则你记下的是自己设置的超时，而不是系统的行为。

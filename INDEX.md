@@ -22,6 +22,7 @@
 | 模型 | 卡型×卡数 | 框架 | 精度 | 状态 | 冷启动 | 原因 | 详情 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | MiniMax-Music3 | BW1000 ×1 | sglang | bf16 | official-eval | 600–700 s | 官方 T03 明确「不进行统一评分和性能比较」；按官方 60 条条件生成 32 kHz 立体声、≤750 声学帧 | [→](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) |
+| Trident-Qwen3VL-2B | BW1000 ×1 | transformers | bf16 | bench | 25–35 s | T02 评测器与 baselines/ 至今未下发，无法按官方口径出分；本条目只做链路验证与embedding 分档吞吐（bench/summary.md 的 items/s 口径），不适用仓库标准的 6 档生成基准 | [→](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/) |
 | Qwen-Image-2.1-Turbo | BW1000 ×1 | diffusers | bf16 | official-eval | 60–90 s | 官方 T03 明确「不进行统一评分和性能比较」；已按官方 180 条条件完成（2048×2048、8 步、KV cache） | [→](models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/) |
 | Qwen3-ASR-1.7B | BW1000 ×1 | vllm | bf16 | official-eval | 150–200 s | 官方 T04 明确「不进行统一评分和性能比较」，不要求服务接口；已按官方 300 条条件完成评测 | [→](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) |
 | Qwen3-ForcedAligner-0.6B | BW1000 ×1 | transformers | bf16 | official-eval | 0–0 s | 官方 T04 明确不进行统一评分和性能比较；且 BOUNDARIES_PENDING —— 无人工词边界，仅收集预测不计算准确率 | [→](models/Qwen__Qwen3-ForcedAligner-0.6B__bw1000__transformers/) |

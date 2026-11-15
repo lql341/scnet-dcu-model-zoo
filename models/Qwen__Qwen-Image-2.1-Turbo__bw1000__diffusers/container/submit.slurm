@@ -10,7 +10,7 @@
 set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"
 source "$REPO/env.sh"
-WORK="${WORK:-/public/home/scnethr2601a10/work/qi}"
+WORK="${WORK:-/public/home/luql/work/qi}"
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
@@ -20,7 +20,12 @@ FREE=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
 echo "[host] node=$(hostname) tmp_free=${FREE}G"
 [ "$FREE" -lt 70 ] && { echo "[host] NOT_ENOUGH_SPACE exit 42"; exit 42; }
 mkdir -p "$XDG_RUNTIME_DIR"; chmod 700 "$XDG_RUNTIME_DIR"
-if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then $PD load -i "$HOST_IMAGE_TAR" >/tmp/load-$JID.log 2>&1; fi
+if [ -n "${HOST_IMAGE_TAR:-}" ] && [ -s "$HOST_IMAGE_TAR" ]; then
+  case "$HOST_IMAGE_TAR" in
+    *.gz) gunzip -c "$HOST_IMAGE_TAR" | $PD load >/tmp/load-$JID.log 2>&1 ;;
+    *)    $PD load -i "$HOST_IMAGE_TAR" >/tmp/load-$JID.log 2>&1 ;;
+  esac
+fi
 $PD image exists "$IMAGE" 2>/dev/null || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMAGE" >/tmp/load-$JID.log 2>&1
 $PD image exists "$IMAGE" || { echo "[host] image unavailable"; tail -3 /tmp/load-$JID.log; exit 1; }
 

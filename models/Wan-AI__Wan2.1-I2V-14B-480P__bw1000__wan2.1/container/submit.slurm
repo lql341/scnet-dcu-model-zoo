@@ -12,9 +12,9 @@ set -uo pipefail
 REPO="${SLURM_SUBMIT_DIR:-$PWD}"
 [ -f "$REPO/env.sh" ] || { echo "[host] 请在条目根目录提交"; exit 1; }
 source "$REPO/env.sh"
-WORK="${WORK:-/public/home/scnethr2601a10/work/zoo-wan}"
+WORK="${WORK:-/public/home/luql/work/zoo-wan}"
 # 官方素材（首帧图）在 official-t34 下，只读挂进 /assets
-ASSETS="${ASSETS:-/public/home/scnethr2601a10/work/official-t34}"
+ASSETS="${ASSETS:-/public/home/luql/work/official-t34}"
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
 mkdir -p "$XDG_RUNTIME_DIR" "$WORK"; chmod 700 "$XDG_RUNTIME_DIR"
 JID="${SLURM_JOB_ID:-$$}"

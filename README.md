@@ -8,7 +8,7 @@
 > 📄 **先读这个**：[docs/REPORT.md](docs/REPORT.md) —— BW1000 模型适配能力报告
 > 📊 **可视化报告**：[docs/report.html](docs/report.html) —— 单文件 HTML，汇总全部结果、数据与技术路线（`tools/gen_report.py` 生成）
 > 📦 **数据在哪**：[docs/ARCHIVE-SUMMARY.md](docs/ARCHIVE-SUMMARY.md) —— 三层保全与还原步骤（集群账号已被回收）
-> （19 个条目 / 935 条真实产物，官方 9 份清单全覆盖 / 5 个镜像归档 / 32 条踩坑 / 4 条硬约束 / 成本核算）。
+> （20 个条目 / 935 条真实产物，官方 9 份清单全覆盖 / 5 个镜像归档 / 35 条踩坑 / 4 条硬约束 / 成本核算）。
 >
 > **本仓库的第一原则：镜像与经验 > 比赛提交。**
 > 比赛提交是一次性的；「哪个参数能开、哪个版本能装、哪种现象会产出假数据」的经验，
@@ -63,6 +63,7 @@ python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/benc
 | [RoboBrain2.5-8B-NV](models/BAAI__RoboBrain2.5-8B-NV__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 667.69 | 225.76 |
 | [MiniMax-Music3](models/MiniMax-AI__MiniMax-Music3__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | ✅ 官方 60/60 条完成 | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__sglang/) | BW1000 ×1 | sglang | bf16 | blocked | — | — |
+| [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 跑通（官方不要求性能对比） | — | — |
 | [Trident-Qwen3VL-2B](models/OpenBMB__Trident-Qwen3VL-2B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | blocked | — | — |
 | [Qwen-Image-2.1-Turbo](models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/) | BW1000 ×1 | diffusers | bf16 | ✅ 官方 180/180 条完成 | — | — |
 | [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 官方 300/300 条完成 | — | — |

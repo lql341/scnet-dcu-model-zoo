@@ -1,0 +1,4 @@
+# 与镜像自带版本的差异（隔离装到 /opt/trident-libs，不改镜像）
+transformers==4.57.1
+huggingface_hub==0.34.0
+qwen_vl_utils==0.0.14

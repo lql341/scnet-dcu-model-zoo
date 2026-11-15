@@ -2,6 +2,11 @@
 
 > **结论：失败。** SGLang 0.5.10rc0 的 `qwen3_vl.py` 只注册了 `Qwen3VLForConditionalGeneration`，
 > 没有 `Qwen3VLForEmbedding`。保留本条目作为证据。
+>
+> **补充（2026-11-15）**：本架构已通过"自建 serving"路线跑通，见
+> [`../OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/`](../OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/)：
+> 官方 `trident_embedder.py` + OpenAI 兼容 `/v1/embeddings`，文本/图像/图文三类输入全部通过，
+> 单卡 512 tok 档 22.8 条/s。本条目保留"框架不支持该架构"这一结论与证据，二者互不替代。
 
 ## 1. 简介
 

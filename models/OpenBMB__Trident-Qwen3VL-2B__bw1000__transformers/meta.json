@@ -1,0 +1,28 @@
+{
+  "model_id": "OpenBMB/Trident-Qwen3VL-2B",
+  "org": "OpenBMB",
+  "model": "Trident-Qwen3VL-2B",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "transformers",
+  "framework_version": "transformers 4.57.1 + qwen_vl_utils 0.0.14 + 自建 OpenAI 兼容 serving",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "not-required",
+  "bench_note": "T02 评测器与 baselines/ 至今未下发，无法按官方口径出分；本条目只做链路验证与embedding 分档吞吐（bench/summary.md 的 items/s 口径），不适用仓库标准的 6 档生成基准",
+  "cold_start_s": [
+    25,
+    35
+  ],
+  "throughput": {
+    "emb_512_c1": 22.787,
+    "emb_512_c8": 23.177,
+    "emb_2k_c1": 15.215,
+    "emb_2k_c8": 15.65,
+    "emb_4k_c1": 8.86,
+    "emb_4k_c8": 9.062
+  },
+  "verified_on": "2026-11-15",
+  "optimized": "GPU 侧串行、按需 batch（EMB_BATCH=16）；实测并发 1→8 吞吐仅 +1.7~2.9%，说明 2B 单次 forward 已吃满算力，提吞吐应加大单请求 batch 而非堆并发"
+}

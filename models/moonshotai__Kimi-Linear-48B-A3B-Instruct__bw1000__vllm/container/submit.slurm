@@ -27,7 +27,7 @@ source "$REPO/env.sh"
 
 WORK="${WORK:-/public/home/luql/work/kimi-vllm}"
 export XDG_RUNTIME_DIR=/tmp/xdg-$$
-mkdir -p "$XDG_RUNTIME_DIR" "$WORK"; chmod 700 "$XDG_RUNTIME_DIR"
+mkdir -p "$XDG_RUNTIME_DIR" "$WORK" /tmp/emptycerts; chmod 700 "$XDG_RUNTIME_DIR"
 JID="${SLURM_JOB_ID:-$$}"
 PD="podman --root /tmp/pr-$JID --runroot /tmp/prr-$JID --storage-driver overlay --storage-opt ignore_chown_errors=true"
 
@@ -40,10 +40,15 @@ if [ "$FREE" -lt 68 ]; then echo "[host] NOT_ENOUGH_SPACE (need 68G for two imag
 for spec in "vLLM|$IMAGE|${HOST_IMAGE_TAR:-}" "CLI|$CLI_IMAGE|${HOST_CLI_TAR:-}"; do
   IFS='|' read -r tag img tar <<<"$spec"
   echo "[host] load $tag image"
-  if [ -n "$tar" ] && [ -s "$tar" ]; then $PD load -i "$tar" >/tmp/load-$tag-$JID.log 2>&1; fi
+  if [ -n "$tar" ] && [ -s "$tar" ]; then
+    case "$tar" in
+      *.gz) gunzip -c "$tar" | $PD load >/tmp/load-$tag-$JID.log 2>&1 ;;
+      *)    $PD load -i "$tar" >/tmp/load-$tag-$JID.log 2>&1 ;;
+    esac
+  fi
   $PD image exists "$img" 2>/dev/null \
     || $PD pull --tls-verify=false --cert-dir=/tmp/emptycerts "$img" >/tmp/load-$tag-$JID.log 2>&1
-  $PD image exists "$img" 2>/dev/null || { echo "[host] $tag image unavailable"; tail -5 /tmp/load-$tag.log; exit 1; }
+  $PD image exists "$img" 2>/dev/null || { echo "[host] $tag image unavailable"; tail -5 /tmp/load-$tag-$JID.log 2>/dev/null; exit 1; }
 done
 
 # 仓库拷进 $WORK/repo（容器写产物后留在宿主机）
