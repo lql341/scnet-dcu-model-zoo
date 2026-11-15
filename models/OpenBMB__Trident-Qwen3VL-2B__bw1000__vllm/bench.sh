@@ -43,10 +43,9 @@ done
 # 有效性校验：TTFT=0 或吞吐超物理上限，说明请求被拒但被计为完成
 echo "[bench] 有效性校验"
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 bad = []
 ROUND_FILE = "bench/round2.jsonl" if os.path.exists("bench/round2.jsonl") else "bench/round1.jsonl"
-EXPECT = len(ILENS.split()) * len(CONCS.split())
 for line in open(ROUND_FILE, encoding="utf-8"):
     line = line.strip()
     if not line:
@@ -70,7 +69,6 @@ ILENS = os.environ.get("BENCH_ILENS", "4096 16384")
 CONCS = os.environ.get("BENCH_CONCS", "1 8 64")
 if os.environ.get("BENCH_QUICK") == "1":
     ILENS, CONCS = "4096", "1"
-EXPECT = len(ILENS.split()) * len(CONCS.split())
 cols = ["random_input_len", "random_output_len", "max_concurrency", "completed", "duration",
         "request_throughput", "output_throughput", "total_throughput", "mean_ttft_ms", "p99_ttft_ms",
         "mean_tpot_ms", "p99_tpot_ms", "mean_e2e_latency_ms"]

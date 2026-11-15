@@ -637,3 +637,561 @@ Invalid address access: 0x7f7e01015000, Error code: 1.
 
 **教训**：凡是"客户端说服务没准备好"的失败，都要先把客户端的等待时间调到明显大于冷启动时间，
 否则你记下的是自己设置的超时，而不是系统的行为。
+
+## 37. 探测脚本漏传 `LD_LIBRARY_PATH`：`import torch` 报 `libgalaxyhip.so.5`
+
+**现象**：新写的只读探测作业里，`python3 -c "import vllm"` / `import torch` / `import aiter` 全部报
+
+```
+ImportError: libgalaxyhip.so.5: cannot open shared object file: No such file or directory
+```
+
+同时 `python3 -c "import sys"` 正常、`ls site-packages/aiter` 也存在 —— 很像"镜像坏了"。
+
+**根因**：探测脚本是我新写的，`podman run` 时只挂了 `/dev/kfd`，**没有**把仓库里统一的
+`LIBPATH` 传进容器。`libgalaxyhip.so.5` 由 DTK/hyhal 提供，缺了它 `torch._C` 起不来；
+而 `ls`/`grep` 这类不 import 的命令自然不受影响，于是同一份输出里"有的项有结果、有的项全挂"。
+
+**判据**：凡是**同一份日志里** `ls`/`grep` 成功而 `import torch` 失败，先查环境变量，别怀疑镜像。
+仓库里各条目的 `container/submit.slurm` 都有完整 `LIBPATH`，新脚本应当**照抄而不是重写**。
+
+**解法**：`podman run` 显式传环境：
+
+```bash
+-e LD_LIBRARY_PATH="$LIBPATH" \
+-e ROCM_PATH=/opt/dtk -e HIP_PATH=/opt/dtk/hip -e HYHAL_PATH=/opt/hyhal
+```
+
+**代价**：一轮 1 卡作业（~15 min）+ 一次重跑；结论上损失了整个 Q0/Q1/Q2/Q5。
+与 gotcha #8（`libmsgpackc` 藏在 lightop 里）同类，区别是这次缺的库在 DTK 侧。
+
+## 38. 换镜像不等于升级：`vllm_hcu` 用 `.t()` 加载 3D 权重，Kimi 在 0.21 上加载即崩
+
+**现象**：Kimi-Linear-48B × vLLM **0.21**（`vllm_hcu` 的 `HCUPlatform`），`--max-model-len 17408`、
+TP=4、`--max-num-seqs 64`，四个 rank 在**模型加载阶段**同时失败，服务从未起来：
+
+```
+File ".../vllm/model_executor/models/kimi_linear.py", line 565, in load_weights
+    weight_loader(param, loaded_weight, **kwargs)
+File ".../vllm_hcu/model_executor/layers/linear.py", line 629, in weight_loader_v2
+    param.load_column_parallel_weight(loaded_weight=..., is_quantization=...)
+File ".../vllm_hcu/model_executor/parameter.py", line 158, in load_column_parallel_weight
+    loaded_weight = loaded_weight.t()
+RuntimeError: t() expects a tensor with <= 2 dimensions, but self is 3D
+```
+
+同一份权重在 0.20 上加载正常，0.20/0.21 的 `kimi_linear.py` 也几乎一致。
+
+**根因**：`vllm_hcu` 是海光自研的并行线性层实现，`load_column_parallel_weight` **无条件**转置权重；
+Kimi 的 `conv1d` 权重是 3D（`[dim, 1, kernel]`）。0.20 用的是 vLLM 上游 `parameter.py`，没有这个假设。
+
+**判据**：换镜像/换版本后若**加载阶段**就崩、且栈里出现 `vllm_hcu/` 而不是 `vllm/`，
+说明是海光私有实现与上游模型的兼容缺口，改配置无用（`--enforce-eager`、`--max-model-len` 都白搭）。
+
+**影响**：闸门曾判断"0.21 自带 `causal_conv1d`，换镜像是跑通 16K/c64 最便宜的一枪" —— **该判断被实测推翻**。
+0.21 对 Kimi 是**比 0.20 更差**。Kimi 的长上下文排查只能留在 0.20 内做。
+
+**推广**：`vllm_hcu` 的平台名是 `HCUPlatform`、`get_device_capability()` 报 CUDA 9.3 等价物，
+**不要用 `vllm/platforms/rocm.py` 的假设去推断 0.21 的行为**；私有层的路径是 `vllm_hcu/...`。
+
+## 39. aiter 在 BW1000 上恒被关闭：先是缺 `rocminfo`，更根本是 MI300 白名单
+
+**现象（表象）**：Kimi-Linear × vLLM 0.20 启动日志里，
+`Using TRITON_MLA backend out of potential backends: ['TRITON_MLA']` —— 候选集只有一项，
+看着像"vLLM 在 DCU 上就只能这样"。
+
+**根因链（2026-11-15 两张只读探测拼出，作业 1121990 + 1122316）**：
+
+```
+容器无 rocminfo
+  → import aiter 失败：Get GPU arch from rocminfo failed ... 'rocminfo'
+  → is_aiter_found_and_supported() = False
+  → rocm_aiter_ops.is_mla_enabled() 被 @if_aiter_supported 短路（返回 None）
+  → _get_backend_priorities(use_mla=True) 走 else 分支，只返回 [TRITON_MLA]
+  → Kimi 的 MLA 层只能用 Triton MLA kernel
+```
+
+`vllm/platforms/rocm.py` 的 `_get_backend_priorities` 原本会给
+`[ROCM_AITER_MLA, TRITON_MLA, ROCM_AITER_TRITON_MLA]` 三项。
+
+**判据**：看到"候选 backend 只有一项"时，**不要当成框架限制**。先查 `is_aiter_found_and_supported()`，
+再看 `import aiter` 的报错。aiter 的所有能力开关（`is_mla_enabled` / `is_mha_enabled` /
+`is_linear_fp8_enabled` …）都挂了 `@if_aiter_supported`，aiter 一挂**全部静默返回 None**，
+不报错、不打日志。
+
+**解法（第一步）**：把 `/opt/dtk/bin` 加进容器的 `PATH`，或让 aiter 的 arch 探测绕开它。
+成本极低（一次镜像内 `cp` 或 `-v` 挂载），收益是可能换掉崩溃嫌疑最大的 Triton MLA kernel。
+
+### 补一句：`rocminfo` **不是全部**（作业 1123060 实测）
+
+上面这条链只对了一半。实测发现：
+
+| 事实 | 证据 |
+| --- | --- |
+| `rocminfo` **本来就在镜像里**，只是不在 `PATH` | `FOUND /opt/dtk/bin/rocminfo`；`which rocminfo` 为空 |
+| 把假 `rocminfo` 放进 PATH 后，`import aiter` **成功** | `aiter OK with fake rocminfo` |
+| 但 `is_aiter_found_and_supported()` **仍然 False** | 同上作业直接调用 |
+| 于是 `is_mla_enabled()` 仍为 `None`，候选集仍是 `['TRITON_MLA']` | `priorities(use_mla=True) = ['TRITON_MLA']` |
+
+所以 `import aiter` 只是第一道门，`_aiter_ops.py` 里还有自己的判定条件。
+**看到 `import aiter` 成功但开关仍为 None 时，不要以为已经修好了**——要直接读
+`is_aiter_found_and_supported()` 的函数体，看它额外要求什么。
+
+### 第二道门是**硬件型号白名单**，BW1000 永远过不了（作业 1123513 + 1123605）
+
+```python
+# vllm/_aiter_ops.py
+def is_aiter_found_and_supported() -> bool:
+    if current_platform.is_rocm() and IS_AITER_FOUND:
+        from vllm.platforms.rocm import on_mi3xx
+        return on_mi3xx()
+
+# vllm/platforms/rocm.py
+_ON_MI3XX = any(arch in _GCN_ARCH for arch in ["gfx942", "gfx950"])
+def on_mi3xx() -> bool: return _ON_MI3XX
+```
+
+本机实测（作业 1123605）：
+
+```
+_CudaDeviceProperties(name='BW', major=9, minor=3,
+                      gcnArchName='gfx936:sramecc+:xnack-', ...)
+```
+
+**gfx936 不在 `["gfx942","gfx950"]` 里 → `on_mi3xx()` 恒为 False。**
+这条与 `rocminfo`、`PATH`、`VLLM_ROCM_USE_AITER_*` 环境变量**全都无关**。
+
+结论修正：**"缺 rocminfo"只是链条最外面的一层，真正把 aiter MLA 关掉的是这条
+硬编码的 MI300 白名单。** 在 BW1000 上，无论补什么库、设什么环境变量，
+`_get_backend_priorities(use_mla=True)` 都不会返回 `ROCM_AITER_MLA`。
+唯一剩下的可能是显式 `--attention-backend ROCM_AITER_MLA` 绕过候选集
+（该函数 docstring 写着 "Can explicitly request aiter regardless of env var"），
+但其能否绕过 `@if_aiter_supported` 装饰器尚待实测。
+
+**同类教训**：`@if_aiter_supported` 这种"装饰器短路"是本仓库里第二次踩到
+（第一次是 gotcha #37 的 `LD_LIBRARY_PATH`）——**能力探测返回 None 时，先怀疑环境，再怀疑框架**。
+
+### ✅ 显式 `--attention-backend` **确实能绕过白名单**（作业 1123927 + 1124018）
+
+上面最后一句话"尚待实测"已经有答案了，而且和直觉相反：
+
+```python
+# vllm/platforms/rocm.py:468-497
+def get_attn_backend_cls(cls, selected_backend, attn_selector_config, num_heads=None) -> str:
+    device_capability = cls.get_device_capability()
+    # First try checking just the selected backend, if there is one.
+    if selected_backend is not None:                    # ← 478: 显式分支
+        try:
+            backend_class = selected_backend.get_class()          # 直接拿类
+            invalid_reasons = backend_class.validate_configuration(  # 只做这一道检查
+                device_capability=device_capability, **attn_selector_config._asdict())
+        except ImportError:
+            invalid_reasons = ["ImportError"]
+        ...
+        return selected_backend.get_path()               # ← 完全不碰 _get_backend_priorities
+    # 只有走到这里才会查候选集（进而查 on_mi3xx）
+    valid_backends_priorities, invalid_reasons = cls.get_valid_backends(...)
+```
+
+实测（作业 1124018，`PATH` 里补了 `/opt/dtk/bin`）：
+
+```
+ON_MI3XX = False                     is_mla_enabled() = None      ← 白名单依旧是关的
+get_class() -> AiterMLABackend       ← ✅ 成功
+validate_configuration() -> OK (empty)  ← ✅ 通过
+ROCM_AITER_TRITON_MLA 也 get_class OK / validate OK
+```
+
+**结论：`--attention-backend ROCM_AITER_MLA` 是 BW1000 上唯一能让 aiter kernel 上场的入口。**
+两条路径的差别：
+
+| 调用方式 | 经过 `_get_backend_priorities` | 受 `on_mi3xx()` 限制 |
+| --- | --- | --- |
+| 默认（不传 `--attention-backend`） | 是 | **是** |
+| 显式 `--attention-backend X` | **否** | **否** |
+
+**但要注意适用范围**：这条只对 **attention backend** 有效。
+GEMM 没有等价的"显式指定"旋钮，所以 fp8 依然被挡住（见 #46）。
+**看到"某个能力被硬件白名单关掉"时，去读分配该类的那段代码——
+很可能存在一条"用户显式指定就跳过检查"的旁路。**
+
+## 40. 作业不做 podman 清理会把节点 `/tmp` 写满，且事后**无法**删除
+
+**现象**：一个正常跑完/被取消的作业之后，**下一个**作业在 `podman load` 阶段失败：
+
+```
+write /usr/local/lib/python3.10/dist-packages/flash_attn_2_cuda...so: no space left on device
+Error: creating runtime temporary files directory: mkdir /tmp/podman-run-2525/libpod/tmp: no space left on device
+```
+
+**根因**：仓库里所有编排脚本都用 `podman --root /tmp/pr-$JID`，作业结束即退出，
+但**存储目录留在节点本地盘**。镜像解包单个就 8–31 GB。实测某节点上累积了 8 个历史作业的目录，
+`/tmp/pr-1122012` 一个就 31 GB。
+
+**为什么很难事后补救**：Slurm 在作业结束后立即 `pam_slurm_adopt` 切断节点访问
+（`Access denied by pam_slurm_adopt: you have no active jobs on this node`），
+所以**登录节点上没有权限去删**自己留下的目录。只能等节点自动回收，或另起一个作业去清理。
+
+**解法**：每个编排脚本都必须有
+
+```bash
+cleanup_podman() {
+  $PD rmi -af >/dev/null 2>&1
+  $PD system prune -af >/dev/null 2>&1
+  rm -rf "/tmp/pr-$JID" "/tmp/prr-$JID" "$XDG_RUNTIME_DIR" 2>/dev/null
+}
+trap cleanup_podman EXIT
+```
+
+并且**按需加载镜像**：服务镜像先加载，压测客户端的镜像等真正要用时再加载
+（一次作业同时展开两个镜像，磁盘峰值翻倍，几百 G 的节点也会被打满）。
+
+**判据**：作业启动时先打印 `df -Pm /tmp`，低于 45 GB 直接退出并报 `NOT_ENOUGH_SPACE`，
+不要让它跑到一半才发现。本仓库早期的 `container/submit.slurm` 只检查一次 68G，
+没有退出清理，属同一类问题。
+
+## 41. 同一作业展开两个 9 GB 镜像 + 容器层，79 GB 的 `/tmp` 也会被打满
+
+**现象**（matrix 作业两次失败，1122422 / 1122564）：
+
+```
+write /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_hip.so: no space left on device
+```
+
+作业启动时 `df` 显示 `tmp_free=95G` / `79G`，预检都通过了，跑到 `podman load` 才爆。
+
+**根因**：解包一个 9.3 GB 的 tar.gz 镜像，落盘后的 overlay 层远超 9 GB
+（torch + DTK 库展开后几十 GB），**而且 `podman load` 期间同时存在压缩流缓冲与解包中间层**。
+再叠加第二个镜像和容器可写层，79 GB 不够。
+
+**判据**：预检阈值不能按"镜像 tar 大小"设。经验值：**单个镜像至少留 45 GB**，
+两个镜像同作业至少 90–100 GB；`tmp_free` 低于 60 GB 时不要在同一作业里加载第二个镜像。
+
+**补充（同日又踩一次，job 1123259）**：预检通过也不算数——探测作业启动时 `tmp_free=84G`，
+仍报 `write .../libmagma.so: no space left on device`。原因是**同一节点上还有别的作业在写**，
+空闲空间在解包期间被别人吃掉。所以：
+
+- 预检只是"入场券"，不是保证；判断依据要看**节点磁盘类型**——`/tmp` 在 NVMe 上的节点
+  （如 `f11r3n17`，437G 盘）比 SATA 节点（876G 总盘但已用 96%）稳得多；
+- 探测类 1 卡作业失败成本低，**直接换节点重提**比在原地调参数快。
+
+**解法**：
+1. 一个作业只加载一个镜像；压测客户端镜像**用到时再加载**（`load_cli()` 里 Check-then-load）；
+2. 启动预检阈值提到 45 GB 并打印实际值；
+3. 末了 `trap` 里清理（gotcha #40）。
+
+## 42. `validate_configuration(dtype=...)` 要 `torch.dtype` 对象；传字符串会"全体不支持"
+
+**现象**：逐个 MLA backend 调 `validate_configuration()` 判断可用性，结果**每一个**都返回
+
+```
+['dtype not supported']
+```
+
+看起来像"DCU 上没有任何 MLA backend 可用"。
+
+**根因**：探测脚本里传的是字符串
+
+```python
+cfg = AttentionSelectorConfig(dtype='bfloat16', ...)   # ❌ str
+```
+
+而 `supports_dtype()` 是拿它跟 `cls.supported_dtypes` 比，那里装的是
+`[torch.float16, torch.bfloat16]` 这样的 `torch.dtype` **对象**。`'bfloat16' != torch.bfloat16`，
+于是无条件为假。正确写法：
+
+```python
+cfg = AttentionSelectorConfig(dtype=torch.bfloat16, ...)   # ✅
+```
+
+**判据（值得当成通则）**：**当一整张表的所有实现都返回同一个失败理由时，先怀疑自己的入参，
+而不是相信"它们都不支持"**。真实世界里各实现的支持集通常不一样；完全一致的结果多半是
+筛选条件本身恒假。
+
+**代价**：这条错误结论一度被写进 README 和实验记录，并在 40 分钟内被当成"换 backend 这条路不存在"
+的依据。同一天里，这是第二个"自己造的假象"（前一个是 gotcha #37 的 `LD_LIBRARY_PATH`）。
+共同点：**探测脚本的输出看起来像框架的行为，其实是我们没把环境/类型配对。**
+
+## 43. `--max-model-len` 按"输入+输出"精确算会差一个 token，压测全 400
+
+**现象**（作业 1123145 的 B 档）：设 `--max-model-len 17408`（= 16384 输入 + 1024 输出），
+压测客户端 17 秒"跑完" 128 个请求，然后崩在
+
+```
+IndexError: index -1 is out of bounds for axis 0 with size 0
+```
+
+`e2e_latencies` 是空数组——**所有请求都失败了**，只是失败得比超时快得多。
+
+**根因**：服务端逐条返回 400：
+
+```
+VLLMValidationError: This model's maximum context length is 17408 tokens.
+However, you requested 1024 output tokens and your prompt contains at least 16385 input tokens,
+for a total of at least 17409 tokens.
+```
+
+实际 prompt 是 **16385** 而不是 16384（多 1 个 token：BOS / chat template）。
+`17408 - 1024 = 16384` 恰好卡死，所以每条请求都超 1 个 token。
+
+**判据**：压测"跑得异常快"（17 秒 vs 正常 547 秒）+ `completed` 计数满 + 结果表
+`no data` → **先怀疑 400，不要怀疑服务端崩了**。`bench.sh` 的 `preflight_lib.py`
+用长度阶梯探测能过，因为它测的是"服务端接不接受这个长度"，而 16384 确实能接受；
+被拒的是 16385。
+
+**解法**：留余量。16K 输入 + 1K 输出直接取 `20480`（默认值就是它），不要精确减。
+确需压到最小，取 `16384 + 1024 + 512 = 17920` 这类有余量的值。
+
+## 44. 单轮成功不能作为"问题已解决"的证据
+
+**事故**（2026-11-15，作业 1123145）：`--enforce-eager` 下第 1 轮 16K/c64
+完整跑通 128 个请求（239.32 tok/s、峰值并发 65），我据此在 README 和结果文档里
+写了"P0-A 已达成、cudagraph 是元凶"。**随后第 2 轮在同一配置下 `KERNEL VMFault` 崩溃**
+（`Running=62, Waiting=2`），全部推翻。
+
+**根因**：这是一个**概率性越界**，不是确定性阈值。round1 峰值并发 65 侥幸通过，
+round2 在 62 崩了。`--enforce-eager` 只是把崩溃概率往下压，不是消除。
+
+**为什么 `bench.sh` 要跑两轮**：第 1 轮是预热，取第 2 轮。这个设计**正是为了防这个**——
+它假定第 1 轮可能受冷启动影响。反过来也成立：**第 1 轮成功、第 2 轮失败**同样是信号，
+说明结果不稳定。
+
+**判据**：任何"修好了"的结论，至少要两轮都出数；概率性故障还要再多跑几次。
+写下结论时明确写"几轮里几轮成功"，不要写"已修复"。
+
+**同一天的相关纠正**：这是本日第三次推翻自己的结论（前两次是 gotchas #42 的 dtype 字符串、
+`rocminfo` 的因果链只对了一半）。共同点是**证据只覆盖了一个样本就下结论**。
+
+## 45. `bench.sh` 的有效性校验自己从未执行过（`os` 未导入）
+
+**事故**（2026-11-15，job 1123145 后复盘）：16K/c64 的 B 档（`--max-model-len 17408`）
+全部请求 400，脚本没有按设计报 `INVALID ... TTFT=0`，而是以
+`np.percentile` 的 `IndexError` 收场，"配置错误"被表现成了"压测脚本崩了"。
+
+**根因**：`bench.sh` 末尾的有效性校验段写的是
+
+```python
+import json, sys                                 # ← 漏了 os
+ROUND_FILE = "bench/round2.jsonl" if os.path.exists("bench/round2.jsonl") else ...
+```
+
+`os` 未导入 → 第 3 行就 `NameError` → 整个校验段被杀掉。**它从来没跑过一次**，
+所以"TTFT=0 / 吞吐超物理上限"这两类无效数据一直都能混进 `round2.jsonl`。
+
+**影响面**：这段模板被复制到 `models/*/bench.sh` 全部 10 个文件，全部失效。
+2026-11-15 统一改为 `import json, os, sys`。
+
+**修复后仍复发一次（16:53 发现）**：同一个 heredoc 里还有第二行坏代码
+`EXPECT = len(ILENS.split()) * len(CONCS.split())`——`ILENS`/`CONCS` 是 **bash** 变量，
+在 Python heredoc 里不存在，`os` 修好后紧接着就是 `NameError: name 'ILENS' is not defined`。
+两道 bug 串联，只修第一道时校验段仍然必死。
+
+更隐蔽的是**远程副本没同步**：本地 `models/*/bench.sh` 已改，但
+`luql:/public/home/luql/work/zoo-sync/` 下只有 Kimi 一个条目存在，
+且它仍是旧版；作业启动时会 `rsync` 到自己的 `WORK/repo`，于是**作业里跑的仍是坏脚本**。
+判据：作业 stdout 里出现
+
+```
+[bench] 有效性校验
+Traceback (most recent call last):
+  NameError: name 'ILENS' is not defined
+```
+
+就说明这一轮的"有效数据"没有经过闸门。**改完 bench.sh 必须 rsync 到远程再提交作业**，
+或直接在作业脚本里就地 `sed` 掉那两行。
+
+**判据**：`bench.sh` 跑完必须看到 `[bench] 有效性校验` 后面跟着 `  all valid`。
+只看到 `[bench] done` 而没有 `all valid`，说明校验段自己失败了（或根本没跑到）。
+**"校验没报错"不等于"校验通过了"**——先确认它真的执行了。
+
+**同类风险**：任何"闸门/校验"代码被放进 `try/except` 或独立 heredoc 时，
+失败可能只表现为"没有输出"。写校验的人要顺手验证一次**它能否正确报错**
+（故意喂一条坏数据看它是否触发）。
+
+## 46. DCU 上 fp8 没有 GEMM kernel：`torch.addmm` 直接 `NotImplementedError`
+
+**现象**（2026-11-15，job 1123947，vLLM 0.20 + BW1000）：
+
+```python
+torch.float8_e4m3fn  torch.mm(a, b)  →  NotImplementedError: "addmm_cuda" not implemented for 'Float8_e4m3fn'
+torch.float8_e5m2    torch.mm(a, b)  →  NotImplementedError: "addmm_cuda" not implemented for 'Float8_e5m2'
+```
+
+**这条容易被误判成配置问题**，因为看起来相关的三样东西都在：
+
+| 看起来该有的 | 实际状态 |
+| --- | --- |
+| `--quantization fp8` 在白名单里 | ✅ `RocmPlatform.supported_quantization` 含 `fp8` |
+| `Fp8Config` 能解析 | ✅ `get_quantization_config("fp8") -> Fp8Config` |
+| `fp8_dtype` 有定义 | ✅ `torch.float8_e4m3fn` |
+| hipBLASLt 认 fp8 | ✅ `libhipblaslt.so.0.10` 含 `R_8F_E4M3` / `R_8F_E5M2` |
+| **torch 能把 fp8 GEMM 分发下去** | ❌ **没有** |
+
+**根因**：PyTorch 的 DCU/HIP 后端没有为 fp8 dtype 注册 `addmm` 实现。
+hipBLASLt 库里的 fp8 符号没有被接进来，所以**库有 = 用不上**。
+任何上层（vLLM、PEFT）都无法在 `addmm` 之上凭空造出 GEMM。
+
+**为什么表现为"engine core 初始化失败"**：`get_device_capability()` 返回
+`DeviceCapability(major=9, minor=3)`——gfx936 被硬套成 CUDA 9.3，于是 vLLM 认为
+"fp8 应该支持"，一路放行到第一次预热 GEMM 才炸。报错位置离真因很远。
+
+**解法**：没有。需要 torch 侧补 fp8 GEMM 绑定，或 vLLM 走绕过 torch 的专用 kernel
+（aiter 的 fp8 kernel 就是这种，但被 `on_mi3xx()` 挡在 gfx936 之外，见 #39）。
+
+**判据**：想验证任何"DCU 上 fp8 能不能用"的话，**先跑这一行**：
+
+```bash
+python3 -c "import torch; a=torch.zeros(16,16,device='cuda',dtype=torch.float8_e4m3fn); print(torch.mm(a,a).dtype)"
+```
+
+它失败就不用往下查了——查白名单、查 hipBLASLt 版本都是白费。
+
+完整记录见 `sweeps/results-kimi-quantigate-2026-11-15.md`。
+
+## 47. `bench/*.log` 不会被清空，读之前先核对 mtime
+
+**事故**（2026-11-15，job 1123874）：检查 `--max-num-seqs 24` 的结果时，
+读到 `bench/round2_16384_1024_c64.log` 末尾是
+`IndexError: index -1 is out of bounds for axis 0 with size 0` +
+`All requests failed. This is likely due to a misconfiguration`，
+一度判定"降到 24 也崩"。核对时间戳后才发现该文件是 **15:13** 写的，
+而当时作业 1123874 的服务 **15:46** 才就绪、正在加载 CLI 镜像——**根本没开始压测**。
+
+**根因**：`bench.sh:8` 只清理结果文件：
+
+```bash
+mkdir -p bench && rm -f bench/round*.jsonl     # ← 只清 jsonl
+```
+
+`bench/${TAG}.log` 由 `> "bench/${TAG}.log"` 覆盖写，但在**该档真正跑到那一步之前**，
+文件还是上一轮的内容。而 `$WORK/repo` 是 `rsync -a --exclude bench` 同步的，
+`bench/` 目录本身在 `$WORK` 里长期存在，跨作业残留。
+
+**判据 / 解法**：看任何 `bench/*.log` 之前，先确认
+
+```bash
+stat -c %y bench/round2_*.log      # 或 ls -la --time-style=+%H:%M:%S
+```
+
+文件时间必须晚于**本次作业的服务就绪时间**。否则你读的是别人的结论。
+更稳的做法是给每个作业独立 `$WORK`（本仓库新脚本已这么做，如
+`kimi-16k-020-aitermla.slurm` 用 `/public/home/luql/work/kimi-16k-020-aitermla`）。
+
+**同类**：这与 gotcha #44"单轮成功不等于修复"是一对——
+一个防"读早了"，一个防"读少了"。共同点是**结论必须先确认证据真的来自当前实验**。
+
+## 48. 用 `--max-num-seqs` 换稳定，代价全在 TTFT 上（不是吞吐）
+
+**实测**（2026-11-15，Kimi 16K/c64，job 1123874 vs 1123145）：
+
+| 配置 | 成功 | Output tok/s | **Mean TTFT** | 崩溃 |
+| --- | --- | ---: | ---: | --- |
+| `--enforce-eager`（并发自然到 62） | 128/128 | 239.32 | **43.6 s** | round2 崩 |
+| `--max-num-seqs 24` | 128/128 | 216.66 | **156.2 s** | round1 无 |
+
+**吞吐只降 9.5%，但 TTFT 恶化 3.6×。** 这和直觉相反——
+一般认为"限批 → GPU 利用率下降 → 吞吐大降"，实际吞吐几乎没变，因为 16K 长上下文时
+瓶颈在单请求的 KV 读写而非 batch 并行度。真正被牺牲的是**排队时间**：
+
+- 客户端仍打 64 并发，服务端每批只跑 24 个；
+- 其余 40 个请求要等前一批生成完 1024 个 token 才被调度；
+- 16K 输入 × 1024 输出的单请求耗时约 100 s，所以后 40 个请求的 TTFT ≈ 2 个整批 ≈ 150–200 s。
+
+**判据**：调 `--max-num-seqs` 时，**不要只看吞吐和"有没有崩"**，必须同时看
+`mean_ttft_ms` / `p99_ttft_ms` / `Waiting` 队列长度。服务端日志里
+`Running: 24 reqs, Waiting: 36 reqs` 这一行就是"TTFT 会很难看"的直接证据。
+
+**适用结论**：`--max-num-seqs` 适合"离线批处理、只关心总吞吐和成功率"的场景；
+不适合任何交互式用途。报告里必须同时给出两个数，不能只写吞吐。
+
+## 49. backend 类能 `get_class()` 成功，不等于它的模块能 import 成功
+
+**现象**（2026-11-15，作业 1124165，vLLM 0.20 / BW1000）：
+
+```
+(Worker_TP0 pid=228) ERROR [multiproc_executor.py:870]
+  ImportError: cannot import name 'flash_attn_varlen_func' from 'aiter'
+  (/usr/local/lib/python3.10/dist-packages/aiter/__init__.py)
+(APIServer pid=1) RuntimeError: Engine core initialization failed.
+```
+
+四个 TP rank 同时死，`--enforce-eager` 一样死。
+
+**判据**：`validate_configuration()` 只检查配置合法性，**不导入 backend 模块**。
+`get_class()` 拿到的是一条 `"module:Class"` 字符串，真正的 import 发生在引擎初始化时。
+所以在 1 卡探测作业里看到 "OK" 只是证明了"这个名字存在"，没证明"这个实现能用"。
+
+**根因**：vLLM 0.20 的 `rocm_aiter_mla.py` 需要 aiter 导出 `flash_attn_varlen_func`，
+而镜像自带的 aiter 版本没有这个符号。这是**vLLM 与 aiter 的版本错配**，与 gfx936、
+`on_mi3xx()`、`PATH` 都无关——即使白名单放行也会死在这里。
+
+**解法 / 代价**：没有配置层面的解法。要么改镜像换 aiter 版本（牵动整个运行时），
+要么改 vLLM 源码。按本仓库原则（不改上游、不换镜像）→ **关闭这条路线**。
+
+**教训**：任何"绕过某道闸门"的探测，必须做到"真实起一次引擎"，而不是"拿到类名 + 校验通过"。
+在 gfx936 这种上游未覆盖的架构上，后者遗漏的概率很高。
+
+## 50. sglang 压测进度条到 100% ≠ 请求成功；要看 `Successful requests`
+
+**现象**（2026-11-15，job 1123874 `mns32eager` 的 round2）：服务端崩了之后压测客户端继续跑，
+进度条一路走到 `100%|`，看起来"这轮终于没崩"。实际日志里：
+
+```
+Successful requests:                     31
+Benchmark duration (s):                  209.51
+```
+
+而正常一轮是 `Successful requests: 128` / `~550–690 s`。
+
+**根因**：`sglang.bench_serving` 的进度条按"已发出并收到响应（含连接失败）的请求数"推进，
+服务端 `Connection refused` 时请求**立刻**返回错误，于是进度条飞速到顶。
+崩溃后的几十个请求都在几百毫秒内失败，整轮反而比正常轮**快得多**。
+
+**判据**（三个一起看，缺一不可）：
+1. `Successful requests` 必须等于 `--num-prompts`（本仓库是 128）；
+2. `Benchmark duration` 落在该档位的正常区间（16K/c64 约 550–700 s）；
+3. 结果 JSON 里 `mean_ttft_ms > 0` 且吞吐不超过物理上限（`bench.sh` 的校验段）。
+
+**另外**：进度条文件是 `bench/round2_16384_1024_c64.log`，若这一轮的 bench 没跑起来，
+读到的可能是**上一轮残留的同名日志**（gotchas #47）。先核对 mtime 再看内容。
+
+**适用结论**：任何"跑完了""100%"的结论，都要用 `Successful requests` 复核一遍。
+
+## 51. Kimi-Linear 16K/c64 的崩溃是**累计状态**问题：每轮重启服务即可稳定出数
+
+**现象**（2026-11-15，vLLM 0.20 + BW1000 ×4 TP）：16K/c64 压测**第一轮永远通过、
+第二轮永远 `KERNEL VMFault`**。四个 TP rank 同时崩、地址各不相同。
+
+**排除过的解释**（每一条都有作业号）：
+| 假设 | 反证 |
+| --- | --- |
+| cudagraph 桶边界 | `--enforce-eager`（无 cudagraph）照样崩，job 1123145 |
+| 单批规模太大 | `--max-num-seqs` 降到 24 / 16 仍崩，job 1123874 |
+| 显存不够 | 崩溃时 KV cache 只用 10–25%，无 OOM |
+| 某次 kernel 越界 | 崩点随配置乱跳（29 / 62 / 23 / 16），与 `Running` 无关 |
+| aiter MLA kernel 更好 | `ROCM_AITER_MLA` 服务都起不来（`flash_attn_varlen_func` 缺失） |
+
+**真因（重读 job 1120618 的 3 MB 日志得出）**：那次作业用**一个服务进程连跑 6 档序列**，
+10:30 启动、**11:02:58** 才崩，期间跑完 10 个档位、约 1200 个请求。
+而后续作业只跑 16K/c64 一档（128 请求 ≈ 10 分钟），于是表现为"第二轮必崩"。
+
+**是请求数而不是时钟时长**：job 1124366 的 R1 进程活了 **27 分钟**、只处理 128 个请求，
+照样干净通过。所以危险量级在"上千请求"，不在分钟数。
+→ **变量是服务进程的累计运行时长/处理量，不是第几轮、也不是并发数。**
+
+**解法（实测有效，job 1124366）**：**每轮压测前 `podman rm -f` 并重启服务**。
+**连续四轮各 128/128 全过、0 处 VMFault**，且吞吐比 `--enforce-eager` 更高：
+
+| 轮 | 吞吐 | TTFT | 与 eager 对比 |
+| --- | ---: | ---: | --- |
+| R1 | 235.14 tok/s | 47.5 s | 页缓存未暖，**不作稳态引用** |
+| R2 | 283.53 tok/s | 31.5 s | 吞吐 **+18%**，TTFT **−28%** |
+| R3 | 284.62 tok/s | 30.8 s | 同上 |
+| R4 | **286.84 tok/s** | **30.6 s** | 同上 |
+
+R2–R4 极差仅 **1.2%**，这才是可引用的稳态区间（283.53–286.84）。
+
+**代价**：每轮多 3–4 分钟冷启动（模型加载 + preflight），换来可重复的有效数据。
+
+**判据**：比较"崩/不崩"时必须记录**该进程已运行分钟数**和**已成功请求总数**，
+只写 `Running` 数会误判（本仓库在此浪费了 5 个作业）。

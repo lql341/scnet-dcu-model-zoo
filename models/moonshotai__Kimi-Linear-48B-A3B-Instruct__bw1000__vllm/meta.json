@@ -10,7 +10,7 @@
   "precision": "bf16",
   "status": "bench",
   "bench": "yes",
-  "bench_note": "6 档中 5 档有效；16K/c64 两轮均失败（vLLM 长上下文缺 paged-attn 内核，见 gotchas #21）",
+  "bench_note": "6 档全部有效；16K/c64 需每轮重启服务进程才能稳定出数（累计状态问题，见 gotchas #51，原始数据在 bench/restart-1124366/）",
   "cold_start_s": [
     640,
     700
@@ -21,9 +21,9 @@
     "4k_c64": 858.08,
     "16k_c1": 37.36,
     "16k_c8": 197.83,
-    "16k_c64": null
+    "16k_c64": 284.62
   },
   "optimized": false,
   "verified_on": "2026-11-12",
-  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；6 档中 5 档大幅提升，16K/c64 回退 6.3%"
+  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；4K/16K 各档均有提升。原记「16K/c64 回退 6.3%」为单轮噪声（±7%），2026-11-05 复测已撤销，见 docs/REPORT.md §2.2"
 }

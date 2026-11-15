@@ -46,7 +46,8 @@ scnethr$ chmod 700 ~
 ## 1.6 历史做法（已废弃）
 
 **二进制归档只放一处**：`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（与 luql 既有的
-`archive/` 归档放一起）。本机 `~/Downloads/pi-test/archive/` 只是**上传中转**，校验通过后即删除。
+`archive/` 归档放一起）。本机上传中转目录只是临时中转，校验通过后即删除
+（旧路径 `~/Downloads/pi-test/archive/`；仓库 2026-11-15 迁至 `~/Downloads/agent/repo/dcu-model-test/`）。
 
 ```text
 /public/home/luql/archive/zoo-dcu-2026-11/

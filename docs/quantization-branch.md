@@ -3,12 +3,22 @@
 > 结论先行：**量化不是"没试过"，而是"试过并被数据否掉了一半"**。本文把已有的硬事实集中在一处，
 > 便于下一次决定要不要继续投入，而不是从头再摸索一遍。
 
+> **2026-11-15 补充（作业 1123947，决定性）**：fp8 的问题**不是配置，是 kernel 不存在**。
+> `torch.mm` 对 `float8_e4m3fn` / `float8_e5m2` 直接抛
+> `NotImplementedError: "addmm_cuda" not implemented`。
+> 白名单有 `fp8`、`Fp8Config` 能解析、`fp8_dtype` 有定义、hipBLASLt 含 `R_8F_E4M3` 符号——
+> **全都对，但 torch 的分发层没有 fp8 GEMM 实现**。
+> 详细证据与"为什么表现为初始化失败"见 `sweeps/results-kimi-quantigate-2026-11-15.md`
+> 与 `docs/gotchas.md` #46。
+> **这意味着在 torch 侧补齐 fp8 GEMM 绑定之前，任何 fp8 自量化都不可能成功**，
+> 不存在"调参数/换版本"的解法。量化分支应视为**外部阻塞**，不是待办。
+
 ## 1. 已经验过的三条路（都有产物或日志）
 
 | 路径 | 结果 | 证据 |
 | --- | --- | --- |
 | 现成 AWQ 权重（MiMo-9B） | ✅ 能起服务、能跑完，但 **慢 5×** | `models/XiaomiMiMo__MiMo-V2.6-Distill-Qwen-9B__bw1000__vllm/`、`sweeps/results-awq-2026-11-06.md` |
-| `--quantization fp8`（Qwen3-ASR） | ❌ engine core 初始化即失败：DCU 无 fp8 kernel | `docs/gotchas.md` #22 |
+| `--quantization fp8`（Qwen3-ASR） | ❌ engine core 初始化即失败：`torch.addmm` 无 fp8 实现 | `docs/gotchas.md` #22、#46；`sweeps/results-kimi-quantigate-2026-11-15.md` |
 | 官方 AWQ / GPTQ 权重 | ❌ MiMo、Kimi 都**没有**官方量化权重 | 各条目 `MISSING.md` |
 
 **为什么 AWQ 会慢 5×**：vLLM 在 DCU 上走的是"int4 权重 → 反量化到 bf16 → bf16 GEMM"的回退路径，
