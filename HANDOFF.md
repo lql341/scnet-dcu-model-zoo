@@ -109,8 +109,16 @@
 **推论**：vLLM 单流天花板 ≈ 1/0.0242 ≈ **41 tok/s**，任何注意力/上下文参数都突破不了。
 → **这不是 gotcha #21 那个"缺 paged-attention 内核"**（那个是 context 相关，MiMo 的 TPOT 47.9→119.4）。
 
-实验作业 `sweeps/kimi-vllm-4k-opt.slurm`（1128188）正在验证 `--compilation-config` 与
-`--async-scheduling` 能否压掉这个气泡。**若全部无效，结论就是"引擎特性，参数改不动"**。
+**实测结果（作业 1128368）**：
+
+| 变体 | 4K/c1 吞吐 | 4K/c1 TPOT | 4K/c8 吞吐 | 4K/c8 TTFT |
+| --- | ---: | ---: | ---: | ---: |
+| 基线 | 39.78 | 24.35 ms | 239.16 | 3949 ms |
+| **`--async-scheduling`** | 41.63 (+4.6%) | 23.58 ms (−3.2%) | **294.69 (+23.2%)** | **1511 ms (−61.7%)** |
+
+- **并发档大幅改善**：4K/c8 +23.2%，TTFT 降 61.7%；
+- **单流档改善有限**：TPOT 仅 −3.2%，24 ms 固定开销主体仍在，天花板 ≈41 tok/s 依然成立；
+- `--compilation-config` 这条**作废**——实测 `compilation_config.mode` 本来就是 `VLLM_COMPILE`。
 
 ### 2.5.3 Recon2Reason / RoboBrain × SGLang 已封存
 

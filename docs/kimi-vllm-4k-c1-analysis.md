@@ -3,6 +3,8 @@
 > **一句话结论**：这**不是** kernel 效率问题，是**每步 ~24 ms 的固定开销**——
 > vLLM 的 TPOT 对 batch 和 context 都近乎不敏感，而 SGLang 的随请求数增长。
 > 机理指向「TritonMLA 无法整图捕获 + TP=4 逐层集合通信」，属引擎/内核特性。
+> **2026-11-15 实测补充**：`--async-scheduling` 让 4K/c8 吞吐 +23.2%、TTFT −61.7%，
+> 但单流 TPOT 仅 −3.2%，24 ms 主体仍在。
 
 ## 1. 现象
 
@@ -70,15 +72,32 @@ SGLang 每步只付 7.6 ms，但每个请求要加 1.67 ms。
 **单流天花板**：如果 24 ms 完全是固定开销，vLLM 的 4K/c1 上限 ≈ 1000/24.2 ≈ **41 tok/s**。
 实测 40.73，已经贴着这个天花板——**说明瓶颈确实是那 24 ms，而不是某个能调好的参数**。
 
-### 待验证的三个方向
+### 2026-11-15 实测结果（作业 1128368）
 
-| 参数 | 依据 | 把握 |
-| --- | --- | --- |
-| `--compilation-config '{"mode":"VLLM_COMPILE"}'` | 全仓 0 命中；ASR 条目日志证明 inductor 在 BW 上可用（TP=1） | 中——**但需先确认当前 mode 不是 VLLM_COMPILE** |
-| `--async-scheduling` | 直击每步气泡 | 低，纯猜测 |
-| RCCL 调优（`RCCL_BUFFSIZE` / `NCCL_PROTO`） | `disable_custom_all_reduce` 已 True，走 RCCL | 低，纯猜测 |
+**先决信息把第一项假设直接作废**：该条目的 `compilation_config.mode` 本来就是
+**`VLLM_COMPILE`**，不是 `NONE`。所以「开启编译配置」这条路不存在——已经是那个模式了。
 
-实验：`sweeps/kimi-vllm-4k-opt.slurm`（作业 1128188）。
+| 变体 | 4K/c1 吞吐 | 4K/c1 TPOT | 4K/c8 吞吐 | 4K/c8 TTFT |
+| --- | ---: | ---: | ---: | ---: |
+| E0 基线 | 39.78 | 24.35 ms | 239.16 | 3949 ms |
+| **E2 `--async-scheduling`** | **41.63（+4.6%）** | **23.58 ms（−3.2%）** | **294.69（+23.2%）** | **1511 ms（−61.7%）** |
+
+**结论**：
+
+1. **`--async-scheduling` 在并发档有效且幅度很大**：4K/c8 吞吐 +23.2%，
+   同时 TTFT 降低 61.7%。这是本轮 vLLM 侧唯一确认有效的参数。
+2. **单流档改善有限**：4K/c1 吞吐 +4.6%、TPOT 仅 −3.2%（24.35 → 23.58 ms）。
+   24 ms 固定开销的主体**未被消除**，与"逐层 eager 发射 + TP 集合通信"的推断一致。
+3. 因此单流天花板问题（≈41 tok/s）依然成立：本次实测 41.63 tok/s 正好贴着该上界。
+
+### 已排除的方向
+
+| 参数 | 结论 |
+| --- | --- |
+| `--compilation-config` | ❌ **作废**：该条目已是 `VLLM_COMPILE` 模式 |
+| RCCL 调优 | 未测；`disable_custom_all_reduce` 已 True，走 RCCL |
+
+实验脚本：`sweeps/kimi-vllm-4k-opt.slurm`（作业 1128188 首次失败、1128368 完成）。
 
 ### 已确认无效（不要重复）
 
