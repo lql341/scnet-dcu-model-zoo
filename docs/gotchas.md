@@ -1470,3 +1470,61 @@ Triton 没找到工具链就放弃了 JIT，回落到一条不编译的路径，
 - `rm -rf ~/.triton/cache` + `TRITON_CACHE_DIR` 指向本地 + `TRITON_ALWAYS_COMPILE=1` → 排除陈旧 hsaco，估 35-45%
 
 历史数据与产物仍然有效（当年在可用状态下产出）。
+
+## 59. 容器镜像存储的落盘位置：NFS 家目录**跑不了**，只能节点本地；但数据必须放家目录
+
+2026-11-15 一整天在这件事上反复踩坑，集中记下来。
+
+## 两条硬约束（都是实测，不是推测）
+
+| 位置 | overlay 驱动 | vfs 驱动 |
+| --- | --- | --- |
+| **NFS 家目录**（`/public/home/luql`，1.5T） | ❌ `lsetxattr /boot: operation not supported` | ❌ `setting up pivot dir ... .pivot_root: permission denied` |
+| **节点本地**（`/tmp`，各节点 0~278 GB 不等） | ✅ 可用 | ✅ 可用 |
+
+→ **镜像存储只能放节点本地**，这是唯一可行的路径。
+
+## 但"全放节点本地"会炸
+
+一次 `podman load` 8.5 GB 的 tar.gz，解压后约 **20-32 GB**。本轮我在多节点反复加载，导致：
+
+- 登录节点 `/` 从 84% 灌到 **99%（只剩 15G）**
+- `/tmp/pr-insp3` 单目录 31 GB、`/tmp/pr-i4` 3.2 GB，全是我留下的
+- 至少 3 次作业因 `no space left on device` 失败，其中一次报在
+  `/usr/local/lib/python3.10/dist-packages/aiter/jit/module_rope_pos_fwd.so`
+
+清理时还有第二个坑：**rootless podman 的目录普通 `rm -rf` 删不掉**（uid 映射），
+必须先 `podman rmi -af` + `podman system prune -af`，再删目录。
+
+```bash
+PD="podman --root /tmp/pr-xxx --runroot /tmp/prr-xxx --storage-driver overlay \
+     --storage-opt ignore_chown_errors=true"
+$PD rmi -af && $PD system prune -af     # 必须走 podman 自己的清理
+rm -rf /tmp/pr-xxx /tmp/prr-xxx         # 之后才删得掉
+```
+
+## 正确做法（已固化为作业模板）
+
+```bash
+# 数据、缓存、产物 → 家目录（NFS，空间充裕，跨节点可见）
+WORK=/public/home/luql/work/<实验名>
+
+# 镜像存储 → 节点本地，且【每个作业独立 root】
+PSTORE=/tmp/pr-$JID
+PD="podman --root $PSTORE --runroot /tmp/prr-$JID --storage-driver overlay \
+     --storage-opt ignore_chown_errors=true"
+trap '$PD rmi -af; $PD system prune -af; rm -rf $PSTORE /tmp/prr-$JID' EXIT
+
+# 提交前自检节点水位：本集群同一分区不同节点从 0 GB 到 278 GB 不等
+FREE_G=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
+[ "$FREE_G" -ge 45 ] || { echo "NOT_ENOUGH_SPACE"; exit 42; }   # exit 42 让调度器换节点重投
+```
+
+`exit 42` + `sbatch --requeue` 是应对"节点水位不稳"的实用组合：
+主动退出比写到一半失败干净，且能自动换节点。
+
+## 一条容易搞错的语义
+
+**"家目录"指的是 `/public/home/luql`，不是节点本地 `/tmp`。**
+本轮我一开始把两者混为一谈，结果既灌满了节点、又说"已放家目录"，
+两个错同时犯。判断方法：`echo $HOME` 在容器内外可能不同，但**宿主机上的 `/public/home/<user>` 才是共享家目录**。

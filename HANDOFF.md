@@ -14,8 +14,8 @@
 | 官方评测 | **9 个条目全绿，935/935 条真实产物**（官方 9 份清单 9/9 覆盖） |
 | 跨引擎基准 | **8 个条目**（MiMo / Kimi / Recon2Reason / RoboBrain，各 SGLang + vLLM × 6 档） |
 | 自建运行时 | **1 个**（Trident-Qwen3VL-2B：OpenAI 兼容 embedding 服务，两引擎均不支持该架构） |
-| 阻塞 | **2 个**（Trident × SGLang/vLLM 架构未注册，保留证据） |
-| 踩坑 | **51 条**（`docs/gotchas.md`，按隐蔽度排序） |
+| 阻塞 | **4 个**（Trident × SGLang/vLLM 架构未注册；Recon2Reason/RoboBrain × SGLang 于 2026-11-15 封存，见 gotcha #58） |
+| 踩坑 | **58 条**（`docs/gotchas.md`，按隐蔽度排序） |
 | 归档 | 5 镜像 55 GB + assets + sources + **products 10 个目录**，`SHA256SUMS` 11/11 通过 |
 | 代码同步 | GitHub `lql341/scnet-dcu-model-zoo` = GitLab `luql/scnet-dcu-model-zoo` = 本地（每次改完 `tools/publish.sh`） |
 
@@ -60,7 +60,7 @@
 | 镜像 | 5 个 tar.gz（55 GB） | `archive/images/`，命名 `<仓库名>_<tag>.tar.gz` |
 | 源码 | AuK / Wan2.1 / OmniWeaving | `archive/sources/` |
 | 轮子 | cp310 多套（auk-fix / qi2 / omni-fix / wan-fix / trident） | `archive/assets/` 与 `~/wheels/` |
-| 经验 | 36 条踩坑 + 4 条有效硬约束（1 条已推翻） | `docs/gotchas.md`、`docs/REPORT.md` §4 |
+| 经验 | 58 条踩坑 + 4 条有效硬约束（1 条已推翻） | `docs/gotchas.md`、`docs/REPORT.md` §4 |
 
 **关键性能数字（引用以此为准）**
 
@@ -76,7 +76,61 @@
 
 ---
 
-## 3. P0：kernel 主线（唯一技术主线，预算 8–16 卡时）
+## 2.5 2026-11-15 下午-晚间：本轮新增结论（**已完成，可引用**）
+
+### 2.5.1 吞吐优化的实收
+
+| 条目 | 改动 | 实测收益 | 数据来源 |
+| --- | --- | --- | --- |
+| **Kimi × SGLang** | `--chunked-prefill-size 4096` 进 `EXTRA_ARGS` | 16K/c8 **+10.5%**（124.31→137.30）、16K/c64 +2.7%（222.45→228.40）、c64 TTFT −10% | 作业 1126055，同节点 A/B |
+| **Qwen3-ASR × vLLM** | `MAX_NUM_SEQS` 16→128、`WORKERS` 4→32 | 60 条 **30s→26s（−13%）**，CER/WER 指标不变 | 归档产物复核 |
+
+> ⚠️ Kimi 的 c64 +2.7% 与本档历史波动（±5%）重叠，**不能算确定收益**；
+> `meta.throughput.16k_c64` 因此保持 234.17 未改，只把 chunked 的影响写进 README §7.4。
+
+> ⚠️ ASR 的"精度零变化"措辞已修正：逐条比对归档产物后，60 条中有 **1 条**
+> （`1089-134686-0024.txt`）在 64 并发档多出一个逗号。CER 上看不出，但**不是逐字节一致**。
+
+### 2.5.2 Kimi × vLLM 的 4K/c1 缺口已查清机理（未优化）
+
+4K/c1 是 **40.73 tok/s，比 SGLang 的 104.67 低 61%**。本轮查明原因**不是** kernel 效率：
+
+| 量 | vLLM | 拟合 |
+| --- | ---: | --- |
+| TPOT 4K/c1 | 24.18 ms | vLLM = **24.07 ms + 0.111 ms/req** |
+| TPOT 4K/c8 | 24.96 ms | 对 batch 几乎不敏感 |
+| TPOT 16K/c1 | 25.23 ms | 对 context 几乎不敏感 |
+| SGLang 4K/c1 | 9.31 ms | SGLang = 7.64 + 1.67 ms/req |
+
+即 vLLM 每步先付 **~24 ms 固定开销** ≈ 27 层 × 0.89 ms/层，指向**逐层 eager kernel launch + TP all-reduce**。
+机理线索：`TritonMLABackend` 的 `AttentionCGSupport.NEVER` 迫使 `cudagraph_mode=PIECEWISE`，
+7 层 MLA 的 decode 注意力永远进不了整图。
+
+**推论**：vLLM 单流天花板 ≈ 1/0.0242 ≈ **41 tok/s**，任何注意力/上下文参数都突破不了。
+→ **这不是 gotcha #21 那个"缺 paged-attention 内核"**（那个是 context 相关，MiMo 的 TPOT 47.9→119.4）。
+
+实验作业 `sweeps/kimi-vllm-4k-opt.slurm`（1128188）正在验证 `--compilation-config` 与
+`--async-scheduling` 能否压掉这个气泡。**若全部无效，结论就是"引擎特性，参数改不动"**。
+
+### 2.5.3 Recon2Reason / RoboBrain × SGLang 已封存
+
+见 gotcha #58。服务可启动但 warmup 时 `_fwd_grouped_kernel_stage1` 触发 KERNEL VMFault。
+已排除节点/参数/显存/cuda-graph/架构/镜像整体损坏（**Kimi 用同一镜像当日跑通**）。
+最可能根因：`tvm-ffi` JIT KV-cache 路径的环境回归。
+**两个条目的 vLLM 兄弟条目不受影响**（2026-11-12 已产出完整 6 档数据）。
+
+### 2.5.4 文档一致性：10 项 🔴 级问题已修
+
+本轮审计发现并修复的典型问题（都记在 gotcha #54/#55）：
+
+- 3 个 `__vllm` 条目的 `run.sh` 是 **SGLang 启动器残留**，引用未定义的 `$MAX_RUNNING_REQUESTS`
+- `MiMo × vLLM` 的 `submit.slurm` 保留已废弃的 `--enforce-eager`，与文档声明的"graph 开启"矛盾
+- `Kimi × SGLang` README 四处仍写 `--disable-cuda-graph`，而 §7.4 已证明"关掉 graph 掉 31%"
+- `INDEX.md`「Kimi × vLLM ❌ 框架不支持」已被该条目 6 档数据推翻（错误源头在 `tools/gen_index.py` 硬编码）
+- `Wan` 的 `FSDP` 默认值 0（分片）→ 1（§7.1 实测分片单卡 OOM）
+
+---
+
 
 ### 3.1 先做 0 卡时闸门（**没通过就不要投人力**）
 

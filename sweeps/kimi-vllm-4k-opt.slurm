@@ -103,13 +103,17 @@ exec python3 -m vllm.entrypoints.openai.api_server \
 " > "$WORK/server-$tag-$JID.log" 2>&1
 }
 
-wait_srv() {
-  local t
+wait_srv() {   # $1=tag，就绪后把容器日志落到 $WORK/srv-<tag>-$JID.txt
+  local tag="$1" t
   for t in $(seq 1 300); do
-    curl -sf --noproxy '*' -m 5 "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1 && return 0
+    if curl -sf --noproxy '*' -m 5 "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then
+      $PD logs vllm-srv > "$WORK/srv-$tag-$JID.txt" 2>&1
+      return 0
+    fi
     $PD ps --format '{{.Names}}' 2>/dev/null | grep -q vllm-srv || return 1
     sleep 10
   done
+  $PD logs vllm-srv > "$WORK/srv-$tag-$JID.txt" 2>&1
   return 1
 }
 
@@ -133,23 +137,26 @@ cd /work/repo && bash bench.sh
 }
 
 # 从服务端日志抓编译模式 —— 这是决定 E1 是否值得跑的关键信息
-grab_mode() {
-  local tag="$1"
-  local mode
-  mode=$(grep -aoE "'mode': <CompilationMode\.[A-Z_]+" "$WORK/server-$tag-$JID.log" 2>/dev/null | head -1 | sed 's/.*CompilationMode\.//')
+grab_mode() {   # $1=tag，从 podman logs 落盘的文件里抓 compilation mode
+  local tag="$1" mode
+  mode=$(grep -aoE "'mode': <CompilationMode\.[A-Z_]+" "$WORK/srv-$tag-$JID.txt" 2>/dev/null | head -1 | sed 's/.*CompilationMode\.//')
+  if [ -z "$mode" ]; then
+    mode=$(grep -aoE "CompilationMode\.[A-Z_]+" "$WORK/srv-$tag-$JID.txt" 2>/dev/null | head -1 | sed 's/.*CompilationMode\.//')
+  fi
   echo "$mode"
 }
 
 : > "$WORK/matrix-$JID.txt"
 
 load_image "$VIMAGE" "$VTAR" vllm020 || exit 1
+load_image "$CIMAGE" "$CTAR" cli || { log "FAIL 客户端镜像，压测无法进行"; exit 1; }
 rsync -a --exclude bench --exclude logs --exclude official-eval "$REPO"/models/moonshotai__Kimi-Linear-48B-A3B-Instruct__bw1000__vllm/ "$WORK/repo"/
 chmod -R a+rwX "$WORK/repo"
 
 # ============ 变体 E0：基线（同时抓 compilation mode）============
 kill_srv
 start_srv "E0_base" ""
-if wait_srv; then
+if wait_srv "E0_base"; then
   MODE=$(grab_mode "E0_base")
   log "compilation_config.mode = ${MODE:-未抓到}"
   echo "MODE=${MODE:-unknown}" >> "$WORK/matrix-$JID.txt"
@@ -180,9 +187,8 @@ fi
 MODE=$(grep -oE "^MODE=.*" "$WORK/matrix-$JID.txt" | head -1 | cut -d= -f2)
 if [ "${MODE:-unknown}" != "VLLM_COMPILE" ] && [ "${MODE:-unknown}" != "unknown" ]; then
   kill_srv
-  load_image "$CIMAGE" "$CTAR" cli || true   # bench 客户端镜像
   start_srv "E1_compile" "--compilation-config '{\"mode\":\"VLLM_COMPILE\"}'"
-  if wait_srv; then
+  if wait_srv "E1_compile"; then
     log "E1 就绪"
     for pair in "4096 1" "4096 8"; do
       set -- $pair
@@ -213,7 +219,7 @@ fi
 # ============ 变体 E2：async scheduling ============
 kill_srv
 start_srv "E2_async" "--async-scheduling"
-if wait_srv; then
+if wait_srv "E2_async"; then
   log "E2 就绪"
   for pair in "4096 1" "4096 8"; do
     set -- $pair
