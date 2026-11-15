@@ -129,7 +129,11 @@ declare -A VARIANTS=(
   [B_chunked4096]="--attention-backend triton --chunked-prefill-size 4096"
 )
 
-for name in A_current B_chunked4096; do
+# SKIP_A=1 时只跑 B（A 的数据已在被取消的 1125845 里留存）
+VLIST="A_current B_chunked4096"
+[ "${SKIP_A:-0}" = "1" ] && VLIST="B_chunked4096"
+
+for name in $VLIST; do
   kill_srv
   log "==================== 变体 $name ===================="
   start_srv "$name" "${VARIANTS[$name]}"
