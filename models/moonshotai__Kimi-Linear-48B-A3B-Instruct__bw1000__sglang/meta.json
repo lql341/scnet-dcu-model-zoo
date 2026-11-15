@@ -25,5 +25,5 @@
   },
   "optimized": true,
   "verified_on": "2026-10-31",
-  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；6 档中 5 档大幅提升，16K/c64 回退 6.3%"
+  "optimization_note": "开启 CUDA Graph（去掉 --disable-cuda-graph）；6 档中 5 档大幅提升。原记「16K/c64 回退 6.3%」为单轮噪声（±7%），2026-11-05 复测已撤销，见 docs/REPORT.md §2.2"
 }
