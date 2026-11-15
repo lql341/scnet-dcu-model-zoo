@@ -45,7 +45,7 @@ triton: 3.5.0
 | --- | --- | --- |
 | `--max-model-len` | `8192` | 语音任务输出短，8K 足够；不必按 20480 分配 KV |
 | `--gpu-memory-utilization` | `0.85` | 模型仅 4.7 GB，显存压力小 |
-| `--max-num-seqs` | `16` | 语音请求耗时长，16 路并发已足够 |
+| `--max-num-seqs` | `128` | 60 条批量子集实测：16→128 让耗时 30→26 s（−13%），精度指标无变化；64 之后开始饱和，见 §7.2 |
 | CUDA Graph | 保持开启 | 未传 `--enforce-eager`；见 `docs/gotchas.md` #2 |
 
 容器运行时要求同其它条目：必须传 `/dev/mkfd`、必须挂宿主 `/opt/hyhal`、容器存储放节点本地盘。见 `docs/gotchas.md`。
@@ -64,7 +64,7 @@ python3 -m vllm.entrypoints.openai.api_server \
   --host 127.0.0.1 --port 30000 \
   --tensor-parallel-size 1 --max-model-len 8192 \
   --gpu-memory-utilization 0.85 \
-  --trust-remote-code --dtype bfloat16 --max-num-seqs 16
+  --trust-remote-code --dtype bfloat16 --max-num-seqs 128
 ```
 
 ## 5. Smoke 测试
@@ -190,7 +190,16 @@ python3 -m vllm.entrypoints.openai.api_server \
 | `--max-num-seqs 64` + 16 并发 | **27 s（−10%）** | 0.10% / 0.53% |
 | `--max-num-seqs 128` + 32 并发 | **26 s（−13%）** | 0.10% / 0.53% |
 
-瓶颈在音频解码 + 编码器前向，不在解码调度，所以收益有限且 64 之后饱和；**精度零变化**。
+瓶颈在音频解码 + 编码器前向，不在解码调度，所以收益有限且 64 之后饱和。
+
+**精度影响（2026-11-15 逐条复核归档产物后的修正）**：三档 CER/WER 都是 0.10% / 0.53%，
+**在指标层面无差异**；但逐文件比对显示 60 条里有 **1 条**（`1089-134686-0024.txt`）输出不同——
+64 并发档多出一个逗号（`vinegar, and`），16 与 128 并发档则完全相同。
+即**不是逐字节一致，而是 1/60 条有 1 个标点差异**，CER 上不可见（该条本来就正确）。
+原因推测是 batch 形状变化导致的浮点累加顺序差异，未做进一步验证。
+
+> 早期版本这里写「精度零变化」，措辞过强：应表述为**「CER/WER 指标无变化，60 条中 1 条标点级差异」**。
+
 详见 [`sweeps/results-asr-throughput-2026-11-06.md`](../../../sweeps/results-asr-throughput-2026-11-06.md)。
 
 ## 8. 注意事项
