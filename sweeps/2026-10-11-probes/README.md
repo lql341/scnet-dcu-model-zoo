@@ -16,7 +16,7 @@
 | 本地镜像化 | `dev1/dev2/dev3.slurm` | 用已 load 的本地 tar 起服务（省 4–6 min pull） | `docs/image-archive.md` |
 | MiMo 引入 | `mimo1`–`mimo4.slurm` | MiMo-9B 在 SGLang 上的最小可用启动与排错 | `models/XiaomiMiMo__*__sglang` |
 | 压测链路 | `bench1.slurm`、`bench2.slurm` | 6 档基准脚本的成型过程（含 preflight、有效性校验） | `tools/preflight_lib.py`、gotchas #11 |
-| SGLang 调参 | `sweep_mimo.slurm`、`opt_mimo.slurm` | 找出 `--max-running-requests 8→64` + CUDA Graph 的最优组合（+73%～+466%） | `docs/gotchas.md` #2、`docs/handoff-2026-11-14-legacy.md` §7 |
+| SGLang 调参 | `sweep_mimo.slurm`、`opt_mimo.slurm` | 找出 `--max-running-requests 8→64` + CUDA Graph 的最优组合（+73%～+466%） | `docs/gotchas.md` #2、`docs/REPORT.md` §2 |
 | Kimi 引入与调参 | `kimi_try1.slurm`、`kimi_bench.slurm`、`sweep_kimi.slurm`、`sweep_kimi2.slurm` | TP=4 起 Kimi-48B；`HIP error: invalid device ordinal` 的定位；CUDA Graph 开/关对比 | gotchas #14、`models/moonshotai__Kimi-*` |
 | vLLM 调参 | `vllm_bw.slurm`、`vllm_bench{,2}.slurm`、`sweep_vllm{,2}.slurm`、`vllm_final.slurm` | 去 `--enforce-eager` + `max-num-seqs 128`；双容器压测（vLLM 服务 + SGLang 客户端） | `models/XiaomiMiMo__*__vllm` |
 | 架构支持探测 | `probe_w2.slurm` | W2 三个候选模型的 `architectures` 与框架注册情况（Trident 之类） | gotchas #17 |

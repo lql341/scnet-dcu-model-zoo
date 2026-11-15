@@ -16,7 +16,7 @@
 
 ### 为什么这个条目值得建（一条被推翻的旧结论）
 
-`docs/handoff-2026-11-14-legacy.md` 早期记录过「vLLM 0.20 内置模型无 `kimi_linear`（只有 kimi_k25 / kimi_vl / kimi_audio），
+早期排查记录过「vLLM 0.20 内置模型无 `kimi_linear`（只有 kimi_k25 / kimi_vl / kimi_audio），
 所以 Kimi 在 vLLM 上 blocked」。**2026-11-12 实测推翻**：
 
 ```python

@@ -195,7 +195,7 @@ Kimi-Linear-48B（TP=4）6 档：104.67 / 353.53 / **839.00** / 50.80 / 119.21 /
 | 换机器怎么重建 | `docs/repro.md` |
 | 镜像/轮子在哪、怎么校验 | `docs/ARCHIVE-SUMMARY.md` + `/public/home/luql/archive/zoo-dcu-2026-11/SHA256SUMS` |
 | 调优过程原件（48 个 slurm） | `sweeps/2026-10-11-probes/` |
-| 会话交接与 TODO（**新会话从这里开始**） | `HANDOFF.md`；上一段历史交接在 `docs/handoff-2026-11-14-legacy.md` |
+| 会话交接与 TODO（**新会话从这里开始**） | `HANDOFF.md` |
 | **二进制归档（镜像/产物/轮子/调优数据）** | `luql:/public/home/luql/archive/zoo-dcu-2026-11/`（见 `docs/ARCHIVE-SUMMARY.md`，内含 `VERIFY.md`） |
 | 报告全文 | `docs/REPORT.md`（本文件） |
 
