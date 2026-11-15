@@ -1372,3 +1372,55 @@ scancel --state=PENDING -u $USER   # 如果确实要清排队中的，限制状�
 `sbatch --export=ALL,SKIP_A=1 xxx.slurm`，比在脚本里 hard-code 或改文件头更干净——
 skip 类开关应该做成环境变量，被取消的作业重跑时可以**从断点续**（本次 A 变体的
 两份 jsonl 留在了 WORK 里，重跑只补 B 变体，省 20 min）。
+
+## 57. Triton 在 DCU 上 JIT 编出的 decode-attention kernel 会 VMFault（Recon/RoboBrain 复现阻塞）
+
+**现象**（2026-11-15）：`BAAI__Recon2Reason-Reasoning-4B` 与 `BAAI__RoboBrain2.5-8B-NV`
+的 SGLang 条目**服务能启动、`/health` 却永远 503**，约 20 秒后进程被 abort。
+三个不同节点（f11r1n15 / f11r2n02 / f11r2n03）表现完全一致。
+
+**崩溃点（traceback 逐帧）**：
+
+```
+radix_attention.py:127          forward
+ → triton_backend.py:1199      forward_decode
+  → decode_attention.py:771    decode_attention_fwd
+   → decode_attention.py:712   decode_attention_fwd_grouped
+    → decode_attention.py:612  _decode_softmax_reducev_fwd   ← 在此 JIT 编译
+     → triton/runtime/jit.py:861  _do_compile
+      → HSA_STATUS_ERROR_EXCEPTION → KERNEL VMFault
+```
+
+崩掉的 kernel 是 `_fwd_grouped_kernel_stage1`，grid `x:16384, y:8, z:16`
+（16K 序列的分组 decode softmax reducev）。
+
+**已排除**（都有对照）：
+
+| 假设 | 反证 |
+| --- | --- |
+| cuda graph 捕获 | `--disable-cuda-graph` **同样崩** |
+| 启动参数 | 与 2026-11-02 成功日志逐行对齐：`#tokens=331145`、`avail mem=9.44/9.30 GB`、捕获 bs 列表全部一致 |
+| 节点故障 | 三个节点表现相同 |
+| 显存不足 | KV cache 分配成功，剩余 9.44 GB，与成功时相同 |
+| 磁盘 | 另一个失败作业（1126552）确实是 `/` 只剩 27G 导致 `no space left`，但与本次崩溃不同 |
+
+**关键对比**：2026-11-02 那次成功日志里有这一行，本次没有：
+
+```
+Failed to load JIT KV-Cache kernel with row_bytes=2048:
+  Could not find CUDA installation. Please set CUDA_HOME environment variable.
+```
+
+**注意这句报错在 DCU 上是误报** —— DTK 是 HIP/ROCm 体系，根本没有 CUDA。
+Triton 没找到工具链就放弃了 JIT，回落到一条不编译的路径，于是能跑通出数据。
+现在 JIT **编译成功了**，但编出来的 kernel 在 gfx936 上访存越界。
+
+→ 所以**当年那批 6 档数据是在「JIT 编译失败」的降级状态下产出的**。
+复现它要么恢复同样的降级，要么让 Triton 正确指向 DTK 的编译器（`hipcc`）。
+
+**未决**：归档镜像实测 manifest digest `sha256:9d16c7f3…`
+与 `image.lock` 记录的 `sha256:db981c46…` 不一致。但 podman `load` 后计算的 digest
+与 registry 的 digest 算法可能不同，**尚不能断定镜像被替换**，需进一步核对。
+
+**影响**：这两个条目当前**无法产出任何新数据**，包括本想做的 chunked-prefill 扫描。
+历史数据与产物仍然有效（它们是当年在可用状态下产出的）。

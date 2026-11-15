@@ -13,6 +13,13 @@
 #   B = A + --chunked-prefill-size 4096
 # 判定阈值沿用 Kimi：>2% 有效；±2% 噪声；更差则记录。
 #
+# 【启动环境必须与原条目 submit.slurm 一致：不要往 PATH 里加 /opt/dtk/bin】
+# 2026-11-15 首次提交（1126056 / 1126225）四个变体全崩在 Capture cuda graph
+# 的第一个 batch（bs=64），报 KERNEL VMFault，换了两个节点都一样。根因是这行
+# 多了 PATH=/opt/dtk/bin:$PATH：加了之后 JIT KV-cache kernel 能找到"CUDA 安装"
+# 并编译成功，而它在 CUDA Graph 捕获阶段访存越界。历史成功日志（11-02）里明确
+# 有 JIT KV-Cache kernel 加载失败、回落 Triton 之后 graph 才捕获成功。见 gotcha #57。
+#
 # 用法：sbatch sweeps/t02-chunked-verify.slurm
 #SBATCH -p hx1hdnormal
 #SBATCH -N 1
@@ -73,7 +80,6 @@ start_srv() {
     -e HIP_VISIBLE_DEVICES=0 -e CUDA_VISIBLE_DEVICES=0 \
     "$IMAGE" -c "
 export LD_LIBRARY_PATH=$LIBPATH:\$LD_LIBRARY_PATH
-export PATH=/opt/dtk/bin:\$PATH
 export ROCM_PATH=/opt/dtk HIP_PATH=/opt/dtk/hip HYHAL_PATH=/opt/hyhal
 exec python3 -m sglang.launch_server \
   --model-path /models/$mname --served-model-name $sname \
