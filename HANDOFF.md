@@ -17,7 +17,7 @@
 | 阻塞 | **4 个**（Trident × SGLang/vLLM 架构未注册；Recon2Reason/RoboBrain × SGLang 于 2026-11-15 封存，见 gotcha #58） |
 | 踩坑 | **59 条**（`docs/gotchas.md`，按隐蔽度排序） |
 | 归档 | 历史口径 5 镜像 55 GB（规范前 31 GB）+ assets + sources + products；**2026-11-21 实测原 `archive/` 目录已不可见，镜像本体仍在原账号——见 §2.6**；`SHA256SUMS` 11/11 为历史校验结果 |
-| 代码同步 | GitHub `lql341/scnet-dcu-model-zoo` = GitLab `luql/scnet-dcu-model-zoo` = 本地（每次改完 `tools/publish.sh`） |
+| 代码同步 | GitHub `lql341/scnet-dcu-model-zoo` = 本地（每次改完 `tools/publish.sh`）。GitLab/sourcefind 远端已于 2026-11-21 按用户决定移除，不再维护 |
 
 **本段最重要的四个教训**（写在这里，防止新会话重犯）：
 
@@ -434,7 +434,7 @@ python3 tools/gen_index.py     # 重生成 INDEX.md 与 README 总矩阵
 ./tools/check_quota.sh         # 配额/体积检查
 python3 tools/check_products.py# 20 个条目产物与 stats 一致性
 python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
-./tools/publish.sh "msg"       # commit + 推双远端（GitHub + GitLab）
+./tools/publish.sh "msg"       # commit + 推 GitHub（GitLab 远端已移除）
 ./tools/sync_remote.sh         # 把本地 models/ + sweeps/ 推到 luql:~/work/zoo-sync（提作业前必跑）
 ```
 

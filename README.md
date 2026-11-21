@@ -14,7 +14,7 @@
 > 比赛提交是一次性的；「哪个参数能开、哪个版本能装、哪种现象会产出假数据」的经验，
 > 以及「上游随时可能删掉的那个镜像」，才是下次遇到同类国产卡时真正的起点。
 > 因此镜像归档（`docs/image-archive.md`，`/public/home/luql/archive/zoo-dcu-2026-11/`）、踩坑清单（`docs/gotchas.md`）
-> 与依赖 wheel 集都当作一等资产维护，并在 GitHub / GitLab 双远端同步（`tools/publish.sh`）。
+> 与依赖 wheel 集都当作一等资产维护，并同步到 GitHub（`tools/publish.sh`；GitLab 远端已于 2026-11-21 移除）。
 
 ## 目录约定
 
@@ -107,7 +107,7 @@ SKIP_BENCH=1 sbatch --export=ALL container/submit.slurm
 
 ## 相关
 
-- 赛事提交仓库（光合代码托管）：<https://developer.sourcefind.cn/codes/luql>
+- 赛事提交仓库（光合代码托管，2026-11-21 起不再推送）：<https://developer.sourcefind.cn/codes/luql>
 - 集群操作 skill：[scnet-hpc](https://github.com/lql341/scnet-hpc)
 - 科学计算移植 playbook：[scientific-dcu-porting](https://github.com/lql341/scientific-dcu-porting)
 
