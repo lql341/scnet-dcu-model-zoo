@@ -364,14 +364,14 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 
 | # | 阻塞 | 现状与证据 | 起手动作 | 判据 |
 | --- | --- | --- | --- | --- |
-| 1 | **Trident × SGLang** | `Qwen3VLForEmbedding` 未注册（`ValueError: Cannot find model module`） | 写注册插件：`SGLang.ModelRegistry.register("Qwen3VLForEmbedding", cls)`（cls 用 `trident_embedder._embedding_backbone_cls()` 现拼），用 `--model-type` 或 sitecustomize 注入 | 服务能起，`/v1/embeddings` 返回 2048 维归一化向量 |
-| 2 | **Trident × vLLM** | 同上（vLLM 0.20/0.21 都没有该 arch） | `ModelRegistry.register_model("Qwen3VLForEmbedding", cls)`；注意它是 embedding 模型，需要 `--task embed` 与 `PoolerConfig` | 同上 |
+| 1 | **Trident × SGLang**（优先级下调） | `Qwen3VLForEmbedding` 未注册（`ValueError: Cannot find model module`）。gotcha #17 实测：SGLang 0.5.10/0.5.18/main 的 `qwen3_vl.py` 均只注册 `ForConditionalGeneration`，无 embedding 变体、也没有 `qwen3_vl_embedding.py`。**已有可用替代**：自建 serving（见下）。 | 若要原生支持需给 SGLang 打源码补丁（非注册插件可解），本地无源码、无卡时，未验证——不要照旧描述写"注册插件"当作可交付。实际交付用 `../OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/` 的自建 serving | 服务能起，`/v1/embeddings` 返回 2048 维归一化向量（自建 serving 已达成，22.8 条/s @512 tok） |
+| 2 | **Trident × vLLM**（优先级下调） | 同上；vLLM 0.20/0.21 均为架构级不支持。**旧方案有误**：本表原写"`--task embed`"，但该条目 README 实测 vLLM 0.20 `api_server` 报 `unrecognized arguments: --task`，嵌入模式由架构自动识别——`--task` 是新版写法，不适用 0.20。已有可用替代：自建 serving。 | 原生支持需给 vLLM 注册架构并改 ModelConfig 校验（框架补丁级），本地无法验证。**不要写 `--task embed`**。实际交付用自建 serving | 同上（自建 serving 已达成）；原生支持列 blocked 留证据 |
 | 3 | ~~**Kimi 16K/c64**~~ ✅ 已解决 | 见 §3.2 A：2026-11-15 17:27 终判，每轮重启服务后四轮全过（128/128、0 VMFault，稳态 283–287 tok/s），交付口径"单轮+重启服务" | 无需再做；引用时按 §3.2 A 数字 | 已达成 |
 | 4 | **Qwen3-VL 类模型的 vLLM 带图崩溃** | vLLM 0.20 的 `deepstack tokens 72 > 67` 断言；**0.21 镜像已修**（Recon2Reason/RoboBrain 已在用 0.21） | 新增 `Qwen/Qwen3-VL-8B-Instruct × {SGLang, vLLM 0.21}` 条目，或对现有 0.21 条目补一次"多图 4 张"的 smoke | 带图 4 图请求 200 且无断言 |
 | 5 | **OmniWeaving 8 卡 SP** | 4 卡已验证 2.23×；8 卡需 `-c 64 --mem≈480G`（本集群单节点 510 GB，需 `-c 120` 才够，可能卡 DefMemPerCPU） | 先 `-c 64 --mem=240G` 试 8 卡是否 OOM，再决定抬不抬内存 | 单条 < 662 s 才值得继续 |
 | 6 | **Wan2.1 序列并行（ulysses）** | FSDP 在 4 卡后饱和（8 卡仅 1.11×） | 验证 xfuser 在 DCU 可用性（`import xfuser`），再试 `--ulysses_size 4/8` | 单条 < 1003 s |
 
-**建议顺序**：4 → 1/2（Trident 插件是纯软件，收益最确定）→ 6 → 5。（原第 3 项 Kimi 16K/c64 已解决，移出待办。）
+**建议顺序**：4 → 6 → 5 → 1/2（已下调：Trident 原生支持需框架补丁、本地无法验证，且自建 serving 已跑通 22.8 条/s，收益低；旧描述"纯软件收益最确定"已据 gotcha #17 与条目 README 修正）。（原第 3 项 Kimi 16K/c64 已解决，移出待办。）
 
 ---
 
@@ -391,7 +391,7 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 
 | 项 | 状态 | 解除条件 |
 | --- | --- | --- |
-| Trident × 两引擎 | blocked，已自建 serving 绕过 | §4-1/§4-2 的注册插件 |
+| Trident × 两引擎 | blocked，已自建 serving 绕过（22.8 条/s，文本/图像/图文三类全通过） | 原生支持需框架补丁（gotcha #17），本地无法验证；不要写 `--task embed`（vLLM 0.20 无此参数）。交付以自建 serving 为准 |
 | ~~Kimi 16K/c64~~ | ✅ 已解决（2026-11-15 17:27）：每轮重启服务，四轮全过（稳态 283–287 tok/s），交付口径"单轮+重启服务" | §3.2 A / gotcha #51 |
 | fp8 / 量化 | 无 kernel | §3.2 B |
 | T01/T02 精度 | **已查证：官方口径与我们的不可比，数据也取不到** | 不是"等材料"，也不是"取来就能跑"：官方分数是 8-shot/5-shot，我们是 0-shot；MiMo 根本没披露 MMLU/GSM8K；数据集本集群不可得。**建议不再投入**（§1-3b，`docs/t01-t02-baseline-investigation.md`） |
@@ -452,8 +452,17 @@ python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
 ## 8. 新会话开场提示（可直接粘贴）
 
 ```
-读 ~/Downloads/agent/repo/dcu-model-test/zoo/HANDOFF.md 与 docs/gotchas.md 最后 6 条（#31–#36），
-然后从 §3.1 的 0 卡时闸门开始：在 1 卡作业里检查 vLLM 镜像的 attention backend 列表、
-aiter 是否存在、hipBLASLt 的 fp8 支持、以及 Kimi-Linear 走的是哪套 kernel。
-闸门结果决定 P0 是否继续投卡时。四件套 + publish.sh 收尾，每个结论都要有原始日志证据。
+读 ~/Downloads/agent/repo/dcu-model-test/zoo/HANDOFF.md 与 docs/gotchas.md 最新条目（现 59 条）。
+
+注意：§3.1 的 0 卡时闸门与 P0 已完成（2026-11-15）——闸门通过、P0-A（Kimi 16K/c64）用
+"每轮重启服务"达成、P0-B（fp8）判定外部阻塞停手。不要再从头做 P0。
+
+当前待办从 §4（P1）起，建议顺序 4 → 6 → 5 → 1/2：
+- P1-4 Qwen3-VL 带图 smoke（0.21 镜像已修，最省事）；
+- P1-6 Wan ulysses / P1-5 OmniWeaving 8 卡（各 1–4 卡时）；
+- P1-1/2 Trident 原生支持已下调优先级（需框架补丁、本地无法验证、自建 serving 已跑通 22.8 条/s），
+  不要照旧描述写"注册插件"或 `--task embed`（vLLM 0.20 无此参数）。
+
+资源现状（2026-11-21 实测）：hx1hdnormal 有 1 个空闲节点可提交；luql 家目录 85.1%（剩 217 GB，注意别撑爆）。
+每个结论都要有原始日志证据；四件套 + tools/publish.sh 收尾（仅推 GitHub，GitLab 已移除）。
 ```
