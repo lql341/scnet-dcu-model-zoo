@@ -1,8 +1,8 @@
 # HANDOFF —— 下一段推进的交接文档
 
-> 版本：2026-11-15　**本文件是唯一有效的交接文档**（旧的 2026-11-14 版已删除，历史细节见 `docs/ARCHIVE-SUMMARY.md` 与 `docs/REPORT.md`）
+> 版本：2026-11-15（2026-11-21 复核修订）　**本文件是唯一有效的交接文档**（旧的 2026-11-14 版已删除，历史细节见 `docs/ARCHIVE-SUMMARY.md` 与 `docs/REPORT.md`）
 > 项目性质：**能力沉淀，不是比赛提交**（2026-11-15 决策）。所有产出的第一价值是"下一个人能复用"。
-> 唯一二进制归档：`luql:/public/home/luql/archive/zoo-dcu-2026-11/`（55 GB）
+> 归档现状见 §0「归档」行与 §2.6：原 `luql:/public/home/luql/archive/zoo-dcu-2026-11/` 目录在 2026-11-21 OpenAPI 复核时已不可见，镜像本体仍散落在原账号（详见 §2.6）。
 
 ---
 
@@ -15,8 +15,8 @@
 | 跨引擎基准 | **8 个条目**（MiMo / Kimi / Recon2Reason / RoboBrain，各 SGLang + vLLM × 6 档） |
 | 自建运行时 | **1 个**（Trident-Qwen3VL-2B：OpenAI 兼容 embedding 服务，两引擎均不支持该架构） |
 | 阻塞 | **4 个**（Trident × SGLang/vLLM 架构未注册；Recon2Reason/RoboBrain × SGLang 于 2026-11-15 封存，见 gotcha #58） |
-| 踩坑 | **58 条**（`docs/gotchas.md`，按隐蔽度排序） |
-| 归档 | 5 镜像 55 GB + assets + sources + **products 10 个目录**，`SHA256SUMS` 11/11 通过 |
+| 踩坑 | **59 条**（`docs/gotchas.md`，按隐蔽度排序） |
+| 归档 | 历史口径 5 镜像 55 GB（规范前 31 GB）+ assets + sources + products；**2026-11-21 实测原 `archive/` 目录已不可见，镜像本体仍在原账号——见 §2.6**；`SHA256SUMS` 11/11 为历史校验结果 |
 | 代码同步 | GitHub `lql341/scnet-dcu-model-zoo` = GitLab `luql/scnet-dcu-model-zoo` = 本地（每次改完 `tools/publish.sh`） |
 
 **本段最重要的四个教训**（写在这里，防止新会话重犯）：
@@ -60,7 +60,7 @@
 | 镜像 | 5 个 tar.gz（55 GB） | `archive/images/`，命名 `<仓库名>_<tag>.tar.gz` |
 | 源码 | AuK / Wan2.1 / OmniWeaving | `archive/sources/` |
 | 轮子 | cp310 多套（auk-fix / qi2 / omni-fix / wan-fix / trident） | `archive/assets/` 与 `~/wheels/` |
-| 经验 | 58 条踩坑 + 4 条有效硬约束（1 条已推翻） | `docs/gotchas.md`、`docs/REPORT.md` §4 |
+| 经验 | 59 条踩坑 + 4 条有效硬约束（1 条已推翻） | `docs/gotchas.md`、`docs/REPORT.md` §4 |
 
 **关键性能数字（引用以此为准）**
 
@@ -136,6 +136,29 @@
 - `Kimi × SGLang` README 四处仍写 `--disable-cuda-graph`，而 §7.4 已证明"关掉 graph 掉 31%"
 - `INDEX.md`「Kimi × vLLM ❌ 框架不支持」已被该条目 6 档数据推翻（错误源头在 `tools/gen_index.py` 硬编码）
 - `Wan` 的 `FSDP` 默认值 0（分片）→ 1（§7.1 实测分片单卡 OOM）
+
+### 2.6 归档实测复核（2026-11-21，scnet-hpc OpenAPI / region 20091 郑州）
+
+**结论：原归档目录 `luql:/public/home/luql/archive/zoo-dcu-2026-11/` 已不可见，但镜像本体仍在原账号，未全部丢失。**
+复核方法：SSH 后端无 zzeshell 密钥（本机只有 kseshell），改用 OpenAPI 文件服务（`scnet.py files`）遍历 12 个 region +
+家目录全量索引（`INDEX.md`，2026-11-21 18:14 生成，9342 文件）。`archive/` 路径在所有 region 均返回 `File does not exist`，
+家目录索引中亦无 `zoo-dcu-2026-11` 或镜像 tar 痕迹。
+
+当前云端可见的归档本体（实测字节数）：
+
+| 内容 | 位置 | 实测 |
+| --- | --- | --- |
+| SGLang 镜像 | `scnethr2601a10/zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz` | 8083 MiB（≈7.9 GiB，sha256 f16125ba） |
+| vLLM 0.20 镜像 | `scnethr2601a10/zoo-images/vllm0.20-qwen_asr1.7_bw_1.0.0.tar.gz` | 8884 MiB（≈8.7 GiB，sha256 986f95a3） |
+| Music3 镜像 | `scnethr2601a10/zoo-images/minimax-music3-bw-sglang_20261031-rc1.tar.gz` | 13093 MiB（≈12.8 GiB，sha256 b61b05bd） |
+| vLLM 0.21 镜像 | `luql/work/imgstore/vllm021.tar`（**gunzip 后未压缩态**，`gunzip.done`） | 31265 MiB（≈30.5 GiB，压缩前口径 9.5 GB / sha256 c3b22bcc） |
+| 依赖包集 | `scnethr2601a10/zoo-images/assets/`（5 个 tar.gz） | 165 MiB（wheels×3 + AuK-src 21.5M + harness 0.2M） |
+| 生产元数据 | `luql/prodmeta/`（7 模型 json/csv） | ≈0.1 MiB |
+
+历史口径：31 GB（2026-11-09/11 初版 3 镜像）→ 53/54/55 GB（2026-11-14 规范化后 5 镜像 + 产物 + 轮子 + 源码，
+`docs/ARCHIVE-SUMMARY.md`/`docs/REPORT.md` 三个口径并存）。当前因 archive 目录移除，无法实测出与历史值相等的单一数字；
+上表 3 个 tar.gz 合计 ≈29.4 GiB，加上未压缩的 vllm021.tar（≈30.5 GiB）与 assets，是现存本体的实测口径。
+**引用大小时以此为准，并把"archive 目录已不可见、本体在原账号"一并说明，不要只写 55 GB。**
 
 ---
 
@@ -343,12 +366,12 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | --- | --- | --- | --- | --- |
 | 1 | **Trident × SGLang** | `Qwen3VLForEmbedding` 未注册（`ValueError: Cannot find model module`） | 写注册插件：`SGLang.ModelRegistry.register("Qwen3VLForEmbedding", cls)`（cls 用 `trident_embedder._embedding_backbone_cls()` 现拼），用 `--model-type` 或 sitecustomize 注入 | 服务能起，`/v1/embeddings` 返回 2048 维归一化向量 |
 | 2 | **Trident × vLLM** | 同上（vLLM 0.20/0.21 都没有该 arch） | `ModelRegistry.register_model("Qwen3VLForEmbedding", cls)`；注意它是 embedding 模型，需要 `--task embed` 与 `PoolerConfig` | 同上 |
-| 3 | **Kimi 16K/c64** | 见 §3.2 A | 先做 §3.1 闸门 | 两轮出数 |
+| 3 | ~~**Kimi 16K/c64**~~ ✅ 已解决 | 见 §3.2 A：2026-11-15 17:27 终判，每轮重启服务后四轮全过（128/128、0 VMFault，稳态 283–287 tok/s），交付口径"单轮+重启服务" | 无需再做；引用时按 §3.2 A 数字 | 已达成 |
 | 4 | **Qwen3-VL 类模型的 vLLM 带图崩溃** | vLLM 0.20 的 `deepstack tokens 72 > 67` 断言；**0.21 镜像已修**（Recon2Reason/RoboBrain 已在用 0.21） | 新增 `Qwen/Qwen3-VL-8B-Instruct × {SGLang, vLLM 0.21}` 条目，或对现有 0.21 条目补一次"多图 4 张"的 smoke | 带图 4 图请求 200 且无断言 |
 | 5 | **OmniWeaving 8 卡 SP** | 4 卡已验证 2.23×；8 卡需 `-c 64 --mem≈480G`（本集群单节点 510 GB，需 `-c 120` 才够，可能卡 DefMemPerCPU） | 先 `-c 64 --mem=240G` 试 8 卡是否 OOM，再决定抬不抬内存 | 单条 < 662 s 才值得继续 |
 | 6 | **Wan2.1 序列并行（ulysses）** | FSDP 在 4 卡后饱和（8 卡仅 1.11×） | 验证 xfuser 在 DCU 可用性（`import xfuser`），再试 `--ulysses_size 4/8` | 单条 < 1003 s |
 
-**建议顺序**：4 → 1/2（Trident 插件是纯软件，收益最确定）→ 3 → 6 → 5。
+**建议顺序**：4 → 1/2（Trident 插件是纯软件，收益最确定）→ 6 → 5。（原第 3 项 Kimi 16K/c64 已解决，移出待办。）
 
 ---
 
@@ -369,11 +392,11 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | 项 | 状态 | 解除条件 |
 | --- | --- | --- |
 | Trident × 两引擎 | blocked，已自建 serving 绕过 | §4-1/§4-2 的注册插件 |
-| Kimi 16K/c64 | 崩溃（GPU VMFault），有原始日志 | §3.2 A |
+| ~~Kimi 16K/c64~~ | ✅ 已解决（2026-11-15 17:27）：每轮重启服务，四轮全过（稳态 283–287 tok/s），交付口径"单轮+重启服务" | §3.2 A / gotcha #51 |
 | fp8 / 量化 | 无 kernel | §3.2 B |
 | T01/T02 精度 | **已查证：官方口径与我们的不可比，数据也取不到** | 不是"等材料"，也不是"取来就能跑"：官方分数是 8-shot/5-shot，我们是 0-shot；MiMo 根本没披露 MMLU/GSM8K；数据集本集群不可得。**建议不再投入**（§1-3b，`docs/t01-t02-baseline-investigation.md`） |
 | Harbor 推送 | 平台无自助凭据 | 已决定不推，镜像留在 `luql` 家目录（tar.gz + sha256 兜底） |
-| 平台清账号风险 | 3 个镜像源出第三方账号（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`），上游可随时删 | tar.gz 归档是唯一保障；不要删 `archive/images/` |
+| 平台清账号风险 | 3 个镜像源出第三方账号（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`），上游可随时删 | tar.gz 归档是唯一保障；不要删镜像本体。2026-11-21 实测原 `archive/images/` 已不可见，现存镜像在 `scnethr2601a10/zoo-images/` 与 `luql/work/imgstore/`（见 §2.6），优先保留这些 |
 | 多卡配额语义 | 每卡需 ≥8 CPU，否则 GRES 静默降级；`--mem ≤ -c × 3888M` | 已固化进各条目 `submit*.slurm` 注释 |
 
 ---
