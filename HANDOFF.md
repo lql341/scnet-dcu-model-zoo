@@ -367,11 +367,11 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | 1 | **Trident × SGLang**（优先级下调） | `Qwen3VLForEmbedding` 未注册（`ValueError: Cannot find model module`）。gotcha #17 实测：SGLang 0.5.10/0.5.18/main 的 `qwen3_vl.py` 均只注册 `ForConditionalGeneration`，无 embedding 变体、也没有 `qwen3_vl_embedding.py`。**已有可用替代**：自建 serving（见下）。 | 若要原生支持需给 SGLang 打源码补丁（非注册插件可解），本地无源码、无卡时，未验证——不要照旧描述写"注册插件"当作可交付。实际交付用 `../OpenBMB__Trident-Qwen3VL-2B__bw1000__transformers/` 的自建 serving | 服务能起，`/v1/embeddings` 返回 2048 维归一化向量（自建 serving 已达成，22.8 条/s @512 tok） |
 | 2 | **Trident × vLLM**（优先级下调） | 同上；vLLM 0.20/0.21 均为架构级不支持。**旧方案有误**：本表原写"`--task embed`"，但该条目 README 实测 vLLM 0.20 `api_server` 报 `unrecognized arguments: --task`，嵌入模式由架构自动识别——`--task` 是新版写法，不适用 0.20。已有可用替代：自建 serving。 | 原生支持需给 vLLM 注册架构并改 ModelConfig 校验（框架补丁级），本地无法验证。**不要写 `--task embed`**。实际交付用自建 serving | 同上（自建 serving 已达成）；原生支持列 blocked 留证据 |
 | 3 | ~~**Kimi 16K/c64**~~ ✅ 已解决 | 见 §3.2 A：2026-11-15 17:27 终判，每轮重启服务后四轮全过（128/128、0 VMFault，稳态 283–287 tok/s），交付口径"单轮+重启服务" | 无需再做；引用时按 §3.2 A 数字 | 已达成 |
-| 4 | **Qwen3-VL 类模型的 vLLM 带图崩溃** | vLLM 0.20 的 `deepstack tokens 72 > 67` 断言；**0.21 镜像已修**（Recon2Reason/RoboBrain 已在用 0.21） | 新增 `Qwen/Qwen3-VL-8B-Instruct × {SGLang, vLLM 0.21}` 条目，或对现有 0.21 条目补一次"多图 4 张"的 smoke | 带图 4 图请求 200 且无断言 |
+| 4 | ~~**Qwen3-VL 类模型的 vLLM 带图崩溃**~~ ✅ 已解决（2026-11-21 复核） | vLLM 0.20 的 `deepstack tokens 72 > 67` 断言，**0.21 已删除该断言**（gotcha #27）。现有 RoboBrain/Recon2Reason × vLLM 0.21 条目的 `smoke.log` 实测 HTTP 200 + 纯文本/单图/多图（2 张）正确回答，`bench/summary.md` 6 档全绿。旧判据"4 图"查证为笔误：全仓无一处将 4 图作为该测试要求（其它"4 张"均指平台截图或 Kimi TP=4），T02 既定标准是 2 图 | 无需再做。若仍想扩模型，新建 Qwen3-VL-8B 条目属 §5（P2），不是本阻塞 | 带图（单图/2 图）请求 200 且无断言——已达成 |
 | 5 | **OmniWeaving 8 卡 SP** | 4 卡已验证 2.23×；8 卡需 `-c 64 --mem≈480G`（本集群单节点 510 GB，需 `-c 120` 才够，可能卡 DefMemPerCPU） | 先 `-c 64 --mem=240G` 试 8 卡是否 OOM，再决定抬不抬内存 | 单条 < 662 s 才值得继续 |
 | 6 | **Wan2.1 序列并行（ulysses）** | FSDP 在 4 卡后饱和（8 卡仅 1.11×） | 验证 xfuser 在 DCU 可用性（`import xfuser`），再试 `--ulysses_size 4/8` | 单条 < 1003 s |
 
-**建议顺序**：4 → 6 → 5 → 1/2（已下调：Trident 原生支持需框架补丁、本地无法验证，且自建 serving 已跑通 22.8 条/s，收益低；旧描述"纯软件收益最确定"已据 gotcha #17 与条目 README 修正）。（原第 3 项 Kimi 16K/c64 已解决，移出待办。）
+**建议顺序**：6 → 5 → 1/2（已下调：Trident 原生支持需框架补丁、本地无法验证，且自建 serving 已跑通 22.8 条/s，收益低；旧描述"纯软件收益最确定"已据 gotcha #17 与条目 README 修正）。（第 3 项 Kimi 16K/c64、第 4 项 Qwen3-VL 带图均已解决，移出待办。）
 
 ---
 
@@ -457,11 +457,11 @@ python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
 注意：§3.1 的 0 卡时闸门与 P0 已完成（2026-11-15）——闸门通过、P0-A（Kimi 16K/c64）用
 "每轮重启服务"达成、P0-B（fp8）判定外部阻塞停手。不要再从头做 P0。
 
-当前待办从 §4（P1）起，建议顺序 4 → 6 → 5 → 1/2：
-- P1-4 Qwen3-VL 带图 smoke（0.21 镜像已修，最省事）；
+当前待办从 §4（P1）起，建议顺序 6 → 5 → 1/2：
 - P1-6 Wan ulysses / P1-5 OmniWeaving 8 卡（各 1–4 卡时）；
 - P1-1/2 Trident 原生支持已下调优先级（需框架补丁、本地无法验证、自建 serving 已跑通 22.8 条/s），
   不要照旧描述写"注册插件"或 `--task embed`（vLLM 0.20 无此参数）。
+- P1-4 Qwen3-VL 带图崩溃已解决（0.21 实测单图/2 图 200，旧"4 图"判据系笔误）；若想扩 Qwen3-VL-8B 见 §5（P2）。
 
 资源现状（2026-11-21 实测）：hx1hdnormal 有 1 个空闲节点可提交；luql 家目录 85.1%（剩 217 GB，注意别撑爆）。
 每个结论都要有原始日志证据；四件套 + tools/publish.sh 收尾（仅推 GitHub，GitLab 已移除）。
