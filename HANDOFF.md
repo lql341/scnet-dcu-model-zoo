@@ -369,9 +369,9 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | 3 | ~~**Kimi 16K/c64**~~ ✅ 已解决 | 见 §3.2 A：2026-11-15 17:27 终判，每轮重启服务后四轮全过（128/128、0 VMFault，稳态 283–287 tok/s），交付口径"单轮+重启服务" | 无需再做；引用时按 §3.2 A 数字 | 已达成 |
 | 4 | ~~**Qwen3-VL 类模型的 vLLM 带图崩溃**~~ ✅ 已解决（2026-11-21 复核） | vLLM 0.20 的 `deepstack tokens 72 > 67` 断言，**0.21 已删除该断言**（gotcha #27）。现有 RoboBrain/Recon2Reason × vLLM 0.21 条目的 `smoke.log` 实测 HTTP 200 + 纯文本/单图/多图（2 张）正确回答，`bench/summary.md` 6 档全绿。旧判据"4 图"查证为笔误：全仓无一处将 4 图作为该测试要求（其它"4 张"均指平台截图或 Kimi TP=4），T02 既定标准是 2 图 | 无需再做。若仍想扩模型，新建 Qwen3-VL-8B 条目属 §5（P2），不是本阻塞 | 带图（单图/2 图）请求 200 且无断言——已达成 |
 | 5 | **OmniWeaving 8 卡 SP** | 4 卡已验证 2.23×；8 卡需 `-c 64 --mem≈480G`（本集群单节点 510 GB，需 `-c 120` 才够，可能卡 DefMemPerCPU） | 先 `-c 64 --mem=240G` 试 8 卡是否 OOM，再决定抬不抬内存 | 单条 < 662 s 才值得继续 |
-| 6 | **Wan2.1 序列并行（ulysses）** | FSDP 在 4 卡后饱和（8 卡仅 1.11×） | 验证 xfuser 在 DCU 可用性（`import xfuser`），再试 `--ulysses_size 4/8` | 单条 < 1003 s |
+| 6 | **Wan2.1 序列并行（ulysses）** ❌ 受阻（2026-11-21 实测） | FSDP 在 4 卡后饱和（8 卡仅 1.11×，单条 1003 s）。ulysses 依赖 xfuser，但 **xfuser 在当前 DCU 环境装不上**：作业 1187223（mimo-sglang 1.1.1 镜像，1 卡 4 min）实测——① 镜像内 `ModuleNotFoundError: No module named 'xfuser'`；② 计算节点 pip 源是内网 DTK 源 `10.16.1.201:9929/nightly/dtk2604/+simple/`，连接被拒（6 次重试失败），`No matching distribution found for xfuser`；③ 集群 wheels/softwares 目录均无 xfuser wheel | 不要再投卡时试 `import xfuser`——已确认装不上。除非后续能在登录节点下载 xfuser wheel 并挂进容器（但 xfuser 依赖 flash_attn，DCU 无可用构建，见 Wan README §8） | 受阻，标 blocked 留证据（作业 1187223 stdout 在 `luql:~/work/xfuser-probe/std.out.1187223`） |
 
-**建议顺序**：6 → 5 → 1/2（已下调：Trident 原生支持需框架补丁、本地无法验证，且自建 serving 已跑通 22.8 条/s，收益低；旧描述"纯软件收益最确定"已据 gotcha #17 与条目 README 修正）。（第 3 项 Kimi 16K/c64、第 4 项 Qwen3-VL 带图均已解决，移出待办。）
+**建议顺序**：5 → 1/2（第 6 项 Wan ulysses 已于 2026-11-21 实测受阻——xfuser 装不上，作业 1187223；第 3 项 Kimi 16K/c64、第 4 项 Qwen3-VL 带图均已解决；均已移出待办）。剩余 1/2 Trident 原生支持也已下调优先级（需框架补丁、本地无法验证、自建 serving 已跑通 22.8 条/s）。**实际上 P1 已无明显低风险可做项，下一步重心应转 §5（P2 扩模型）。**
 
 ---
 
@@ -457,10 +457,12 @@ python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
 注意：§3.1 的 0 卡时闸门与 P0 已完成（2026-11-15）——闸门通过、P0-A（Kimi 16K/c64）用
 "每轮重启服务"达成、P0-B（fp8）判定外部阻塞停手。不要再从头做 P0。
 
-当前待办从 §4（P1）起，建议顺序 6 → 5 → 1/2：
-- P1-6 Wan ulysses / P1-5 OmniWeaving 8 卡（各 1–4 卡时）；
+当前待办从 §4（P1）起，建议顺序 5 → 1/2：
+- P1-5 OmniWeaving 8 卡（1–4 卡时；先 -c 64 --mem=240G 试是否 OOM）；
 - P1-1/2 Trident 原生支持已下调优先级（需框架补丁、本地无法验证、自建 serving 已跑通 22.8 条/s），
   不要照旧描述写"注册插件"或 `--task embed`（vLLM 0.20 无此参数）。
+- P1-6 Wan ulysses 已实测受阻（2026-11-21，作业 1187223）：xfuser 装不上（镜像无、计算节点 pip 源不可达、集群无 wheel），不要再投卡时试 import。
+- **P1 已无明显低风险可做项；下一步重心转 §5（P2 扩模型：Qwen3-VL-8B / Kimi-VL）。**
 - P1-4 Qwen3-VL 带图崩溃已解决（0.21 实测单图/2 图 200，旧"4 图"判据系笔误）；若想扩 Qwen3-VL-8B 见 §5（P2）。
 
 资源现状（2026-11-21 实测）：hx1hdnormal 有 1 个空闲节点可提交；luql 家目录 85.1%（剩 217 GB，注意别撑爆）。
