@@ -133,6 +133,12 @@ def esc(s):
 
 def build(rows, bench, gotchas, sweeps):
     n_entries = len(rows)
+    # 镜像数动态取自各条目 image.lock 中去重的 digest（2026-11-21 实测为 5）
+    _digests = set()
+    for _f in glob.glob(os.path.join(ROOT, "models", "*", "image.lock")):
+        for _d in re.findall(r"sha256:[0-9a-f]+", open(_f, encoding="utf-8", errors="ignore").read()):
+            _digests.add(_d)
+    n_images = len(_digests)
     n_ok = sum(1 for r in rows if r["status"] == "official-eval")
     n_partial = sum(1 for r in rows if r["status"] == "partial")
     n_bench = sum(1 for r in rows if r["bench"] == "yes")
@@ -260,11 +266,11 @@ a {{ color:var(--info); }}
 <div class="wrap">
 
 <h1>BW1000（海光 DCU）大模型适配 —— 结项报告</h1>
-<p class="sub">2026-11-09 · 15 个条目 · {n_samples} 条官方条件真实产物 · 3 个镜像归档（31 GB）· {len(gotchas)} 条踩坑 · 5 条硬约束</p>
+<p class="sub">2026-11-09 · {n_entries} 个条目 · {n_samples} 条官方条件真实产物 · {n_images} 个镜像归档（历史口径 55 GB，见 HANDOFF §2.6）· {len(gotchas)} 条踩坑 · 5 条硬约束</p>
 
 <div class="hero">
-<p style="margin:0 0 10px"><b>一句话</b>：在一张 64 GB 的海光 BW1000 上，把 T03/T04 官方 8 个模型中的 6 个跑到官方条件全绿
-（另 1 个 53/60、1 个未做），并沉淀出可复现的镜像归档、24 条踩坑与 5 条换谁都绕不过的硬约束。</p>
+<p style="margin:0 0 10px"><b>一句话</b>：在一张 64 GB 的海光 BW1000 上，把 T03/T04 官方模型跑到官方条件全绿
+（{n_ok} 个条目全绿、{n_partial} 个部分验证），并沉淀出可复现的镜像归档、{len(gotchas)} 条踩坑与 5 条换谁都绕不过的硬约束。</p>
 <p style="margin:0"><b>为什么现在结项</b>：<code>scnethr2601a10</code> 于 2026-11-07 被移出分区
 <code>AllowAccounts</code>；<code>luql</code> 有 SSH 但无卡权限。两个账号都无法再提交作业。
 所有数据、镜像、经验已在结项前完成三层保全。</p>
@@ -275,7 +281,7 @@ a {{ color:var(--info); }}
   <div class="kpi warn"><div class="v">{n_partial}</div><div class="k">部分完成（53/60）</div></div>
   <div class="kpi info"><div class="v">{n_bench}</div><div class="k">完整 6 档基准</div></div>
   <div class="kpi"><div class="v">{n_samples}</div><div class="k">真实产物（官方清单 935）</div></div>
-  <div class="kpi"><div class="v">31 GB</div><div class="k">镜像+产物归档</div></div>
+  <div class="kpi"><div class="v">{n_images} 镜像</div><div class="k">归档（历史 55 GB；archive 目录 2026-11-21 复核已不可见，见 HANDOFF §2.6）</div></div>
   <div class="kpi"><div class="v">{len(gotchas)}</div><div class="k">踩坑条目</div></div>
 </div>
 
@@ -405,7 +411,7 @@ a {{ color:var(--info); }}
 <tr><td><b>合计</b></td><td class="num strong">~200 卡时 ≈ 105 元</td></tr>
 </tbody>
 </table>
-<p>换来 15 个可复现条目 + 3 个镜像归档 + {len(gotchas)} 条踩坑 + {n_samples} 条真实产物 —— <b>约 0.11 元/样本</b>。</p>
+<p>换来 {n_entries} 个可复现条目 + {n_images} 个镜像归档 + {len(gotchas)} 条踩坑 + {n_samples} 条真实产物 —— <b>约 0.11 元/样本</b>。</p>
 
 <h2>10. 结项状态与重启方式</h2>
 <div class="note">
@@ -431,7 +437,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm   # 自动跳过已有 5
 <table>
 <thead><tr><th>#</th><th>事项</th><th>成本</th><th>为什么</th></tr></thead>
 <tbody>
-<tr><td class="num">1</td><td>把 3 个镜像推到自有 Harbor 命名空间</td><td>0.5 卡时</td><td>唯一能真正摆脱「上游删仓 + 临时账号回收」两个风险（需 Harbor 凭据）</td></tr>
+<tr><td class="num">1</td><td>把 {n_images} 个镜像推到自有 Harbor 命名空间</td><td>0.5 卡时</td><td>唯一能真正摆脱「上游删仓 + 临时账号回收」两个风险（需 Harbor 凭据）</td></tr>
 <tr><td class="num">2</td><td>量化条目（AWQ 已验证可跑）</td><td>4–8 卡时</td><td>全库唯一空白；慢 5× 但显存收益真实</td></tr>
 <tr><td class="num">3</td><td>WorldMirror（编 ROCm 版 gsplat）</td><td>8+ 卡时</td><td>T03 第 5 个模型，可能失败</td></tr>
 <tr><td class="num">4</td><td>T01/T02 精度</td><td>需官方 baselines</td><td>材料从未下发，无法自证</td></tr>
@@ -451,7 +457,7 @@ sbatch --export=ALL,PROBE_ONLY=0 container/submit.slurm   # 自动跳过已有 5
 <code>docs/gotchas.md</code>、<code>sweeps/results-*.md</code>，由 <code>tools/gen_report.py</code> 生成。
 报告中每一个数字都能在上述文件中追到原始记录。<br>
 代码：GitHub <code>lql341/scnet-dcu-model-zoo</code> · GitLab <code>luql/scnet-dcu-model-zoo</code>　|　
-二进制归档：<code>{ARCHIVE}/</code>（31 GB）
+二进制归档：<code>{ARCHIVE}/</code>（历史口径 55 GB；2026-11-21 复核该目录已不可见，镜像本体在原账号，见 HANDOFF §2.6）
 </footer>
 </div>
 </body>
