@@ -145,10 +145,14 @@ vi models/<new>/image.lock      # 镜像 digest
 vi models/<new>/meta.json       # 元数据
 vi models/<new>/README.md       # 技术报告
 
-# 3. 在集群上跑通
-rsync -az models/<new>/ <cluster>:<work>/     # 上传
-sbatch container/submit.slurm                 # 复现
-scp <cluster>:<work>/repo/logs/* models/<new>/logs/   # 回收日志
+# 3. 在集群上跑通（2026-11-22 起走 OpenAPI：SSH 已失效、集群无外网）
+#    详见 HANDOFF §7「OpenAPI 通道」。upload 只收单个文件，所以本地打 tar：
+tar czf /tmp/entry.tgz -C models/<new> .
+python3 ~/Downloads/agent/skills/scnet-hpc/scripts/scnet.py --region 20091 \
+  mkdir /public/home/luql/work/<new>
+python3 ~/Downloads/agent/skills/scnet-hpc/scripts/scnet.py --region 20091 \
+  upload /tmp/entry.tgz /public/home/luql/work/<new>/
+#    然后在 --command 里解包并执行 submit.slurm（脚本内已处理 REPO==WORK/repo 的自拷问题）
 
 # 4. 校验后入库
 ./tools/lint_entry.sh models/<new>/

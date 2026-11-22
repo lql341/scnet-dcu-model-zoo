@@ -1531,3 +1531,107 @@ FREE_G=$(df -Pm /tmp | awk 'NR==2{print int($4/1024)}')
 **"家目录"指的是 `/public/home/luql`，不是节点本地 `/tmp`。**
 本轮我一开始把两者混为一谈，结果既灌满了节点、又说"已放家目录"，
 两个错同时犯。判断方法：`echo $HOME` 在容器内外可能不同，但**宿主机上的 `/public/home/<user>` 才是共享家目录**。
+
+## 60. 集群出网被切断：DNS 不通是表象，根因是公网无路由（2026-11-22 实测）
+
+**现象**：在 `hx1hdnormal` 上 `snapshot_download` / `curl modelscope.cn` 全部失败，
+报 `Could not resolve host`。第一反应会以为是 DNS 配置问题，**但改 DNS 没用**。
+
+**判据（三步就能定性，别只看第一条）**：
+
+| 探测 | 本次结果 | 说明 |
+| --- | --- | --- |
+| `getent hosts www.modelscope.cn` | FAIL | 只看这条会误判成"DNS 坏了" |
+| **TCP 443 直连公网 IP**（223.5.5.5 / 114.114.114.114 / 47.96.8.1 / 8.8.8.8 / 202.96.128.86） | **全部超时** | 绕过 DNS 仍不通 → 是路由/防火墙，不是解析 |
+| TCP 53 到平台 DNS `11.13.20.240` | OPEN | 内网通，DNS 端口可达，只是不解析外网 |
+| 网关代理口 10.6.1.254/{3128,8080,1080}、11.6.1.254/{3128,8080} | 全 closed | 没有可用代理 |
+| 内网 pip 源 10.16.1.201:9929 | closed | 与 gotcha #49/xfuser 结论一致 |
+
+```bash
+# 最小判据：公网 IP 的 443 能不能通（不依赖 DNS）
+for ip in 223.5.5.5 114.114.114.114 8.8.8.8; do
+  timeout 6 bash -c "cat < /dev/null > /dev/tcp/$ip/443" 2>/dev/null \
+    && echo "$ip OPEN" || echo "$ip TIMEOUT"
+done
+```
+
+**这是近期变化**：2026-11-15 22:48 同一账号还用 `curl -L -C -` 直连下完了 DeepSeek-V4.1
+（85 个文件逐条 OK，见 `luql:~/models/DeepSeek-V4.1-Flash-1017/.dl.progress`）。
+现在同样命令全超时。**历史条目的"ModelScope 直连下载"流程不可照抄。**
+
+**解法**：权重只能离线搬运——本机下载（实测 16 MB/s）→ `scnet.py upload`（实测 10 MB/s）。
+OpenAPI 的 `upload` **只收单个文件**（传目录报 `local file is not a file`），
+所以要么逐文件传，要么本地打 tar 再在作业里解包。
+
+**代价**：16.34 GiB 约 50 分钟；且从此每次扩模型都要多付这一段，不能像以前那样在作业里顺手下载。
+
+完整证据：`sweeps/results-cluster-egress-2026-11-22.md`（作业 1191934，节点 f13r4n02）。
+
+## 61. `podman manifest inspect` 不能用来判断镜像是否还在（会误报 OK）
+
+**现象**：2026-11-22 盘点镜像时，脚本用 `podman manifest inspect` 判断，四个镜像全部报 `[OK]`。
+但同一时期真实 `podman pull` 里 vLLM 0.21 报 `artifact ... not found`，
+CLI 镜像报 `connect: no route to host`（Harbor 整个不可达）。
+
+**根因**：这条判据写成了"输出里不含 not found/manifest unknown 就算 OK"，
+而**超时/网络错误的文本里也不含这些词**，于是被误判成存在。典型的"只在已知失败模式上判空"。
+
+**判据（应该怎么做）**：
+
+```bash
+# ✅ 直接问"能不能真拿到"，不要 grep 错误串
+podman pull --tls-verify=false --cert-dir=/tmp/emptycerts "$IMG" >/tmp/p.log 2>&1
+if podman image exists "$IMG"; then echo OK; else echo "FAIL: $(tail -1 /tmp/p.log)"; fi
+```
+
+**这条的代价**：我先据此判断"镜像都在"，随后连提两个作业才发现拉不到，白跑两轮调度。
+**教训**：判据要"正向确认成功"，不要"只要没看到某几种错误就算成功"。
+
+## 62. 本集群 Harbor 已不可达，镜像只能从本地 tar 加载（2026-11-22）
+
+**现象**：`podman pull image.ac.com:5000/...` 报
+`pinging container registry image.ac.com:5000: ... dial tcp 12.13.17.201:5000: connect: connection timed out`
+（重试后 `no route to host`）。同时另一个镜像报 `artifact ... not found`。
+
+**两条独立的坏消息**：① Harbor 网络不可达；② 即使可达，`dcu/wqxyyt06` 的 vllm0.21 仓库
+也可能已被上游删除（`artifact not found`）。与 gotcha #60（集群无外网）是同一背景下的两个表现。
+
+**解法：一切镜像都从本地归档 load**，`podman pull` 只作兜底：
+
+| 镜像 | 本地归档 | 形态 |
+| --- | --- | --- |
+| vLLM 0.21 | `luql:/public/home/luql/work/imgstore/vllm021.tar` | 31 GB，**未压缩**（`podman load -i`） |
+| mimo-sglang 1.1.1（压测 CLI） | `scnethr2601a10:/public/home/scnethr2601a10/zoo-images/mimo-sglang-bw10000_1.1.1.tar.gz` | 7.9 GB gzip（`gunzip -c \| podman load`） |
+| vLLM 0.20 / Music3 | 同目录 `*.tar.gz` | gzip |
+
+验证 tag 能对上：`tar xOf vllm021.tar repositories` 里记录的就是
+`image.ac.com:5000/dcu/wqxyyt06/base/vllm0.21.0-ubuntu22.04-dtk2604-py3.10:v1`，
+load 后 `podman images` 的 Repository:Tag 完全一致，**不需要 retag**。
+
+**空间代价（很容易踩）**：vLLM 镜像解压后约 30 GB，CLI 镜像约 20 GB。
+`docker-archive` 格式的 `podman load` 是边解边写、峰值约为自身 2 倍——实测 103 GB 的节点
+在 load CLI 镜像时仍报 `no space left on device`（写 `/opt/dtk/rocfft/lib/sgFFT_B12.hsaco` 失败）。
+→ **只跑 smoke 就别加载 CLI 镜像**（省 20 GB）；要跑压测则节点 `/tmp` 需 ≥75 GB，不够就 `exit 42` 换节点。
+
+## 63. `vllm bench serve` 在 DCU 上的三个参数坑（2026-11-22 实测）
+
+**背景**：节点 `/tmp` 放不下两个镜像（见 #62），改用 vLLM 镜像自带的 `vllm bench serve` 替代
+`sglang.benchmark.serving`。链路能跑通，但连踩三坑，报错位置都离真因较远：
+
+| 现象 | 根因 | 修法 |
+| --- | --- | --- |
+| `OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/models/M'` | 压测容器的 `podman run` 漏了 `-v $HOST_MODEL_PATH:/models/M:ro`，本地路径不存在就被 `AutoTokenizer` 当成 HF repo id 去查 | 补回挂载。**注意**：这个错发生在 tokenizer 加载阶段，看着像"要联网"，实际是挂载漏了 |
+| `ValueError: OpenAI Chat Completions API URL must end with one of: {'chat/completions', 'profile'}` | `--backend openai-chat` 的默认 `--endpoint` 仍是 `/v1/completions` | 显式 `--endpoint /v1/chat/completions` |
+| `ValueError: --random-input-len is too small: ... minimum possible total input tokens is 0` | 新版 `--random-range-ratio 1` 的语义是"全随机"，长度下限可为 0（不是旧版的"固定长度"） | 去掉 `--random-range-ratio`，只给 `--random-input-len` |
+
+**字段口径差异（做数据归并时会踩）**：`vllm bench` 的 result json 与 sglang 不同——
+
+| 量 | sglang | vllm bench |
+| --- | --- | --- |
+| 总吞吐 | `total_throughput` | `total_token_throughput` |
+| 端到端延迟 | `mean_e2e_latency_ms` | **没有**，需用 `TTFT + TPOT×(output_len−1)` 还原（无排队时是确定性关系） |
+
+本仓库的 `models/*/bench_vllm.sh` 已做映射，归并出的 jsonl 与 `bench/summary.md` 口径与其它条目一致。
+
+**判据**：判断压测是否真跑完，看 `round*.jsonl` 是否有 6 行、且有效性校验输出 `all valid`；
+只看容器退出码会被 `verify.py` 的 `[BLOCKED]`（exit 1）掩盖成 `rc=2`。

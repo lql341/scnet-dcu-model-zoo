@@ -68,6 +68,7 @@ python3 tools/gen_report.py      # 重新生成 docs/report.html（从 meta/benc
 | [Qwen-Image-2.1-Turbo](models/Qwen__Qwen-Image-2.1-Turbo__bw1000__diffusers/) | BW1000 ×1 | diffusers | bf16 | ✅ 官方 180/180 条完成 | — | — |
 | [Qwen3-ASR-1.7B](models/Qwen__Qwen3-ASR-1.7B__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 官方 300/300 条完成 | — | — |
 | [Qwen3-ForcedAligner-0.6B](models/Qwen__Qwen3-ForcedAligner-0.6B__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 30/30 条完成 | — | — |
+| [Qwen3-VL-8B-Instruct](models/Qwen__Qwen3-VL-8B-Instruct__bw1000__vllm/) | BW1000 ×1 | vllm | bf16 | ✅ 6 档基准 | 688.50 | 230.34 |
 | [AuK-Flash](models/Tencent-Hunyuan__AuK-Flash__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 120/120 条完成 | — | — |
 | [AuK](models/Tencent-Hunyuan__AuK__bw1000__transformers/) | BW1000 ×1 | transformers | bf16 | ✅ 官方 120/120 条完成 | — | — |
 | [HY-OmniWeaving](models/Tencent-Hunyuan__HY-OmniWeaving__bw1000__hyvideo/) | BW1000 ×1 | hyvideo | bf16 | ✅ 官方 60/60 条完成 | — | — |

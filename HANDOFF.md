@@ -10,14 +10,15 @@
 
 | 项 | 现状 |
 | --- | --- |
-| 条目 | **20 个**（14 个不同模型 × 卡型 × 框架 × 精度） |
+| 条目 | **21 个**（15 个不同模型 × 卡型 × 框架 × 精度） |
 | 官方评测 | **9 个条目全绿，935/935 条真实产物**（官方 9 份清单 9/9 覆盖） |
-| 跨引擎基准 | **8 个条目**（MiMo / Kimi / Recon2Reason / RoboBrain，各 SGLang + vLLM × 6 档） |
+| 6 档基准 | **9 个条目**（MiMo / Kimi / Recon2Reason / RoboBrain 各双引擎；+ Qwen3-VL-8B × vLLM，2026-11-22 新增） |
 | 自建运行时 | **1 个**（Trident-Qwen3VL-2B：OpenAI 兼容 embedding 服务，两引擎均不支持该架构） |
 | 阻塞 | **4 个**（Trident × SGLang/vLLM 架构未注册；Recon2Reason/RoboBrain × SGLang 于 2026-11-15 封存，见 gotcha #58） |
-| 踩坑 | **59 条**（`docs/gotchas.md`，按隐蔽度排序） |
+| 踩坑 | **63 条**（`docs/gotchas.md`，按隐蔽度排序） |
 | 归档 | 历史口径 5 镜像 55 GB（规范前 31 GB）+ assets + sources + products；**2026-11-21 实测原 `archive/` 目录已不可见，镜像本体仍在原账号——见 §2.6**；`SHA256SUMS` 11/11 为历史校验结果 |
 | 代码同步 | GitHub `lql341/scnet-dcu-model-zoo` = 本地（每次改完 `tools/publish.sh`）。GitLab/sourcefind 远端已于 2026-11-21 按用户决定移除，不再维护 |
+| **集群通道（2026-11-22 变化）** | ⚠️ **SSH 与集群外网双双失效**：`ssh luql@zzeshell.scnet.cn -p 65032` 报 `Permission denied (publickey)`；集群无公网路由（gotcha #60）。**`tools/sync_remote.sh` 与 `docs/entry-spec.md` §8 的 rsync/scp 流程已不可用**，作业提交与文件收发一律走 `scnet.py`（见 §7） |
 
 **本段最重要的四个教训**（写在这里，防止新会话重犯）：
 
@@ -375,15 +376,26 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 
 ---
 
-## 5. P2：扩模型（每项 1–2 卡时，排在 kernel 之后）
+## 5. P2：扩模型
 
-| 模型 | 体积 | 已知情况 |
+> ⚠️ **2026-11-22 起前提变了**：集群已无外网（gotcha #60），"ModelScope 可得"不再等于
+> "集群上能下"。权重必须**本机下载 → `scnet.py upload` 上传**（实测 16 MB/s 下、10 MB/s 上），
+> 16–33 GB 的单条目要先付 40–100 分钟搬运成本。评估新模型时把这段算进去。
+
+| 模型 | 体积 | 状态 |
 | --- | --- | --- |
-| `Qwen/Qwen3-VL-8B-Instruct` | 17.5 GB | ModelScope 可得；vLLM 0.21 已修 deepstack 断言，是本仓库最省事的下一批 |
-| `moonshotai/Kimi-VL-A3B-Thinking` | 32.8 GB | ModelScope 可得；需 2 卡或开启 offload |
+| `Qwen/Qwen3-VL-8B-Instruct` | 16.34 GiB | ✅ **已完成（2026-11-22）**：`models/Qwen__Qwen3-VL-8B-Instruct__bw1000__vllm/`，服务跑通（单图/双图均正确）、6 档全绿。详见 `sweeps/results-qwenvl8b-2026-11-22.md` |
+| `moonshotai/Kimi-VL-A3B-Thinking` | 32.8 GB | 未开始。架构 `KimiVLForConditionalGeneration`，**先确认 vLLM 0.21 是否注册该架构**（0 卡时就能查），否则会白搬 33 GB |
+
+**Qwen3-VL-8B 的关键结论（下一条扩模型可直接沿用）**：
+
+- 同底座 RoboBrain 六档对照最大差异 4.8%，**6 档文本负载主要反映架构与引擎，对同底座后训练不敏感**；
+- **压测改用同镜像内 `vllm bench serve`**，不再加载 SGLang 客户端镜像（省 20 GB / 一个镜像 load）——
+  本分区节点 `/tmp` 只有 21–141 GB，双镜像共存需 145 GB，实测反复失败；
+- 冷启动 360 s，其中 **torch.compile 占 ~124 s** 且缓存在容器内 `/root/.cache/vllm`，每次作业重付。
 
 新增条目照 `docs/entry-spec.md` 走（8 章 README + `env.sh` + `image.lock` + `bench/` + `logs/`），
-跑完必须过四件套（见 §7）。
+跑完必须过四件套（见 §7）。**§8 的 rsync/sbatch 步骤已失效**，改用 §7「OpenAPI 通道」。
 
 ---
 
@@ -397,33 +409,51 @@ grep -rn "short_conv\|linear_attention\|gdn_attention\|causal_conv1d\|fused_recu
 | T01/T02 精度 | **已查证：官方口径与我们的不可比，数据也取不到** | 不是"等材料"，也不是"取来就能跑"：官方分数是 8-shot/5-shot，我们是 0-shot；MiMo 根本没披露 MMLU/GSM8K；数据集本集群不可得。**建议不再投入**（§1-3b，`docs/t01-t02-baseline-investigation.md`） |
 | Harbor 推送 | 平台无自助凭据 | 已决定不推，镜像留在 `luql` 家目录（tar.gz + sha256 兜底） |
 | 平台清账号风险 | 3 个镜像源出第三方账号（`dcu/linshp`、`dcu/wqxyyt06`、`dcu/acizv7iztz`），上游可随时删 | tar.gz 归档是唯一保障；不要删镜像本体。2026-11-21 实测原 `archive/images/` 已不可见，现存镜像在 `scnethr2601a10/zoo-images/` 与 `luql/work/imgstore/`（见 §2.6），优先保留这些 |
+| **Harbor 已不可达（2026-11-22）** | `podman pull image.ac.com:5000/...` 报 `connection timed out` / `no route to host`；vllm0.21 仓库另报 `artifact not found` | **一切镜像只能从本地 tar 加载**：`luql/work/imgstore/vllm021.tar`（31 GB 未压缩）与 `scnethr2601a10/zoo-images/*.tar.gz`。新条目务必设 `HOST_IMAGE_TAR` / `HOST_CLI_TAR`，不要指望 pull（gotcha #62） |
 | 多卡配额语义 | 每卡需 ≥8 CPU，否则 GRES 静默降级；`--mem ≤ -c × 3888M` | 已固化进各条目 `submit*.slurm` 注释 |
 
 ---
 
 ## 7. 环境与命令速查
 
+> ⚠️ **2026-11-22 起 SSH 与集群外网都不可用**，下面的 `ssh` / `sbatch` / `squeue` 是历史写法，
+> 仅供对照；实际一律用 OpenAPI（`scnet.py`）。见本节末尾的「OpenAPI 通道」。
+
 ```bash
-# 账号（唯一可用）
+# 账号（历史写法，2026-11-22 实测 Permission denied publickey）
 ssh luql@zzeshell.scnet.cn -p 65032
-# 旧账号（只能读写文件，不能提交作业）
-ssh zzeshell-hz1                      # scnethr2601a10
-
 # 归档
-A=/public/home/luql/archive/zoo-dcu-2026-11
-cd $A && sha256sum -c SHA256SUMS      # 11 条，全 OK 才可信
-
-# 镜像还原（离线，比 pull 稳）
-gunzip -c $A/images/<name>.tar.gz | podman --root /tmp/pr-$JOBID --runroot /tmp/prr-$JOBID \
-  --storage-driver overlay --storage-opt ignore_chown_errors=true load
-
-# 提交（每个条目都在自己目录里 sbatch；磁盘水位不够会 exit 42 自动重投）
-cd ~/work/<条目目录> && sbatch container/submit.slurm
-
-# 查作业
-squeue -u luql -o "%.8i %.14j %.9T %.6M %.18R"
-sacct -j <JID> -n -P -o JobID,State,ExitCode,Elapsed,AllocTRES%50,NodeList
+A=/public/home/luql/archive/zoo-dcu-2026-11      # 已不可见，见 §2.6
 ```
+
+**OpenAPI 通道（当前唯一可用，`--region 20091`）**
+
+```bash
+S=~/Downloads/agent/skills/scnet-hpc/scripts/scnet.py
+
+python3 $S --region 20091 doctor            # 配置自检
+python3 $S --region 20091 resource-summary  # 队列空闲节点
+python3 $S --region 20091 jobs              # 在跑作业（active）
+python3 $S --region 20091 job <JID>         # 单作业状态
+python3 $S --region 20091 --timeout 400 wait <JID>   # 阻塞等待（--timeout 是全局参数，放子命令前）
+python3 $S --region 20091 logs <JID>        # 作业 stdout
+python3 $S --region 20091 download <远端文件> <本地路径>
+python3 $S --region 20091 mkdir <远端目录>
+python3 $S --region 20091 upload <本地文件> <远端目录/>   # ⚠️ 只收单文件，传目录报 local file is not a file
+python3 $S --region 20091 files --path <远端目录>         # 列目录（JSON）
+
+# 提交：--command 是脚本正文（多行也行），--work-dir 必须是绝对路径
+python3 $S --region 20091 submit --name <名> --queue hx1hdnormal \
+  --nodes 1 --dcus 1 --cpus 16 --memory 32GB --walltime 01:00:00 \
+  --work-dir /public/home/luql/work/<目录> --command "$(cat job.sh)"
+```
+
+提交时的硬约束（都实测过）：
+
+- **`--dcus` 最小是 1**：传 0 报 `min tres(gres/dcu) request 0 exceeds per-job max tres limit 1`，
+  所以纯 CPU 作业也必须占 1 张卡。
+- `--cpus 8` 会被拒（DefMemPerCPU），**用 16**；多卡时每卡 ≥8 CPU，否则 GRES 静默降级。
+- 提交后原地没有 `std.out`，要 `download` 取；想留证据就让 `--command` 里自己 `tee` 一份到 work-dir。
 
 **本机仓库与工具链**
 
@@ -435,7 +465,8 @@ python3 tools/gen_index.py     # 重生成 INDEX.md 与 README 总矩阵
 python3 tools/check_products.py# 20 个条目产物与 stats 一致性
 python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
 ./tools/publish.sh "msg"       # commit + 推 GitHub（GitLab 远端已移除）
-./tools/sync_remote.sh         # 把本地 models/ + sweeps/ 推到 luql:~/work/zoo-sync（提作业前必跑）
+# ./tools/sync_remote.sh       # ❌ 2026-11-22 起失效（依赖 ssh+rsync，SSH 已 Permission denied）
+#                              #    改用 scnet.py upload（单文件）+ submit --command，见上「OpenAPI 通道」
 ```
 
 **工作纪律（上一段总结出来的，务必遵守）**
@@ -452,19 +483,23 @@ python3 tools/gen_report.py    # 重生成 docs/REPORT.md 的统计段
 ## 8. 新会话开场提示（可直接粘贴）
 
 ```
-读 ~/Downloads/agent/repo/dcu-model-test/zoo/HANDOFF.md 与 docs/gotchas.md 最新条目（现 59 条）。
+读 ~/Downloads/agent/repo/dcu-model-test/zoo/HANDOFF.md 与 docs/gotchas.md 最新条目（现 63 条）。
 
-注意：§3.1 的 0 卡时闸门与 P0 已完成（2026-11-15）——闸门通过、P0-A（Kimi 16K/c64）用
-"每轮重启服务"达成、P0-B（fp8）判定外部阻塞停手。不要再从头做 P0。
+三条前置事实（2026-11-22 实测，先接受再动手）：
+1. SSH 已失效：ssh luql@zzeshell.scnet.cn -p 65032 → Permission denied (publickey)。
+   tools/sync_remote.sh 与 docs/entry-spec.md §8 的 rsync/scp/sbatch 流程都不可用。
+   提交与收发一律用 OpenAPI：python3 ~/Downloads/agent/skills/scnet-hpc/scripts/scnet.py
+   --region 20091 {submit,upload,download,files,job,wait,logs}。详见 §7「OpenAPI 通道」。
+   注意 upload 只收单文件；--dcus 最小 1（传 0 会被 QOS 拒）；--cpus 用 16。
+2. 集群无外网：DNS 与公网 IP:443 全不通，不是 DNS 故障（gotcha #60）。
+   权重只能本机下载（16 MB/s）→ upload（10 MB/s），16 GB 约 50 分钟。
+   不要在集群上试 snapshot_download 或 pip install，会白等一轮调度。
+3. P0 已完成（2026-11-15），不要再从头做；P1 已无低风险项。
 
-当前待办从 §4（P1）起，建议顺序 5 → 1/2：
-- P1-5 OmniWeaving 8 卡（1–4 卡时；先 -c 64 --mem=240G 试是否 OOM）；
-- P1-1/2 Trident 原生支持已下调优先级（需框架补丁、本地无法验证、自建 serving 已跑通 22.8 条/s），
-  不要照旧描述写"注册插件"或 `--task embed`（vLLM 0.20 无此参数）。
-- P1-6 Wan ulysses 已实测受阻（2026-11-21，作业 1187223）：xfuser 装不上（镜像无、计算节点 pip 源不可达、集群无 wheel），不要再投卡时试 import。
-- **P1 已无明显低风险可做项；下一步重心转 §5（P2 扩模型：Qwen3-VL-8B / Kimi-VL）。**
-- P1-4 Qwen3-VL 带图崩溃已解决（0.21 实测单图/2 图 200，旧"4 图"判据系笔误）；若想扩 Qwen3-VL-8B 见 §5（P2）。
+当前待办：§5 P2 扩模型。
+- Qwen/Qwen3-VL-8B-Instruct 进行中（2026-11-22）：条目骨架已建、权重搬运中，下一步是跑 smoke + 6 档。
+- Kimi-VL-A3B-Thinking（32.8 GB）搬之前先 0 卡时确认 vLLM 0.21 注册了 KimiVLForConditionalGeneration。
 
-资源现状（2026-11-21 实测）：hx1hdnormal 有 1 个空闲节点可提交；luql 家目录 85.1%（剩 217 GB，注意别撑爆）。
+资源现状（2026-11-22 实测）：hx1hdnormal 空闲 3 节点 / 2181 CPU；luql 家目录 85.1%（剩 216.6 GB）。
 每个结论都要有原始日志证据；四件套 + tools/publish.sh 收尾（仅推 GitHub，GitLab 已移除）。
 ```

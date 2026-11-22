@@ -1,0 +1,28 @@
+{
+  "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+  "org": "Qwen",
+  "model": "Qwen3-VL-8B-Instruct",
+  "card": "BW1000",
+  "cards_used": 1,
+  "tp": 1,
+  "framework": "vllm",
+  "framework_version": "0.21.0（vllm0.21.0-ubuntu22.04-dtk2604-py3.10 镜像）",
+  "precision": "bf16",
+  "status": "bench",
+  "bench": "yes",
+  "bench_note": "6 档文本负载已实测（vllm bench serve，两轮取第二轮）；T02 官方评测器 OCRBench/MMMU 未下发，故只作引擎能力证据，无精度分数",
+  "cold_start_s": [
+    360,
+    420
+  ],
+  "throughput": {
+    "4k_c1": 62.54,
+    "4k_c8": 387.3,
+    "4k_c64": 688.5,
+    "16k_c1": 51.26,
+    "16k_c8": 230.34,
+    "16k_c64": 184.06
+  },
+  "optimized": false,
+  "verified_on": "2026-11-22"
+}
